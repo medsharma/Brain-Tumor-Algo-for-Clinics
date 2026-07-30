@@ -1,0 +1,88 @@
+{
+  "baseline_summary": {
+    "model": [
+      "simplecnn"
+    ],
+    "seed": [
+      42
+    ],
+    "best_val_loss": [
+      1.845327119659582
+    ],
+    "best_val_acc": [
+      0.4220018034265104
+    ],
+    "test_loss": [
+      1.9346545188547037
+    ],
+    "test_acc": [
+      0.41276978417266186
+    ],
+    "mc_acc": [
+      0.41276978417266186
+    ],
+    "macro_f1": [
+      0.30635355826644894
+    ],
+    "macro_auc": [
+      0.8002069418263352
+    ],
+    "mean_entropy": [
+      0.9865992665290833
+    ],
+    "ece": [
+      0.3212351413885895
+    ],
+    "brier": [
+      0.8149525517153239
+    ],
+    "aurc": [
+      0.3883768555423389
+    ],
+    "acc_at_80": [
+      0.4746906636670416
+    ],
+    "acc_at_90": [
+      0.444
+    ],
+    "acc_at_95": [
+      0.4337121212121212
+    ],
+    "acc_ci_lo": [
+      0.3839703237410072
+    ],
+    "acc_ci_hi": [
+      0.4433453237410072
+    ],
+    "auc_ci_lo": [
+      0.783273659754113
+    ],
+    "auc_ci_hi": [
+      0.8164761144978376
+    ]
+  },
+  "reference_run": "20260620_165427",
+  "reference_run_is_smoke": null,
+  "mcnemar_vs_reference": [
+    {
+      "seed": 42,
+      "simplecnn_acc": 0.414568345323741,
+      "other_model": "vit",
+      "other_model_acc": 0.29136690647482016,
+      "mcnemar_chi2": 37.97946611909651,
+      "mcnemar_p": 7.149312253318385e-10,
+      "significant": true,
+      "reference_run_is_smoke": false
+    },
+    {
+      "seed": 42,
+      "simplecnn_acc": 0.414568345323741,
+      "other_model": "resnet50",
+      "other_model_acc": 0.19694244604316546,
+      "mcnemar_chi2": 129.0688888888889,
+      "mcnemar_p": 0.0,
+      "significant": true,
+      "reference_run_is_smoke": false
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+2026-07-09 19:14:25  [INFO]  Loading existing manifest: C:\Users\medha\OneDrive\Documents\MRI ALGO\split_manifest.csv
+2026-07-09 19:14:25  [INFO]  [train]  4979 samples  /  155 batches
+2026-07-09 19:14:25  [INFO]  [val]  1109 samples  /  35 batches
+2026-07-09 19:14:25  [INFO]  [test]  1112 samples  /  35 batches
+2026-07-09 19:14:26  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 19:26:56  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 19:39:56  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 19:52:49  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 20:05:57  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 20:18:47  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 20:23:30  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 20:28:38  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 20:34:05  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 20:39:04  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+Run dir: C:\Users\medha\OneDrive\Documents\MRI ALGO\results\20260703_155524
+
+=== evaluating vit seed=42 (T=20 MC Dropout) ===
+  acc=0.9640  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\vit_seed42_predictions.json
+
+=== evaluating vit seed=123 (T=20 MC Dropout) ===
+  acc=0.9640  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\vit_seed123_predictions.json
+
+=== evaluating vit seed=7 (T=20 MC Dropout) ===
+  acc=0.9613  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\vit_seed7_predictions.json
+
+=== evaluating vit seed=2024 (T=20 MC Dropout) ===
+  acc=0.9622  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\vit_seed2024_predictions.json
+
+=== evaluating vit seed=31 (T=20 MC Dropout) ===
+  acc=0.9568  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\vit_seed31_predictions.json
+
+=== evaluating resnet50 seed=42 (T=20 MC Dropout) ===
+  acc=0.9649  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\resnet50_seed42_predictions.json
+
+=== evaluating resnet50 seed=123 (T=20 MC Dropout) ===
+  acc=0.9586  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\resnet50_seed123_predictions.json
+
+=== evaluating resnet50 seed=7 (T=20 MC Dropout) ===
+  acc=0.9658  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\resnet50_seed7_predictions.json
+
+=== evaluating resnet50 seed=2024 (T=20 MC Dropout) ===
+  acc=0.9667  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\resnet50_seed2024_predictions.json
+
+=== evaluating resnet50 seed=31 (T=20 MC Dropout) ===
+  acc=0.9649  -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\resnet50_seed31_predictions.json
+McNemar [seed=42]  chi2=0.0000  p=1.0000  dir=resnet50_better  (vit=0.9640  rn=0.9649)
+McNemar [seed=123]  chi2=0.6250  p=0.4292  dir=vit_better  (vit=0.9640  rn=0.9586)
+McNemar [seed=7]  chi2=0.5517  p=0.4576  dir=resnet50_better  (vit=0.9613  rn=0.9658)
+McNemar [seed=2024]  chi2=0.5517  p=0.4576  dir=resnet50_better  (vit=0.9622  rn=0.9667)
+McNemar [seed=31]  chi2=1.5610  p=0.2115  dir=resnet50_better  (vit=0.9568  rn=0.9649)
+McNemar summary: 0/5 seeds significant (p<0.05).
+
+Wrote C:\Users\medha\OneDrive\Documents\MRI ALGO\results\20260703_155524\comparison_summary.json

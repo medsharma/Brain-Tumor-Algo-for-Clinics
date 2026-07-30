@@ -1,0 +1,365 @@
+{
+  "run_dir": "20260703_155524",
+  "models": {
+    "vit": {
+      "model": "vit",
+      "per_seed": [
+        {
+          "seed_dir": "seed_123",
+          "checkpoint": "results\\20260703_155524\\vit\\seed_123\\best_vit_seed123.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\vit\\seed_123",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 123,
+              "model": "vit",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.5891366600990295,
+          "val_nll_before": 0.14309342205524445,
+          "val_nll_after": 0.08506997674703598,
+          "test_accuracy": 0.9640287769784173,
+          "test_ece_before": 0.07255076718844952,
+          "test_ece_after": 0.02138855758545207,
+          "test_brier_before": 0.06523897770214239,
+          "test_brier_after": 0.06371939701252909,
+          "test_nll_before": 0.1790243536233902,
+          "test_nll_after": 0.15055105090141296,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_2024",
+          "checkpoint": "results\\20260703_155524\\vit\\seed_2024\\best_vit_seed2024.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\vit\\seed_2024",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 2024,
+              "model": "vit",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.6624651551246643,
+          "val_nll_before": 0.14103354513645172,
+          "val_nll_after": 0.09907157719135284,
+          "test_accuracy": 0.9622302158273381,
+          "test_ece_before": 0.06030185011436616,
+          "test_ece_after": 0.01894205336948091,
+          "test_brier_before": 0.06605199490131941,
+          "test_brier_after": 0.06539368513549736,
+          "test_nll_before": 0.1838451623916626,
+          "test_nll_after": 0.16265368461608887,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_31",
+          "checkpoint": "results\\20260703_155524\\vit\\seed_31\\best_vit_seed31.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\vit\\seed_31",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 31,
+              "model": "vit",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.626030683517456,
+          "val_nll_before": 0.15386661887168884,
+          "val_nll_after": 0.10550475865602493,
+          "test_accuracy": 0.9568345323741008,
+          "test_ece_before": 0.059696478836184806,
+          "test_ece_after": 0.0205926379497103,
+          "test_brier_before": 0.07282483771065802,
+          "test_brier_after": 0.07055829169658562,
+          "test_nll_before": 0.1912388801574707,
+          "test_nll_after": 0.16314928233623505,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_42",
+          "checkpoint": "results\\20260703_155524\\vit\\seed_42\\best_vit_seed42.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\vit\\seed_42",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 42,
+              "model": "vit",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.5737918019294739,
+          "val_nll_before": 0.15180672705173492,
+          "val_nll_after": 0.08824800699949265,
+          "test_accuracy": 0.9631294964028777,
+          "test_ece_before": 0.07183197682066784,
+          "test_ece_after": 0.01926907754952099,
+          "test_brier_before": 0.06789349883512424,
+          "test_brier_after": 0.06403263726738284,
+          "test_nll_before": 0.1879924088716507,
+          "test_nll_after": 0.14905071258544922,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_7",
+          "checkpoint": "results\\20260703_155524\\vit\\seed_7\\best_vit_seed7.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\vit\\seed_7",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 7,
+              "model": "vit",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.6519778966903687,
+          "val_nll_before": 0.1497371345758438,
+          "val_nll_after": 0.10621248185634613,
+          "test_accuracy": 0.9613309352517986,
+          "test_ece_before": 0.06493858108631996,
+          "test_ece_after": 0.01755470208984486,
+          "test_brier_before": 0.06328386263720322,
+          "test_brier_after": 0.06184976991479046,
+          "test_nll_before": 0.17468582093715668,
+          "test_nll_after": 0.1444902867078781,
+          "ece_improved": true,
+          "brier_improved": true
+        }
+      ]
+    },
+    "resnet50": {
+      "model": "resnet50",
+      "per_seed": [
+        {
+          "seed_dir": "seed_123",
+          "checkpoint": "results\\20260703_155524\\resnet50\\seed_123\\best_resnet50_seed123.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\resnet50\\seed_123",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 123,
+              "model": "resnet50",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.6006218194961548,
+          "val_nll_before": 0.15419858694076538,
+          "val_nll_after": 0.09533216804265976,
+          "test_accuracy": 0.960431654676259,
+          "test_ece_before": 0.0762858917976884,
+          "test_ece_after": 0.016872662541677574,
+          "test_brier_before": 0.06928338030578737,
+          "test_brier_after": 0.06626829588154996,
+          "test_nll_before": 0.1911022961139679,
+          "test_nll_after": 0.14935468137264252,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_2024",
+          "checkpoint": "results\\20260703_155524\\resnet50\\seed_2024\\best_resnet50_seed2024.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\resnet50\\seed_2024",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 2024,
+              "model": "resnet50",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.5817832350730896,
+          "val_nll_before": 0.14313332736492157,
+          "val_nll_after": 0.08342590928077698,
+          "test_accuracy": 0.966726618705036,
+          "test_ece_before": 0.07256060420609206,
+          "test_ece_after": 0.019926571749526015,
+          "test_brier_before": 0.062449502873242836,
+          "test_brier_after": 0.05852989057420362,
+          "test_nll_before": 0.1752747744321823,
+          "test_nll_after": 0.1386825442314148,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_31",
+          "checkpoint": "results\\20260703_155524\\resnet50\\seed_31\\best_resnet50_seed31.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\resnet50\\seed_31",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 31,
+              "model": "resnet50",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.652592658996582,
+          "val_nll_before": 0.17166253924369812,
+          "val_nll_after": 0.12405674904584885,
+          "test_accuracy": 0.9640287769784173,
+          "test_ece_before": 0.07287862256383722,
+          "test_ece_after": 0.012635317932573184,
+          "test_brier_before": 0.07129999300223416,
+          "test_brier_after": 0.06535180609765677,
+          "test_nll_before": 0.19440720975399017,
+          "test_nll_after": 0.15165743231773376,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_42",
+          "checkpoint": "results\\20260703_155524\\resnet50\\seed_42\\best_resnet50_seed42.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\resnet50\\seed_42",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 42,
+              "model": "resnet50",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.6454501152038574,
+          "val_nll_before": 0.13821780681610107,
+          "val_nll_after": 0.0921996608376503,
+          "test_accuracy": 0.9649280575539568,
+          "test_ece_before": 0.06461692228913304,
+          "test_ece_after": 0.018250634853574046,
+          "test_brier_before": 0.06503036062756656,
+          "test_brier_after": 0.06383111833016727,
+          "test_nll_before": 0.18149752914905548,
+          "test_nll_after": 0.15439046919345856,
+          "ece_improved": true,
+          "brier_improved": true
+        },
+        {
+          "seed_dir": "seed_7",
+          "checkpoint": "results\\20260703_155524\\resnet50\\seed_7\\best_resnet50_seed7.pth",
+          "provenance": {
+            "run_dir": "results\\20260703_155524",
+            "seed_dir": "results\\20260703_155524\\resnet50\\seed_7",
+            "is_smoke_test_run": false,
+            "caveat": "Real training run (not a smoke test).",
+            "config": {
+              "seed": 7,
+              "model": "resnet50",
+              "num_epochs": 30,
+              "batch_size": 32,
+              "lr": 0.0001,
+              "wd": 0.01,
+              "label_smoothing": 0.1,
+              "mc_T": 20,
+              "early_stop_patience": 5
+            }
+          },
+          "n_val": 1109,
+          "n_test": 1112,
+          "temperature": 0.6140458583831787,
+          "val_nll_before": 0.1514604389667511,
+          "val_nll_after": 0.09716971218585968,
+          "test_accuracy": 0.9649280575539568,
+          "test_ece_before": 0.07249026096982067,
+          "test_ece_after": 0.011311107214620676,
+          "test_brier_before": 0.05861822684687828,
+          "test_brier_after": 0.053641851599144925,
+          "test_nll_before": 0.1669512838125229,
+          "test_nll_after": 0.11552013456821442,
+          "ece_improved": true,
+          "brier_improved": true
+        }
+      ]
+    }
+  }
+}

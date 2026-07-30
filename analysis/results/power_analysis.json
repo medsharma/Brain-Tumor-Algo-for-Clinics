@@ -1,0 +1,443 @@
+{
+  "N_test": 1112,
+  "alpha": 0.05,
+  "run_dir": "20260703_155524",
+  "provenance": {
+    "run_dir": "results\\20260703_155524",
+    "seed_dir": "results\\20260703_155524\\vit\\seed_123",
+    "is_smoke_test_run": false,
+    "caveat": "Real training run (not a smoke test).",
+    "config": {
+      "seed": 123,
+      "model": "vit",
+      "num_epochs": 30,
+      "batch_size": 32,
+      "lr": 0.0001,
+      "wd": 0.01,
+      "label_smoothing": 0.1,
+      "mc_T": 20,
+      "early_stop_patience": 5
+    }
+  },
+  "mcnemar_power_analysis": [
+    {
+      "seed": 42,
+      "N_test": 1112,
+      "vit_acc": 0.9640287769784173,
+      "resnet50_acc": 0.9649280575539568,
+      "reported_chi2": 0.0,
+      "reported_p": 1.0,
+      "reconstructed_counts": {
+        "both_correct": 1072,
+        "vit_only": 0,
+        "resnet50_only": 1,
+        "both_wrong": 39
+      },
+      "reconstruction_validated": true,
+      "n_discordant_pairs": 1,
+      "discordance_rate": 0.0008992805755395684,
+      "proportion_favoring_vit_among_discordant": 0.0,
+      "achieved_power_at_current_N": 0.0,
+      "required_n_discordant_for_80pct_power": 4,
+      "required_n_discordant_for_90pct_power": 4,
+      "required_total_N_for_80pct_power_at_same_discordance_rate": 4448,
+      "required_total_N_for_90pct_power_at_same_discordance_rate": 4448
+    },
+    {
+      "seed": 123,
+      "N_test": 1112,
+      "vit_acc": 0.9640287769784173,
+      "resnet50_acc": 0.9586330935251799,
+      "reported_chi2": 0.625,
+      "reported_p": 0.42919530044034926,
+      "reconstructed_counts": {
+        "both_correct": 1049,
+        "vit_only": 23,
+        "resnet50_only": 17,
+        "both_wrong": 23
+      },
+      "reconstruction_validated": true,
+      "n_discordant_pairs": 40,
+      "discordance_rate": 0.03597122302158273,
+      "proportion_favoring_vit_among_discordant": 0.575,
+      "achieved_power_at_current_N": 0.15318861777111936,
+      "required_n_discordant_for_80pct_power": 347,
+      "required_n_discordant_for_90pct_power": 463,
+      "required_total_N_for_80pct_power_at_same_discordance_rate": 9647,
+      "required_total_N_for_90pct_power_at_same_discordance_rate": 12872
+    },
+    {
+      "seed": 7,
+      "N_test": 1112,
+      "vit_acc": 0.9613309352517986,
+      "resnet50_acc": 0.9658273381294964,
+      "reported_chi2": 0.5517241379310345,
+      "reported_p": 0.4576140668763148,
+      "reconstructed_counts": {
+        "both_correct": 1057,
+        "vit_only": 12,
+        "resnet50_only": 17,
+        "both_wrong": 26
+      },
+      "reconstruction_validated": true,
+      "n_discordant_pairs": 29,
+      "discordance_rate": 0.026079136690647483,
+      "proportion_favoring_vit_among_discordant": 0.41379310344827586,
+      "achieved_power_at_current_N": 0.1475108067353681,
+      "required_n_discordant_for_80pct_power": 262,
+      "required_n_discordant_for_90pct_power": 350,
+      "required_total_N_for_80pct_power_at_same_discordance_rate": 10047,
+      "required_total_N_for_90pct_power_at_same_discordance_rate": 13421
+    },
+    {
+      "seed": 2024,
+      "N_test": 1112,
+      "vit_acc": 0.9622302158273381,
+      "resnet50_acc": 0.966726618705036,
+      "reported_chi2": 0.5517241379310345,
+      "reported_p": 0.4576140668763148,
+      "reconstructed_counts": {
+        "both_correct": 1058,
+        "vit_only": 12,
+        "resnet50_only": 17,
+        "both_wrong": 25
+      },
+      "reconstruction_validated": true,
+      "n_discordant_pairs": 29,
+      "discordance_rate": 0.026079136690647483,
+      "proportion_favoring_vit_among_discordant": 0.41379310344827586,
+      "achieved_power_at_current_N": 0.1475108067353681,
+      "required_n_discordant_for_80pct_power": 262,
+      "required_n_discordant_for_90pct_power": 350,
+      "required_total_N_for_80pct_power_at_same_discordance_rate": 10047,
+      "required_total_N_for_90pct_power_at_same_discordance_rate": 13421
+    },
+    {
+      "seed": 31,
+      "N_test": 1112,
+      "vit_acc": 0.9568345323741008,
+      "resnet50_acc": 0.9649280575539568,
+      "reported_chi2": 1.5609756097560976,
+      "reported_p": 0.21152242941072907,
+      "reconstructed_counts": {
+        "both_correct": 1048,
+        "vit_only": 16,
+        "resnet50_only": 25,
+        "both_wrong": 23
+      },
+      "reconstruction_validated": true,
+      "n_discordant_pairs": 41,
+      "discordance_rate": 0.0368705035971223,
+      "proportion_favoring_vit_among_discordant": 0.3902439024390244,
+      "achieved_power_at_current_N": 0.28492917339088897,
+      "required_n_discordant_for_80pct_power": 161,
+      "required_n_discordant_for_90pct_power": 214,
+      "required_total_N_for_80pct_power_at_same_discordance_rate": 4367,
+      "required_total_N_for_90pct_power_at_same_discordance_rate": 5805
+    }
+  ],
+  "general_required_n_table": [
+    {
+      "discordance_rate": 0.05,
+      "proportion_favoring_better_model_among_discordant": 0.55,
+      "implied_accuracy_gap_pct_points": 0.5,
+      "required_total_N_80pct_power": 15660,
+      "required_total_N_90pct_power": 20940
+    },
+    {
+      "discordance_rate": 0.05,
+      "proportion_favoring_better_model_among_discordant": 0.6,
+      "implied_accuracy_gap_pct_points": 1.0,
+      "required_total_N_80pct_power": 3880,
+      "required_total_N_90pct_power": 5180
+    },
+    {
+      "discordance_rate": 0.05,
+      "proportion_favoring_better_model_among_discordant": 0.65,
+      "implied_accuracy_gap_pct_points": 1.5,
+      "required_total_N_80pct_power": 1700,
+      "required_total_N_90pct_power": 2260
+    },
+    {
+      "discordance_rate": 0.05,
+      "proportion_favoring_better_model_among_discordant": 0.7,
+      "implied_accuracy_gap_pct_points": 2.0,
+      "required_total_N_80pct_power": 940,
+      "required_total_N_90pct_power": 1240
+    },
+    {
+      "discordance_rate": 0.1,
+      "proportion_favoring_better_model_among_discordant": 0.55,
+      "implied_accuracy_gap_pct_points": 1.0,
+      "required_total_N_80pct_power": 7830,
+      "required_total_N_90pct_power": 10470
+    },
+    {
+      "discordance_rate": 0.1,
+      "proportion_favoring_better_model_among_discordant": 0.6,
+      "implied_accuracy_gap_pct_points": 2.0,
+      "required_total_N_80pct_power": 1940,
+      "required_total_N_90pct_power": 2590
+    },
+    {
+      "discordance_rate": 0.1,
+      "proportion_favoring_better_model_among_discordant": 0.65,
+      "implied_accuracy_gap_pct_points": 3.0,
+      "required_total_N_80pct_power": 850,
+      "required_total_N_90pct_power": 1130
+    },
+    {
+      "discordance_rate": 0.1,
+      "proportion_favoring_better_model_among_discordant": 0.7,
+      "implied_accuracy_gap_pct_points": 4.0,
+      "required_total_N_80pct_power": 470,
+      "required_total_N_90pct_power": 620
+    },
+    {
+      "discordance_rate": 0.15,
+      "proportion_favoring_better_model_among_discordant": 0.55,
+      "implied_accuracy_gap_pct_points": 1.5,
+      "required_total_N_80pct_power": 5220,
+      "required_total_N_90pct_power": 6980
+    },
+    {
+      "discordance_rate": 0.15,
+      "proportion_favoring_better_model_among_discordant": 0.6,
+      "implied_accuracy_gap_pct_points": 3.0,
+      "required_total_N_80pct_power": 1294,
+      "required_total_N_90pct_power": 1727
+    },
+    {
+      "discordance_rate": 0.15,
+      "proportion_favoring_better_model_among_discordant": 0.65,
+      "implied_accuracy_gap_pct_points": 4.5,
+      "required_total_N_80pct_power": 567,
+      "required_total_N_90pct_power": 754
+    },
+    {
+      "discordance_rate": 0.15,
+      "proportion_favoring_better_model_among_discordant": 0.7,
+      "implied_accuracy_gap_pct_points": 6.0,
+      "required_total_N_80pct_power": 314,
+      "required_total_N_90pct_power": 414
+    },
+    {
+      "discordance_rate": 0.2,
+      "proportion_favoring_better_model_among_discordant": 0.55,
+      "implied_accuracy_gap_pct_points": 2.0,
+      "required_total_N_80pct_power": 3915,
+      "required_total_N_90pct_power": 5235
+    },
+    {
+      "discordance_rate": 0.2,
+      "proportion_favoring_better_model_among_discordant": 0.6,
+      "implied_accuracy_gap_pct_points": 4.0,
+      "required_total_N_80pct_power": 970,
+      "required_total_N_90pct_power": 1295
+    },
+    {
+      "discordance_rate": 0.2,
+      "proportion_favoring_better_model_among_discordant": 0.65,
+      "implied_accuracy_gap_pct_points": 6.0,
+      "required_total_N_80pct_power": 425,
+      "required_total_N_90pct_power": 565
+    },
+    {
+      "discordance_rate": 0.2,
+      "proportion_favoring_better_model_among_discordant": 0.7,
+      "implied_accuracy_gap_pct_points": 8.0,
+      "required_total_N_80pct_power": 235,
+      "required_total_N_90pct_power": 310
+    },
+    {
+      "discordance_rate": 0.3,
+      "proportion_favoring_better_model_among_discordant": 0.55,
+      "implied_accuracy_gap_pct_points": 3.0,
+      "required_total_N_80pct_power": 2610,
+      "required_total_N_90pct_power": 3490
+    },
+    {
+      "discordance_rate": 0.3,
+      "proportion_favoring_better_model_among_discordant": 0.6,
+      "implied_accuracy_gap_pct_points": 6.0,
+      "required_total_N_80pct_power": 647,
+      "required_total_N_90pct_power": 864
+    },
+    {
+      "discordance_rate": 0.3,
+      "proportion_favoring_better_model_among_discordant": 0.65,
+      "implied_accuracy_gap_pct_points": 9.0,
+      "required_total_N_80pct_power": 284,
+      "required_total_N_90pct_power": 377
+    },
+    {
+      "discordance_rate": 0.3,
+      "proportion_favoring_better_model_among_discordant": 0.7,
+      "implied_accuracy_gap_pct_points": 12.0,
+      "required_total_N_80pct_power": 157,
+      "required_total_N_90pct_power": 207
+    }
+  ],
+  "per_class_wilson_ci_table": [
+    {
+      "class": "glioma",
+      "n_test": 277,
+      "assumed_recall": 0.8,
+      "95pct_wilson_ci_low": 0.7489,
+      "95pct_wilson_ci_high": 0.8429,
+      "half_width_pct_points": 4.7
+    },
+    {
+      "class": "glioma",
+      "n_test": 277,
+      "assumed_recall": 0.85,
+      "95pct_wilson_ci_low": 0.8032,
+      "95pct_wilson_ci_high": 0.8872,
+      "half_width_pct_points": 4.2
+    },
+    {
+      "class": "glioma",
+      "n_test": 277,
+      "assumed_recall": 0.9,
+      "95pct_wilson_ci_low": 0.859,
+      "95pct_wilson_ci_high": 0.93,
+      "half_width_pct_points": 3.55
+    },
+    {
+      "class": "glioma",
+      "n_test": 277,
+      "assumed_recall": 0.95,
+      "95pct_wilson_ci_low": 0.9176,
+      "95pct_wilson_ci_high": 0.9701,
+      "half_width_pct_points": 2.62
+    },
+    {
+      "class": "glioma",
+      "n_test": 277,
+      "assumed_recall": 0.99,
+      "95pct_wilson_ci_low": 0.9699,
+      "95pct_wilson_ci_high": 0.9967,
+      "half_width_pct_points": 1.34
+    },
+    {
+      "class": "meningioma",
+      "n_test": 266,
+      "assumed_recall": 0.8,
+      "95pct_wilson_ci_low": 0.7478,
+      "95pct_wilson_ci_high": 0.8436,
+      "half_width_pct_points": 4.79
+    },
+    {
+      "class": "meningioma",
+      "n_test": 266,
+      "assumed_recall": 0.85,
+      "95pct_wilson_ci_low": 0.8021,
+      "95pct_wilson_ci_high": 0.8879,
+      "half_width_pct_points": 4.29
+    },
+    {
+      "class": "meningioma",
+      "n_test": 266,
+      "assumed_recall": 0.9,
+      "95pct_wilson_ci_low": 0.8581,
+      "95pct_wilson_ci_high": 0.9306,
+      "half_width_pct_points": 3.62
+    },
+    {
+      "class": "meningioma",
+      "n_test": 266,
+      "assumed_recall": 0.95,
+      "95pct_wilson_ci_low": 0.9168,
+      "95pct_wilson_ci_high": 0.9704,
+      "half_width_pct_points": 2.68
+    },
+    {
+      "class": "meningioma",
+      "n_test": 266,
+      "assumed_recall": 0.99,
+      "95pct_wilson_ci_low": 0.9693,
+      "95pct_wilson_ci_high": 0.9968,
+      "half_width_pct_points": 1.38
+    },
+    {
+      "class": "notumor",
+      "n_test": 291,
+      "assumed_recall": 0.8,
+      "95pct_wilson_ci_low": 0.7503,
+      "95pct_wilson_ci_high": 0.8419,
+      "half_width_pct_points": 4.58
+    },
+    {
+      "class": "notumor",
+      "n_test": 291,
+      "assumed_recall": 0.85,
+      "95pct_wilson_ci_low": 0.8044,
+      "95pct_wilson_ci_high": 0.8865,
+      "half_width_pct_points": 4.1
+    },
+    {
+      "class": "notumor",
+      "n_test": 291,
+      "assumed_recall": 0.9,
+      "95pct_wilson_ci_low": 0.8602,
+      "95pct_wilson_ci_high": 0.9294,
+      "half_width_pct_points": 3.46
+    },
+    {
+      "class": "notumor",
+      "n_test": 291,
+      "assumed_recall": 0.95,
+      "95pct_wilson_ci_low": 0.9186,
+      "95pct_wilson_ci_high": 0.9697,
+      "half_width_pct_points": 2.56
+    },
+    {
+      "class": "notumor",
+      "n_test": 291,
+      "assumed_recall": 0.99,
+      "95pct_wilson_ci_low": 0.9706,
+      "95pct_wilson_ci_high": 0.9966,
+      "half_width_pct_points": 1.3
+    },
+    {
+      "class": "pituitary",
+      "n_test": 278,
+      "assumed_recall": 0.8,
+      "95pct_wilson_ci_low": 0.749,
+      "95pct_wilson_ci_high": 0.8428,
+      "half_width_pct_points": 4.69
+    },
+    {
+      "class": "pituitary",
+      "n_test": 278,
+      "assumed_recall": 0.85,
+      "95pct_wilson_ci_low": 0.8033,
+      "95pct_wilson_ci_high": 0.8872,
+      "half_width_pct_points": 4.2
+    },
+    {
+      "class": "pituitary",
+      "n_test": 278,
+      "assumed_recall": 0.9,
+      "95pct_wilson_ci_low": 0.8591,
+      "95pct_wilson_ci_high": 0.93,
+      "half_width_pct_points": 3.54
+    },
+    {
+      "class": "pituitary",
+      "n_test": 278,
+      "assumed_recall": 0.95,
+      "95pct_wilson_ci_low": 0.9177,
+      "95pct_wilson_ci_high": 0.97,
+      "half_width_pct_points": 2.62
+    },
+    {
+      "class": "pituitary",
+      "n_test": 278,
+      "assumed_recall": 0.99,
+      "95pct_wilson_ci_low": 0.9699,
+      "95pct_wilson_ci_high": 0.9967,
+      "half_width_pct_points": 1.34
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+2026-07-09 21:27:28  [INFO]  Loading existing manifest: C:\Users\medha\OneDrive\Documents\MRI ALGO\split_manifest.csv
+2026-07-09 21:27:28  [INFO]  [train]  4979 samples  /  155 batches
+2026-07-09 21:27:28  [INFO]  [val]  1109 samples  /  35 batches
+2026-07-09 21:27:28  [INFO]  [test]  1112 samples  /  35 batches
+2026-07-09 21:27:30  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 21:29:09  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 21:30:53  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 21:32:33  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 21:34:30  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-09 21:36:27  [INFO]  [train]  4979 samples  /  155 batches
+2026-07-09 21:36:27  [INFO]  [val]  1109 samples  /  35 batches
+2026-07-09 21:36:27  [INFO]  [test]  1112 samples  /  35 batches
+2026-07-09 21:36:27  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 21:37:36  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 21:38:23  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 21:39:09  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+2026-07-09 21:39:56  [INFO]  BrainTumorResNet50 | trainable: 15,494,404 / 24,037,700  (64.46%)
+Using run: C:\Users\medha\OneDrive\Documents\MRI ALGO\results\20260703_155524
+
+=== vit ===
+  [seed_123] T=0.589  ECE 0.0726 -> 0.0214  Brier 0.0652 -> 0.0637  NLL 0.1790 -> 0.1506
+  [seed_2024] T=0.662  ECE 0.0603 -> 0.0189  Brier 0.0661 -> 0.0654  NLL 0.1838 -> 0.1627
+  [seed_31] T=0.626  ECE 0.0597 -> 0.0206  Brier 0.0728 -> 0.0706  NLL 0.1912 -> 0.1631
+  [seed_42] T=0.574  ECE 0.0718 -> 0.0193  Brier 0.0679 -> 0.0640  NLL 0.1880 -> 0.1491
+  [seed_7] T=0.652  ECE 0.0649 -> 0.0176  Brier 0.0633 -> 0.0618  NLL 0.1747 -> 0.1445
+
+=== resnet50 ===
+  [seed_123] T=0.601  ECE 0.0763 -> 0.0169  Brier 0.0693 -> 0.0663  NLL 0.1911 -> 0.1494
+  [seed_2024] T=0.582  ECE 0.0726 -> 0.0199  Brier 0.0624 -> 0.0585  NLL 0.1753 -> 0.1387
+  [seed_31] T=0.653  ECE 0.0729 -> 0.0126  Brier 0.0713 -> 0.0654  NLL 0.1944 -> 0.1517
+  [seed_42] T=0.645  ECE 0.0646 -> 0.0183  Brier 0.0650 -> 0.0638  NLL 0.1815 -> 0.1544
+  [seed_7] T=0.614  ECE 0.0725 -> 0.0113  Brier 0.0586 -> 0.0536  NLL 0.1670 -> 0.1155
+
+JSON -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\calibration\calibration_comparison.json
+Markdown -> C:\Users\medha\OneDrive\Documents\MRI ALGO\analysis\results\calibration\calibration_comparison.md

@@ -1,0 +1,11 @@
+{
+  "seed": 7,
+  "model": "vit",
+  "num_epochs": 30,
+  "batch_size": 32,
+  "lr": 0.0001,
+  "wd": 0.01,
+  "label_smoothing": 0.1,
+  "mc_T": 20,
+  "early_stop_patience": 5
+}

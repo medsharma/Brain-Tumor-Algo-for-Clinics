@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.vscode/
+
+# Model checkpoints (>100MB, exceed GitHub's file size limit)
+*.pth

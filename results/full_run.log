@@ -1,0 +1,267 @@
+2026-07-03 15:55:24  [INFO]  Compute device: cpu
+2026-07-03 15:55:24  [INFO]  Loading existing manifest: split_manifest.csv
+2026-07-03 15:55:24  [INFO]  ============================================================
+2026-07-03 15:55:24  [INFO]  Seed 42  |  VIT
+2026-07-03 15:55:24  [INFO]  ============================================================
+2026-07-03 15:55:24  [INFO]  Reproducibility locked — seed=42, cudnn.deterministic=True
+2026-07-03 15:55:24  [INFO]  [train]  4979 samples  /  155 batches
+2026-07-03 15:55:24  [INFO]  [val]  1109 samples  /  35 batches
+2026-07-03 15:55:24  [INFO]  [test]  1112 samples  /  35 batches
+2026-07-03 15:55:24  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-03 15:56:31  [INFO]  Epoch [01]  step [20/155]  batch_loss=0.7682
+2026-07-03 15:57:20  [INFO]  Epoch [01]  step [40/155]  batch_loss=0.5803
+2026-07-03 15:58:01  [INFO]  Epoch [01]  step [60/155]  batch_loss=0.6040
+2026-07-03 15:58:44  [INFO]  Epoch [01]  step [80/155]  batch_loss=0.6809
+2026-07-03 15:59:26  [INFO]  Epoch [01]  step [100/155]  batch_loss=0.7816
+2026-07-03 16:00:17  [INFO]  Epoch [01]  step [120/155]  batch_loss=0.7201
+2026-07-03 16:01:08  [INFO]  Epoch [01]  step [140/155]  batch_loss=0.4770
+2026-07-03 16:02:51  [INFO]  [vit | seed=42]  Epoch [01/30]  train_loss=0.6648  train_acc=0.8351  val_loss=0.5143  val_acc=0.9170
+2026-07-03 16:02:52  [INFO]    \u2713 Checkpoint saved  (epoch=1  val_loss=0.5143  val_acc=0.9170)
+2026-07-03 16:03:36  [INFO]  Epoch [02]  step [20/155]  batch_loss=0.6089
+2026-07-03 16:04:18  [INFO]  Epoch [02]  step [40/155]  batch_loss=0.6203
+2026-07-03 16:04:58  [INFO]  Epoch [02]  step [60/155]  batch_loss=0.5215
+2026-07-03 16:05:43  [INFO]  Epoch [02]  step [80/155]  batch_loss=0.5216
+2026-07-03 16:06:34  [INFO]  Epoch [02]  step [100/155]  batch_loss=0.4228
+2026-07-03 16:07:18  [INFO]  Epoch [02]  step [120/155]  batch_loss=0.5452
+2026-07-03 16:07:59  [INFO]  Epoch [02]  step [140/155]  batch_loss=0.5890
+2026-07-03 16:09:22  [INFO]  [vit | seed=42]  Epoch [02/30]  train_loss=0.4863  train_acc=0.9375  val_loss=0.4606  val_acc=0.9459
+2026-07-03 16:09:23  [INFO]    \u2713 Checkpoint saved  (epoch=2  val_loss=0.4606  val_acc=0.9459)
+2026-07-03 16:10:09  [INFO]  Epoch [03]  step [20/155]  batch_loss=0.3889
+2026-07-03 16:10:55  [INFO]  Epoch [03]  step [40/155]  batch_loss=0.5943
+2026-07-03 16:11:36  [INFO]  Epoch [03]  step [60/155]  batch_loss=0.5018
+2026-07-03 16:12:18  [INFO]  Epoch [03]  step [80/155]  batch_loss=0.4057
+2026-07-03 16:13:05  [INFO]  Epoch [03]  step [100/155]  batch_loss=0.4390
+2026-07-03 16:13:52  [INFO]  Epoch [03]  step [120/155]  batch_loss=0.5425
+2026-07-03 16:14:43  [INFO]  Epoch [03]  step [140/155]  batch_loss=0.3970
+2026-07-03 16:16:12  [INFO]  [vit | seed=42]  Epoch [03/30]  train_loss=0.4331  train_acc=0.9651  val_loss=0.4402  val_acc=0.9522
+2026-07-03 16:16:13  [INFO]    \u2713 Checkpoint saved  (epoch=3  val_loss=0.4402  val_acc=0.9522)
+2026-07-03 16:16:57  [INFO]  Epoch [04]  step [20/155]  batch_loss=0.3977
+2026-07-03 16:17:42  [INFO]  Epoch [04]  step [40/155]  batch_loss=0.3917
+2026-07-03 16:18:24  [INFO]  Epoch [04]  step [60/155]  batch_loss=0.5839
+2026-07-03 16:19:09  [INFO]  Epoch [04]  step [80/155]  batch_loss=0.4162
+2026-07-03 16:19:51  [INFO]  Epoch [04]  step [100/155]  batch_loss=0.3612
+2026-07-03 16:20:32  [INFO]  Epoch [04]  step [120/155]  batch_loss=0.3619
+2026-07-03 16:21:12  [INFO]  Epoch [04]  step [140/155]  batch_loss=0.4270
+2026-07-03 16:22:37  [INFO]  [vit | seed=42]  Epoch [04/30]  train_loss=0.4182  train_acc=0.9704  val_loss=0.4231  val_acc=0.9702
+2026-07-03 16:22:37  [INFO]    \u2713 Checkpoint saved  (epoch=4  val_loss=0.4231  val_acc=0.9702)
+2026-07-03 16:23:22  [INFO]  Epoch [05]  step [20/155]  batch_loss=0.3790
+2026-07-03 16:24:04  [INFO]  Epoch [05]  step [40/155]  batch_loss=0.3693
+2026-07-03 16:24:45  [INFO]  Epoch [05]  step [60/155]  batch_loss=0.4248
+2026-07-03 16:25:24  [INFO]  Epoch [05]  step [80/155]  batch_loss=0.3930
+2026-07-03 16:26:01  [INFO]  Epoch [05]  step [100/155]  batch_loss=0.4024
+2026-07-03 16:26:37  [INFO]  Epoch [05]  step [120/155]  batch_loss=0.3603
+2026-07-03 16:27:13  [INFO]  Epoch [05]  step [140/155]  batch_loss=0.4321
+2026-07-03 16:28:30  [INFO]  [vit | seed=42]  Epoch [05/30]  train_loss=0.4062  train_acc=0.9746  val_loss=0.4054  val_acc=0.9757
+2026-07-03 16:28:30  [INFO]    \u2713 Checkpoint saved  (epoch=5  val_loss=0.4054  val_acc=0.9757)
+2026-07-03 16:29:08  [INFO]  Epoch [06]  step [20/155]  batch_loss=0.5149
+2026-07-03 16:29:46  [INFO]  Epoch [06]  step [40/155]  batch_loss=0.4328
+2026-07-03 16:30:22  [INFO]  Epoch [06]  step [60/155]  batch_loss=0.3868
+2026-07-03 16:31:00  [INFO]  Epoch [06]  step [80/155]  batch_loss=0.3738
+2026-07-03 16:31:36  [INFO]  Epoch [06]  step [100/155]  batch_loss=0.4114
+2026-07-03 16:32:13  [INFO]  Epoch [06]  step [120/155]  batch_loss=0.3595
+2026-07-03 16:32:49  [INFO]  Epoch [06]  step [140/155]  batch_loss=0.3814
+2026-07-03 16:34:04  [INFO]  [vit | seed=42]  Epoch [06/30]  train_loss=0.3913  train_acc=0.9835  val_loss=0.4158  val_acc=0.9675
+2026-07-03 16:34:44  [INFO]  Epoch [07]  step [20/155]  batch_loss=0.4161
+2026-07-03 16:35:19  [INFO]  Epoch [07]  step [40/155]  batch_loss=0.4117
+2026-07-03 16:35:58  [INFO]  Epoch [07]  step [60/155]  batch_loss=0.4035
+2026-07-03 16:36:37  [INFO]  Epoch [07]  step [80/155]  batch_loss=0.3584
+2026-07-03 16:37:17  [INFO]  Epoch [07]  step [100/155]  batch_loss=0.3565
+2026-07-03 16:37:56  [INFO]  Epoch [07]  step [120/155]  batch_loss=0.3575
+2026-07-03 16:38:35  [INFO]  Epoch [07]  step [140/155]  batch_loss=0.3793
+2026-07-03 16:39:52  [INFO]  [vit | seed=42]  Epoch [07/30]  train_loss=0.3843  train_acc=0.9861  val_loss=0.4321  val_acc=0.9639
+2026-07-03 16:40:31  [INFO]  Epoch [08]  step [20/155]  batch_loss=0.3617
+2026-07-03 16:41:08  [INFO]  Epoch [08]  step [40/155]  batch_loss=0.4793
+2026-07-03 16:41:45  [INFO]  Epoch [08]  step [60/155]  batch_loss=0.3586
+2026-07-03 16:42:22  [INFO]  Epoch [08]  step [80/155]  batch_loss=0.4456
+2026-07-03 16:43:00  [INFO]  Epoch [08]  step [100/155]  batch_loss=0.4052
+2026-07-03 16:43:36  [INFO]  Epoch [08]  step [120/155]  batch_loss=0.3819
+2026-07-03 16:44:11  [INFO]  Epoch [08]  step [140/155]  batch_loss=0.4092
+2026-07-03 16:45:30  [INFO]  [vit | seed=42]  Epoch [08/30]  train_loss=0.3828  train_acc=0.9853  val_loss=0.4380  val_acc=0.9585
+2026-07-03 16:46:07  [INFO]  Epoch [09]  step [20/155]  batch_loss=0.3591
+2026-07-03 16:46:45  [INFO]  Epoch [09]  step [40/155]  batch_loss=0.3576
+2026-07-03 16:47:23  [INFO]  Epoch [09]  step [60/155]  batch_loss=0.3592
+2026-07-03 16:48:00  [INFO]  Epoch [09]  step [80/155]  batch_loss=0.3596
+2026-07-03 16:48:37  [INFO]  Epoch [09]  step [100/155]  batch_loss=0.3580
+2026-07-03 16:49:15  [INFO]  Epoch [09]  step [120/155]  batch_loss=0.3576
+2026-07-03 16:49:52  [INFO]  Epoch [09]  step [140/155]  batch_loss=0.4177
+2026-07-03 16:51:10  [INFO]  [vit | seed=42]  Epoch [09/30]  train_loss=0.3757  train_acc=0.9901  val_loss=0.4071  val_acc=0.9702
+2026-07-03 16:51:49  [INFO]  Epoch [10]  step [20/155]  batch_loss=0.4168
+2026-07-03 16:52:28  [INFO]  Epoch [10]  step [40/155]  batch_loss=0.3592
+2026-07-03 16:53:07  [INFO]  Epoch [10]  step [60/155]  batch_loss=0.3585
+2026-07-03 16:53:46  [INFO]  Epoch [10]  step [80/155]  batch_loss=0.4467
+2026-07-03 16:54:24  [INFO]  Epoch [10]  step [100/155]  batch_loss=0.3562
+2026-07-03 16:55:01  [INFO]  Epoch [10]  step [120/155]  batch_loss=0.4100
+2026-07-03 16:55:40  [INFO]  Epoch [10]  step [140/155]  batch_loss=0.4731
+2026-07-03 16:56:57  [INFO]  [vit | seed=42]  Epoch [10/30]  train_loss=0.3811  train_acc=0.9881  val_loss=0.4258  val_acc=0.9657
+2026-07-03 16:56:57  [INFO]  Early stopping at epoch 10 — no val_loss improvement for 5 consecutive epochs.
+2026-07-03 16:56:57  [INFO]  Best weights restored — epoch 5  val_loss=0.4054  val_acc=0.9757
+2026-07-03 16:58:04  [INFO]  Test (deterministic)  loss=0.4367  acc=0.9631
+2026-07-03 16:58:04  [INFO]  MC Dropout  T=20 on test set …
+2026-07-03 17:13:40  [INFO]  Test (MC T=20)  acc=0.9631  macro-F1=0.9627  macro-AUC=0.9948  mean-H=0.6336 bits
+2026-07-03 17:13:40  [INFO]  ECE=0.0812  Brier=0.0689
+2026-07-03 17:13:40  [INFO]  AURC=0.0079
+2026-07-03 17:13:40  [INFO]    Accuracy @ 80% coverage = 0.9921
+2026-07-03 17:13:40  [INFO]    Accuracy @ 90% coverage = 0.9880
+2026-07-03 17:13:40  [INFO]    Accuracy @ 95% coverage = 0.9801
+2026-07-03 17:13:42  [INFO]  Bootstrap (1000) | acc=0.9631 [0.9523, 0.9739]  auc=0.9948 [0.9914, 0.9973]
+2026-07-03 17:13:43  [INFO]  Summary \u2192 results\20260703_155524\vit\seed_42\summary.json
+2026-07-03 17:13:46  [INFO]  ============================================================
+2026-07-03 17:13:46  [INFO]  Seed 123  |  VIT
+2026-07-03 17:13:46  [INFO]  ============================================================
+2026-07-03 17:13:46  [INFO]  Reproducibility locked — seed=123, cudnn.deterministic=True
+2026-07-03 17:13:46  [INFO]  [train]  4979 samples  /  155 batches
+2026-07-03 17:13:46  [INFO]  [val]  1109 samples  /  35 batches
+2026-07-03 17:13:46  [INFO]  [test]  1112 samples  /  35 batches
+2026-07-03 17:13:47  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-03 17:14:44  [INFO]  Epoch [01]  step [20/155]  batch_loss=0.7837
+2026-07-03 17:15:23  [INFO]  Epoch [01]  step [40/155]  batch_loss=0.6959
+2026-07-03 17:16:00  [INFO]  Epoch [01]  step [60/155]  batch_loss=0.7204
+2026-07-03 17:16:38  [INFO]  Epoch [01]  step [80/155]  batch_loss=0.6293
+2026-07-03 17:17:16  [INFO]  Epoch [01]  step [100/155]  batch_loss=0.5252
+2026-07-03 17:17:53  [INFO]  Epoch [01]  step [120/155]  batch_loss=0.4840
+2026-07-03 17:18:29  [INFO]  Epoch [01]  step [140/155]  batch_loss=0.5456
+2026-07-03 17:20:06  [INFO]  [vit | seed=123]  Epoch [01/30]  train_loss=0.6562  train_acc=0.8413  val_loss=0.4917  val_acc=0.9243
+2026-07-03 17:20:07  [INFO]    \u2713 Checkpoint saved  (epoch=1  val_loss=0.4917  val_acc=0.9243)
+2026-07-03 17:20:44  [INFO]  Epoch [02]  step [20/155]  batch_loss=0.4615
+2026-07-03 17:21:20  [INFO]  Epoch [02]  step [40/155]  batch_loss=0.4938
+2026-07-03 17:21:57  [INFO]  Epoch [02]  step [60/155]  batch_loss=0.4541
+2026-07-03 17:22:33  [INFO]  Epoch [02]  step [80/155]  batch_loss=0.3840
+2026-07-03 17:23:11  [INFO]  Epoch [02]  step [100/155]  batch_loss=0.4790
+2026-07-03 17:23:47  [INFO]  Epoch [02]  step [120/155]  batch_loss=0.5165
+2026-07-03 17:24:24  [INFO]  Epoch [02]  step [140/155]  batch_loss=0.4455
+2026-07-03 17:25:39  [INFO]  [vit | seed=123]  Epoch [02/30]  train_loss=0.4806  train_acc=0.9383  val_loss=0.4676  val_acc=0.9513
+2026-07-03 17:25:39  [INFO]    \u2713 Checkpoint saved  (epoch=2  val_loss=0.4676  val_acc=0.9513)
+2026-07-03 17:26:17  [INFO]  Epoch [03]  step [20/155]  batch_loss=0.4105
+2026-07-03 17:26:55  [INFO]  Epoch [03]  step [40/155]  batch_loss=0.3662
+2026-07-03 17:27:35  [INFO]  Epoch [03]  step [60/155]  batch_loss=0.4502
+2026-07-03 17:28:14  [INFO]  Epoch [03]  step [80/155]  batch_loss=0.4348
+2026-07-03 17:28:50  [INFO]  Epoch [03]  step [100/155]  batch_loss=0.6154
+2026-07-03 17:29:28  [INFO]  Epoch [03]  step [120/155]  batch_loss=0.4094
+2026-07-03 17:30:04  [INFO]  Epoch [03]  step [140/155]  batch_loss=0.3668
+2026-07-03 17:31:19  [INFO]  [vit | seed=123]  Epoch [03/30]  train_loss=0.4382  train_acc=0.9625  val_loss=0.4314  val_acc=0.9621
+2026-07-03 17:31:20  [INFO]    \u2713 Checkpoint saved  (epoch=3  val_loss=0.4314  val_acc=0.9621)
+2026-07-03 17:31:59  [INFO]  Epoch [04]  step [20/155]  batch_loss=0.4327
+2026-07-03 17:32:38  [INFO]  Epoch [04]  step [40/155]  batch_loss=0.3932
+2026-07-03 17:33:15  [INFO]  Epoch [04]  step [60/155]  batch_loss=0.4221
+2026-07-03 17:33:53  [INFO]  Epoch [04]  step [80/155]  batch_loss=0.4004
+2026-07-03 17:34:30  [INFO]  Epoch [04]  step [100/155]  batch_loss=0.3709
+2026-07-03 17:35:07  [INFO]  Epoch [04]  step [120/155]  batch_loss=0.4342
+2026-07-03 17:35:46  [INFO]  Epoch [04]  step [140/155]  batch_loss=0.5181
+2026-07-03 17:37:01  [INFO]  [vit | seed=123]  Epoch [04/30]  train_loss=0.4151  train_acc=0.9752  val_loss=0.4234  val_acc=0.9657
+2026-07-03 17:37:02  [INFO]    \u2713 Checkpoint saved  (epoch=4  val_loss=0.4234  val_acc=0.9657)
+2026-07-03 17:37:39  [INFO]  Epoch [05]  step [20/155]  batch_loss=0.5161
+2026-07-03 17:38:16  [INFO]  Epoch [05]  step [40/155]  batch_loss=0.3666
+2026-07-03 17:38:53  [INFO]  Epoch [05]  step [60/155]  batch_loss=0.4404
+2026-07-03 17:39:29  [INFO]  Epoch [05]  step [80/155]  batch_loss=0.4605
+2026-07-03 17:40:07  [INFO]  Epoch [05]  step [100/155]  batch_loss=0.4330
+2026-07-03 17:40:46  [INFO]  Epoch [05]  step [120/155]  batch_loss=0.3625
+2026-07-03 17:41:22  [INFO]  Epoch [05]  step [140/155]  batch_loss=0.4366
+2026-07-03 17:42:39  [INFO]  [vit | seed=123]  Epoch [05/30]  train_loss=0.4082  train_acc=0.9748  val_loss=0.4218  val_acc=0.9630
+2026-07-03 17:42:40  [INFO]    \u2713 Checkpoint saved  (epoch=5  val_loss=0.4218  val_acc=0.9630)
+2026-07-03 17:43:19  [INFO]  Epoch [06]  step [20/155]  batch_loss=0.3831
+2026-07-03 17:43:58  [INFO]  Epoch [06]  step [40/155]  batch_loss=0.3593
+2026-07-03 17:44:34  [INFO]  Epoch [06]  step [60/155]  batch_loss=0.3635
+2026-07-03 17:45:13  [INFO]  Epoch [06]  step [80/155]  batch_loss=0.3614
+2026-07-03 17:45:52  [INFO]  Epoch [06]  step [100/155]  batch_loss=0.3732
+2026-07-03 17:46:31  [INFO]  Epoch [06]  step [120/155]  batch_loss=0.4590
+2026-07-03 17:47:10  [INFO]  Epoch [06]  step [140/155]  batch_loss=0.3615
+2026-07-03 17:48:26  [INFO]  [vit | seed=123]  Epoch [06/30]  train_loss=0.3898  train_acc=0.9829  val_loss=0.4087  val_acc=0.9675
+2026-07-03 17:48:27  [INFO]    \u2713 Checkpoint saved  (epoch=6  val_loss=0.4087  val_acc=0.9675)
+2026-07-03 17:49:05  [INFO]  Epoch [07]  step [20/155]  batch_loss=0.4211
+2026-07-03 17:49:44  [INFO]  Epoch [07]  step [40/155]  batch_loss=0.3621
+2026-07-03 17:50:22  [INFO]  Epoch [07]  step [60/155]  batch_loss=0.4945
+2026-07-03 17:50:59  [INFO]  Epoch [07]  step [80/155]  batch_loss=0.4754
+2026-07-03 17:51:36  [INFO]  Epoch [07]  step [100/155]  batch_loss=0.3604
+2026-07-03 17:52:13  [INFO]  Epoch [07]  step [120/155]  batch_loss=0.3678
+2026-07-03 17:52:50  [INFO]  Epoch [07]  step [140/155]  batch_loss=0.4962
+2026-07-03 17:54:06  [INFO]  [vit | seed=123]  Epoch [07/30]  train_loss=0.3903  train_acc=0.9831  val_loss=0.4478  val_acc=0.9522
+2026-07-03 17:54:45  [INFO]  Epoch [08]  step [20/155]  batch_loss=0.3562
+2026-07-03 17:55:22  [INFO]  Epoch [08]  step [40/155]  batch_loss=0.3583
+2026-07-03 17:55:58  [INFO]  Epoch [08]  step [60/155]  batch_loss=0.3743
+2026-07-03 17:56:35  [INFO]  Epoch [08]  step [80/155]  batch_loss=0.3674
+2026-07-03 17:57:14  [INFO]  Epoch [08]  step [100/155]  batch_loss=0.3654
+2026-07-03 17:57:53  [INFO]  Epoch [08]  step [120/155]  batch_loss=0.4185
+2026-07-03 17:58:31  [INFO]  Epoch [08]  step [140/155]  batch_loss=0.3578
+2026-07-03 17:59:48  [INFO]  [vit | seed=123]  Epoch [08/30]  train_loss=0.3854  train_acc=0.9847  val_loss=0.4019  val_acc=0.9739
+2026-07-03 17:59:49  [INFO]    \u2713 Checkpoint saved  (epoch=8  val_loss=0.4019  val_acc=0.9739)
+2026-07-03 18:00:27  [INFO]  Epoch [09]  step [20/155]  batch_loss=0.4510
+2026-07-03 18:01:04  [INFO]  Epoch [09]  step [40/155]  batch_loss=0.3581
+2026-07-03 18:01:41  [INFO]  Epoch [09]  step [60/155]  batch_loss=0.3551
+2026-07-03 18:02:17  [INFO]  Epoch [09]  step [80/155]  batch_loss=0.3730
+2026-07-03 18:02:54  [INFO]  Epoch [09]  step [100/155]  batch_loss=0.4600
+2026-07-03 18:03:31  [INFO]  Epoch [09]  step [120/155]  batch_loss=0.3566
+2026-07-03 18:04:10  [INFO]  Epoch [09]  step [140/155]  batch_loss=0.4928
+2026-07-03 18:05:29  [INFO]  [vit | seed=123]  Epoch [09/30]  train_loss=0.3828  train_acc=0.9873  val_loss=0.4477  val_acc=0.9540
+2026-07-03 18:06:08  [INFO]  Epoch [10]  step [20/155]  batch_loss=0.3560
+2026-07-03 18:06:47  [INFO]  Epoch [10]  step [40/155]  batch_loss=0.3993
+2026-07-03 18:07:23  [INFO]  Epoch [10]  step [60/155]  batch_loss=0.3920
+2026-07-03 18:08:01  [INFO]  Epoch [10]  step [80/155]  batch_loss=0.4772
+2026-07-03 18:08:40  [INFO]  Epoch [10]  step [100/155]  batch_loss=0.3571
+2026-07-03 18:09:19  [INFO]  Epoch [10]  step [120/155]  batch_loss=0.3546
+2026-07-03 18:09:58  [INFO]  Epoch [10]  step [140/155]  batch_loss=0.3574
+2026-07-03 18:11:14  [INFO]  [vit | seed=123]  Epoch [10/30]  train_loss=0.3729  train_acc=0.9921  val_loss=0.4508  val_acc=0.9522
+2026-07-03 18:11:54  [INFO]  Epoch [11]  step [20/155]  batch_loss=0.3552
+2026-07-03 18:12:33  [INFO]  Epoch [11]  step [40/155]  batch_loss=0.4461
+2026-07-03 18:13:11  [INFO]  Epoch [11]  step [60/155]  batch_loss=0.4240
+2026-07-03 18:13:48  [INFO]  Epoch [11]  step [80/155]  batch_loss=0.3890
+2026-07-03 18:14:25  [INFO]  Epoch [11]  step [100/155]  batch_loss=0.3576
+2026-07-03 18:15:04  [INFO]  Epoch [11]  step [120/155]  batch_loss=0.3576
+2026-07-03 18:15:44  [INFO]  Epoch [11]  step [140/155]  batch_loss=0.3906
+2026-07-03 18:17:02  [INFO]  [vit | seed=123]  Epoch [11/30]  train_loss=0.3720  train_acc=0.9919  val_loss=0.4439  val_acc=0.9567
+2026-07-03 18:17:41  [INFO]  Epoch [12]  step [20/155]  batch_loss=0.3721
+2026-07-03 18:18:21  [INFO]  Epoch [12]  step [40/155]  batch_loss=0.3577
+2026-07-03 18:19:01  [INFO]  Epoch [12]  step [60/155]  batch_loss=0.4001
+2026-07-03 18:19:40  [INFO]  Epoch [12]  step [80/155]  batch_loss=0.4198
+2026-07-03 18:20:19  [INFO]  Epoch [12]  step [100/155]  batch_loss=0.3570
+2026-07-03 21:20:49  [INFO]  Epoch [12]  step [120/155]  batch_loss=0.3814
+2026-07-03 21:21:35  [INFO]  Epoch [12]  step [140/155]  batch_loss=0.3633
+2026-07-03 21:23:06  [INFO]  [vit | seed=123]  Epoch [12/30]  train_loss=0.3688  train_acc=0.9931  val_loss=0.4087  val_acc=0.9720
+2026-07-03 21:23:50  [INFO]  Epoch [13]  step [20/155]  batch_loss=0.3533
+2026-07-03 21:24:32  [INFO]  Epoch [13]  step [40/155]  batch_loss=0.3535
+2026-07-03 21:25:16  [INFO]  Epoch [13]  step [60/155]  batch_loss=0.3575
+2026-07-03 21:26:01  [INFO]  Epoch [13]  step [80/155]  batch_loss=0.3525
+2026-07-03 21:26:44  [INFO]  Epoch [13]  step [100/155]  batch_loss=0.3618
+2026-07-03 21:27:31  [INFO]  Epoch [13]  step [120/155]  batch_loss=0.4240
+2026-07-03 21:28:15  [INFO]  Epoch [13]  step [140/155]  batch_loss=0.3524
+2026-07-03 21:29:45  [INFO]  [vit | seed=123]  Epoch [13/30]  train_loss=0.3675  train_acc=0.9938  val_loss=0.4143  val_acc=0.9729
+2026-07-03 21:29:45  [INFO]  Early stopping at epoch 13 — no val_loss improvement for 5 consecutive epochs.
+2026-07-03 21:29:45  [INFO]  Best weights restored — epoch 8  val_loss=0.4019  val_acc=0.9739
+2026-07-03 21:31:06  [INFO]  Test (deterministic)  loss=0.4351  acc=0.9640
+2026-07-03 21:31:06  [INFO]  MC Dropout  T=20 on test set …
+2026-07-03 21:47:20  [INFO]  Test (MC T=20)  acc=0.9640  macro-F1=0.9639  macro-AUC=0.9953  mean-H=0.5813 bits
+2026-07-03 21:47:20  [INFO]  ECE=0.0721  Brier=0.0663
+2026-07-03 21:47:20  [INFO]  AURC=0.0058
+2026-07-03 21:47:20  [INFO]    Accuracy @ 80% coverage = 0.9921
+2026-07-03 21:47:20  [INFO]    Accuracy @ 90% coverage = 0.9900
+2026-07-03 21:47:20  [INFO]    Accuracy @ 95% coverage = 0.9801
+2026-07-03 21:47:22  [INFO]  Bootstrap (1000) | acc=0.9640 [0.9532, 0.9748]  auc=0.9953 [0.9919, 0.9982]
+2026-07-03 21:47:22  [INFO]  Summary \u2192 results\20260703_155524\vit\seed_123\summary.json
+2026-07-03 21:47:26  [INFO]  ============================================================
+2026-07-03 21:47:26  [INFO]  Seed 7  |  VIT
+2026-07-03 21:47:26  [INFO]  ============================================================
+2026-07-03 21:47:26  [INFO]  Reproducibility locked — seed=7, cudnn.deterministic=True
+2026-07-03 21:47:26  [INFO]  [train]  4979 samples  /  155 batches
+2026-07-03 21:47:26  [INFO]  [val]  1109 samples  /  35 batches
+2026-07-03 21:47:26  [INFO]  [test]  1112 samples  /  35 batches
+2026-07-03 21:47:26  [INFO]  BrainTumorViT | trainable: 14,376,708 / 85,998,084  (16.72%)
+2026-07-03 21:48:35  [INFO]  Epoch [01]  step [20/155]  batch_loss=0.8599
+2026-07-03 21:49:13  [INFO]  Epoch [01]  step [40/155]  batch_loss=0.6234
+2026-07-03 21:49:51  [INFO]  Epoch [01]  step [60/155]  batch_loss=0.5792
+2026-07-03 21:50:27  [INFO]  Epoch [01]  step [80/155]  batch_loss=0.5362
+2026-07-03 21:51:06  [INFO]  Epoch [01]  step [100/155]  batch_loss=0.6246
+2026-07-03 21:51:44  [INFO]  Epoch [01]  step [120/155]  batch_loss=0.4355
+2026-07-03 21:52:21  [INFO]  Epoch [01]  step [140/155]  batch_loss=0.5954
+2026-07-03 21:54:01  [INFO]  [vit | seed=7]  Epoch [01/30]  train_loss=0.6732  train_acc=0.8345  val_loss=0.5496  val_acc=0.9098
+2026-07-03 21:54:01  [INFO]    \u2713 Checkpoint saved  (epoch=1  val_loss=0.5496  val_acc=0.9098)
+2026-07-03 21:54:37  [INFO]  Epoch [02]  step [20/155]  batch_loss=0.4533
+2026-07-03 21:55:15  [INFO]  Epoch [02]  step [40/155]  batch_loss=0.4511
+2026-07-03 21:55:52  [INFO]  Epoch [02]  step [60/155]  batch_loss=0.4843
+2026-07-03 21:56:28  [INFO]  Epoch [02]  step [80/155]  batch_loss=0.4434
+2026-07-03 21:57:05  [INFO]  Epoch [02]  step [100/155]  batch_loss=0.5703
+2026-07-03 21:57:46  [INFO]  Epoch [02]  step [120/155]  batch_loss=0.5237
+2026-07-03 21:58:26  [INFO]  Epoch [02]  step [140/155]  batch_loss=0.5006
+2026-07-03 21:59:42  [INFO]  [vit | seed=7]  Epoch [02/30]  train_loss=0.4966  train_acc=0.9286  val_loss=0.4964  val_acc=0.9243
+2026-07-03 21:59:42  [INFO]    \u2713 Checkpoint saved  (epoch=2  val_loss=0.4964  val_acc=0.9243)
+2026-07-03 22:00:20  [INFO]  Epoch [03]  step [20/155]  batch_loss=0.5295
+2026-07-03 22:01:03  [INFO]  Epoch [03]  step [40/155]  batch_loss=0.5468
+2026-07-03 22:01:48  [INFO]  Epoch [03]  step [60/155]  batch_loss=0.4899

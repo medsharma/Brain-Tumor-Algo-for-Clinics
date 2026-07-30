@@ -1,0 +1,576 @@
+{
+  "run_dir": "20260703_155524",
+  "models": {
+    "resnet50": {
+      "provenance": {
+        "run_dir": "results\\20260703_155524",
+        "seed_dir": "results\\20260703_155524\\resnet50\\seed_123",
+        "is_smoke_test_run": false,
+        "caveat": "Real training run (not a smoke test).",
+        "config": {
+          "seed": 123,
+          "model": "resnet50",
+          "num_epochs": 30,
+          "batch_size": 32,
+          "lr": 0.0001,
+          "wd": 0.01,
+          "label_smoothing": 0.1,
+          "mc_T": 20,
+          "early_stop_patience": 5
+        }
+      },
+      "checkpoint": "results\\20260703_155524\\resnet50\\seed_123\\best_resnet50_seed123.pth",
+      "per_class_pool": 80,
+      "mc_T": 20,
+      "selections": [
+        {
+          "class": "glioma",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 6,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Te-gl_229.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": true,
+              "entropy": 0.43616312742233276,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Tr-gl_211.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": true,
+              "entropy": 0.458327978849411,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Tr-gl_1357.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 1.3862162828445435,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Te-gl_372.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": false,
+              "entropy": 1.3326174020767212,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "meningioma",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 6,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Tr-me_733.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": true,
+              "entropy": 0.3827292323112488,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Tr-me_366.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": true,
+              "entropy": 0.4040946066379547,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Te-me_266.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": false,
+              "entropy": 1.6659880876541138,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Te-me_78.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": false,
+              "entropy": 1.427042007446289,
+              "categories": [
+                "misclassified"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Tr-me_1033.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": true,
+              "entropy": 1.6178680658340454,
+              "categories": [
+                "high_entropy"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "pituitary",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 2,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Tr-pi_761.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 2,
+              "pred_class": "pituitary",
+              "correct": true,
+              "entropy": 0.3397989869117737,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Tr-pi_638.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 2,
+              "pred_class": "pituitary",
+              "correct": true,
+              "entropy": 0.3728891611099243,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Te-pi_206.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 1.50532865524292,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Tr-pi_1236.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 1.357132911682129,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "notumor",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 3,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Te-no_229.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": true,
+              "entropy": 0.41250166296958923,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Te-no_281.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": true,
+              "entropy": 0.4184012711048126,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Tr-no_1264.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": false,
+              "entropy": 1.6617156267166138,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Tr-no_522.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 1.4594475030899048,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            }
+          ]
+        }
+      ],
+      "n_heatmaps_saved": 17
+    },
+    "vit": {
+      "provenance": {
+        "run_dir": "results\\20260703_155524",
+        "seed_dir": "results\\20260703_155524\\vit\\seed_123",
+        "is_smoke_test_run": false,
+        "caveat": "Real training run (not a smoke test).",
+        "config": {
+          "seed": 123,
+          "model": "vit",
+          "num_epochs": 30,
+          "batch_size": 32,
+          "lr": 0.0001,
+          "wd": 0.01,
+          "label_smoothing": 0.1,
+          "mc_T": 20,
+          "early_stop_patience": 5
+        }
+      },
+      "checkpoint": "results\\20260703_155524\\vit\\seed_123\\best_vit_seed123.pth",
+      "per_class_pool": 80,
+      "mc_T": 20,
+      "selections": [
+        {
+          "class": "glioma",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 5,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Te-gl_195.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": true,
+              "entropy": 0.46314722299575806,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Tr-gl_1255.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": true,
+              "entropy": 0.4765925109386444,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Tr-gl_352.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": false,
+              "entropy": 1.0357675552368164,
+              "categories": [
+                "misclassified"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Te-gl_205.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 0.9235825538635254,
+              "categories": [
+                "misclassified"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Te-gl_53.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": true,
+              "entropy": 1.5222325325012207,
+              "categories": [
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\glioma\\Te-gl_295.jpg",
+              "true_class_idx": 0,
+              "true_class": "glioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": true,
+              "entropy": 1.3095120191574097,
+              "categories": [
+                "high_entropy"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "meningioma",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 2,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Tr-me_275.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": true,
+              "entropy": 0.34281349182128906,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Te-me_174.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": true,
+              "entropy": 0.38045963644981384,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Tr-me_1107.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": false,
+              "entropy": 1.2739919424057007,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Te-me_219.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 0,
+              "pred_class": "glioma",
+              "correct": false,
+              "entropy": 1.1270198822021484,
+              "categories": [
+                "misclassified"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\meningioma\\Tr-me_947.jpg",
+              "true_class_idx": 1,
+              "true_class": "meningioma",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": true,
+              "entropy": 1.1651904582977295,
+              "categories": [
+                "high_entropy"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "pituitary",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 2,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Tr-pi_889.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 2,
+              "pred_class": "pituitary",
+              "correct": true,
+              "entropy": 0.40702834725379944,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Tr-pi_402.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 2,
+              "pred_class": "pituitary",
+              "correct": true,
+              "entropy": 0.4181084632873535,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Tr-pi_86.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 1.4084415435791016,
+              "categories": [
+                "misclassified",
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Te-pi_206.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 0.6874758005142212,
+              "categories": [
+                "misclassified"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\pituitary\\Tr-pi_1376.jpg",
+              "true_class_idx": 2,
+              "true_class": "pituitary",
+              "pred_class_idx": 2,
+              "pred_class": "pituitary",
+              "correct": true,
+              "entropy": 1.3868825435638428,
+              "categories": [
+                "high_entropy"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "notumor",
+          "pool_size": 80,
+          "n_misclassified_in_pool": 1,
+          "examples": [
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Tr-no_34.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": true,
+              "entropy": 0.4516993463039398,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Tr-no_418.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": true,
+              "entropy": 0.4559260606765747,
+              "categories": [
+                "confident_correct"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Tr-no_522.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 1,
+              "pred_class": "meningioma",
+              "correct": false,
+              "entropy": 0.5526124835014343,
+              "categories": [
+                "misclassified"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Tr-no_487.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": true,
+              "entropy": 1.0685663223266602,
+              "categories": [
+                "high_entropy"
+              ]
+            },
+            {
+              "filepath": "data\\brain_tumor\\notumor\\Tr-no_1264.jpg",
+              "true_class_idx": 3,
+              "true_class": "notumor",
+              "pred_class_idx": 3,
+              "pred_class": "notumor",
+              "correct": true,
+              "entropy": 1.0617624521255493,
+              "categories": [
+                "high_entropy"
+              ]
+            }
+          ]
+        }
+      ],
+      "n_heatmaps_saved": 21
+    }
+  }
+}

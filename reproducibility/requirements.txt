@@ -1,0 +1,19 @@
+# Exact versions verified in the environment this scaffold was built and
+# tested in (Python 3.10.11, Windows, CPU-only — see README.md for why this
+# is NOT the training hardware). Pin these for evaluation/figure-generation
+# reproducibility; training itself needs a CUDA build of torch (see README).
+numpy==2.2.6
+pandas==2.3.3
+scipy==1.15.3
+scikit-learn==1.7.2
+matplotlib==3.10.9
+pillow==11.3.0
+torch==2.12.1
+torchvision==0.27.1
+ImageHash==4.3.2
+opencv-python==4.13.0.92
+
+# Used by src/legacy_figures.py (superseded demo script, kept for reference)
+# but not installed in the environment this scaffold was verified in — install
+# before running it; not required by anything under figures/.
+seaborn>=0.13

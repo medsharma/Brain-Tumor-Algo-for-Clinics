@@ -1,0 +1,41 @@
+{
+  "_THIS_IS_A_STUB": true,
+  "_WARNING": "FAKE VALUES. NOT CLINICAL CONFIG. Session C wrote this on day one so the app had something to build against before session A published the real deployment_config.json. Every number below is deliberately absurd so it can never be mistaken for a real threshold in a screenshot or a demo. The app refuses to start on this file unless MRI_CLINIC_DEV_MODE=1.",
+  "_OWNER": "Contract 2 owner is session A. Session C owns this stub file only, per CONTRACTS.md.",
+
+  "schema_version": "0.0-STUB-NOT-FOR-CLINICAL-USE",
+  "created_utc": "1970-01-01T00:00:00Z",
+  "chosen_backbone": "resnet50",
+  "chosen_seeds": [42],
+  "ensemble": false,
+  "mc_T": 20,
+  "temperature": 9.876543,
+  "tumor_threshold": 0.123456,
+  "entropy_defer_threshold": 1.987654,
+  "thresholds_fitted_on": "NOTHING_THIS_IS_A_STUB",
+  "class_names": ["glioma", "meningioma", "pituitary", "notumor"],
+  "preprocessing": {
+    "resize": [224, 224],
+    "normalize_mean": [0.485, 0.456, 0.406],
+    "normalize_std": [0.229, 0.224, 0.225]
+  },
+  "checkpoints": [
+    {
+      "model": "resnet50",
+      "seed": 42,
+      "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\resnet50\\seed_42\\best_resnet50_seed42.pth",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "expected_performance": {
+    "dataset": "NOT_MEASURED_STUB",
+    "n": 0,
+    "tumor_miss_rate": 0.987654,
+    "tumor_miss_rate_ci": [0.876543, 0.998877],
+    "binary_sensitivity": 0.012345,
+    "binary_specificity": 0.012345,
+    "four_way_accuracy": 0.012345,
+    "defer_rate": 0.987654,
+    "miss_rate_after_defer": 0.987654
+  }
+}

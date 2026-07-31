@@ -137,6 +137,45 @@
     <button type="button" id="error-retry" class="secondary-button">Try again</button>
   </section>
 
+  <!-- ---------------------------------------------------------------- -->
+  <section id="download-panel" class="panel">
+    <h2>Run this yourself, offline</h2>
+    <p class="download-intro">
+      These are the exact files this server is running on. Downloaded and put
+      next to a copy of the app, they give the same answers this page gives.
+      Not a similar model. The same weights and the same safety settings.
+    </p>
+
+    <p class="download-intro">
+      Once installed it needs no internet at all. That is the point: a clinic
+      with no radiologist and no reliable connection can run it on a laptop.
+    </p>
+
+    <div id="download-summary" class="download-summary"></div>
+    <table id="download-table" class="download-table"></table>
+
+    <details class="download-howto">
+      <summary>How to use these files</summary>
+      <ol>
+        <li>Download every file in the table. All of them are needed.</li>
+        <li>Check each SHA-256 against the value shown. A part-downloaded model
+            file can still load and then give wrong answers.</li>
+        <li>Put the <code>.pth</code> model files in a <code>models</code>
+            folder next to the app.</li>
+        <li>Put the two <code>.json</code> settings files where the app expects
+            them, as described in the app's README.</li>
+        <li>Start the app. It refuses to start if anything is missing or does
+            not match, which is deliberate.</li>
+      </ol>
+      <p>
+        On Windows you can check a file with:
+        <code>certutil -hashfile best_vit_seed42.pth SHA256</code>
+      </p>
+    </details>
+
+    <p class="download-warning" id="download-warning"></p>
+  </section>
+
 </main>
 
 <footer>

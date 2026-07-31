@@ -18,13 +18,27 @@ web app.
 
 Binding
 -------
-``127.0.0.1`` only, never ``0.0.0.0``. A clinic laptop on a shared clinic
-network must not serve patient scans to every other machine on that network.
-This is enforced in :func:`run`, and ``app/tests/test_binding.py`` asserts it.
+``127.0.0.1`` by default, and that is what a clinic install runs. A clinic
+laptop on a shared network must not serve patient scans to every other machine
+on that network.
 
-No patient data leaves the machine. Uploaded images are held in memory, never
-written to disk, and never sent anywhere. There is no telemetry and no crash
-reporting.
+Serving it over a network is possible and takes a deliberate opt-in:
+``MRI_TRIAGE_ALLOW_PUBLIC_BIND=1``. That single switch releases both the bind
+check and the per-request client check, because releasing one without the other
+produces a server that listens on the network and then refuses everyone on it.
+See ``app/HOSTING.md`` for what changes the moment scans leave the machine they
+were taken on. ``app/tests/test_binding.py`` pins both directions.
+
+Patient data
+------------
+Uploaded image pixels are held in memory and never written to disk. One audit
+line per scan **is** written, holding the result, timings and a SHA-256 of the
+image, but not the image and not the file name unless the operator ticks the
+box. There is no telemetry and no crash reporting.
+
+When the app is served publicly, images obviously do leave the uploading
+machine: they travel to this one. The upload page rewrites its privacy line to
+say so rather than continuing to promise otherwise.
 """
 
 from __future__ import annotations
@@ -40,11 +54,11 @@ from typing import Any
 
 import numpy as np
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
-from .core import decision, explain_adapter, paths, version as version_module
+from .core import decision, downloads, explain_adapter, paths, version as version_module
 from .core.engine import TriageEngine, TriageResult
 from .core.readiness import NotReadyError
 
@@ -292,6 +306,52 @@ def create_app() -> FastAPI:
             content=html,
             media_type="text/html; charset=utf-8",
             headers={"Content-Disposition": 'attachment; filename="mri-triage-report.html"'},
+        )
+
+    # ---------------------------------------------------------------- downloads
+    #
+    # Hand out the exact files this server is running on, so somebody else can
+    # reproduce it rather than approximate it. The catalogue is derived from the
+    # loaded config, not from a folder listing, so the offer cannot drift away
+    # from what is actually answering requests.
+    #
+    # Built lazily and cached: SHA-256 over five 344 MB files takes a few
+    # seconds, and paying that at import time would slow every startup for a
+    # page most runs never open.
+    _catalogue: list[downloads.Downloadable] = []
+
+    def catalogue() -> list[downloads.Downloadable]:
+        nonlocal _catalogue
+        if not _catalogue:
+            _catalogue = downloads.build_catalogue(get_engine().config)
+        return _catalogue
+
+    @app.get("/api/downloads")
+    async def list_downloads() -> dict[str, Any]:
+        items = catalogue()
+        return downloads.manifest(get_engine().config, items)
+
+    @app.get("/api/downloads/{key}")
+    async def fetch_download(key: str) -> Response:
+        """Stream one file.
+
+        `key` is matched against the catalogue rather than joined onto a
+        directory, so there is no path to traverse out of. A request for
+        `../../secrets` simply does not match anything.
+        """
+        item = downloads.find(catalogue(), key)
+        if item is None or not item.path.is_file():
+            raise HTTPException(status_code=404, detail="No such file.")
+
+        return FileResponse(
+            path=str(item.path),
+            filename=item.filename,
+            media_type="application/octet-stream",
+            headers={
+                # so a client can verify what it got without a second request
+                "X-Content-SHA256": item.sha256,
+                "Content-Disposition": f'attachment; filename="{item.filename}"',
+            },
         )
 
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

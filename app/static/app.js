@@ -64,6 +64,61 @@ function show(panelId) {
   });
   el("upload-panel").classList.toggle("hidden", panelId !== "upload-panel");
   el(panelId).classList.remove("hidden");
+  // The download panel is reference material, not a step in reading a scan.
+  // It stays out of the way while a result is on screen.
+  const dl = el("download-panel");
+  if (dl) dl.classList.toggle("hidden", panelId !== "upload-panel");
+}
+
+/* --------------------------------------------------------------- downloads */
+
+function humanBytes(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(2) + " GB";
+  if (n >= 1e6) return Math.round(n / 1e6) + " MB";
+  if (n >= 1e3) return Math.round(n / 1e3) + " KB";
+  return n + " bytes";
+}
+
+async function loadDownloads() {
+  const table = el("download-table");
+  const summary = el("download-summary");
+  if (!table) return;
+
+  let data;
+  try {
+    const response = await fetch("/api/downloads");
+    if (!response.ok) throw new Error("status " + response.status);
+    data = await response.json();
+  } catch (err) {
+    summary.textContent = "The download list could not be loaded.";
+    return;
+  }
+
+  const cfg = data.app_config || {};
+  summary.innerHTML =
+    "<strong>" + data.files.length + " files, " + data.total_size_human +
+    " in total.</strong> This server runs " +
+    (cfg.ensemble ? cfg.seeds.length + " averaged " : "a single ") +
+    (cfg.backbone || "") + " model" + (cfg.ensemble ? "s" : "") +
+    ", referring at p_tumor &ge; " + cfg.tumor_threshold +
+    " and sending a scan to a human when " + (cfg.defer_signal || "uncertainty") +
+    " &ge; " + Number(cfg.defer_threshold).toFixed(4) + " " + (cfg.entropy_units || "") + ".";
+
+  const rows = ['<tr><th>File</th><th>Size</th><th>What it is</th><th>SHA-256</th></tr>'];
+  data.files.forEach((f) => {
+    rows.push(
+      "<tr>" +
+      '<td><a class="download-link" href="/api/downloads/' + encodeURIComponent(f.key) +
+      '" download>' + f.filename + "</a></td>" +
+      "<td>" + f.size_human + "</td>" +
+      "<td>" + f.description + "</td>" +
+      '<td class="hash">' + f.sha256 + "</td>" +
+      "</tr>"
+    );
+  });
+  table.innerHTML = rows.join("");
+
+  el("download-warning").textContent = data.not_validated || "";
 }
 
 async function analyze(file) {
@@ -303,4 +358,9 @@ document.addEventListener("DOMContentLoaded", () => {
     el("error-text").textContent = error.message;
     show("error-panel");
   });
+
+  // Separate from loadStatus on purpose. Hashing five 344 MB files takes a few
+  // seconds on the first request, and reading a scan must never wait on the
+  // download list.
+  loadDownloads();
 });

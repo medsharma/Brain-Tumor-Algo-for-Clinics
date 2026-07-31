@@ -42,3 +42,22 @@ def audit_dir() -> Path:
     path = data_dir() / "audit"
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def repo_root() -> Path:
+    """Where bundled read-only files live: configs, static assets.
+
+    Two different answers depending on how the app is running.
+
+    From a source checkout this is the repository root, three levels up from
+    this file. Inside a PyInstaller build there is no repository: the bundled
+    data was unpacked next to the executable under ``_internal``, and
+    ``sys._MEIPASS`` is the only reliable way to find it. Guessing from
+    ``__file__`` lands in the wrong place, which is how session B's rejector
+    config went missing from the packaged build and silently downgraded the
+    input check to unfitted limits.
+    """
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        return Path(meipass)
+    return Path(__file__).resolve().parents[2]

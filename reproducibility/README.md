@@ -148,12 +148,14 @@ record of the training host.
 
   **License: CC0 1.0 Public Domain, as stated on the Kaggle listing.
   Redistribution of the 7,200 images in this public repository is permitted.**
-  This resolves the placeholder that previously sat here. Three caveats apply
-  and they are written out in `docs/DATA_PROVENANCE.md`: CC0 was asserted by
-  the aggregator rather than the original custodians, the Figshare/Cheng
-  upstream is CC BY 4.0 and we attribute all three sources regardless, and the
-  live Kaggle listing now describes 7,023 images against this copy's 7,200
-  (believed to be Version 2, not confirmed against a fresh download).
+  This resolves the placeholder that previously sat here. Four caveats apply
+  and all four are written out in `docs/DATA_PROVENANCE.md`: CC0 was asserted
+  by the aggregator rather than by the original custodians; the Figshare/Cheng
+  upstream is CC BY 4.0 and we attribute all three sources regardless; the live
+  Kaggle listing now describes 7,023 images against this copy's 7,200 (believed
+  to be Version 2, not confirmed against a fresh download); and the labels carry
+  an inherited correction to SARTAJ's mislabelled glioma class that we never
+  independently checked.
 
   No DOI is minted by Kaggle. Cite as Nickparvar 2023, Version 2.
 - **Evaluation data:** BRISC 2025 (Fateh et al., *Scientific Data* 2026,

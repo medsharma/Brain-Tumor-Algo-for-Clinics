@@ -46,7 +46,7 @@ with no attribution requirement and no share-alike obligation.
 is permitted.** This resolves the placeholder that previously sat in
 `reproducibility/README.md`.
 
-### Three caveats we are not going to bury
+### Four caveats we are not going to bury
 
 1. **CC0 is asserted by the Kaggle uploader, not by the original data
    custodians.** Nickparvar aggregated three upstream collections. Whether the

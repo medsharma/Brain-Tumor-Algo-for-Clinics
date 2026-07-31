@@ -13,7 +13,7 @@
   "mc_T": 20,
   "temperature": 0.5271263718605042,
   "tumor_threshold": 0.59,
-  "entropy_defer_threshold": 0.01158844232559204,
+  "entropy_defer_threshold": 0.3948388803005215,
   "thresholds_fitted_on": "internal_val",
   "class_names": [
     "glioma",
@@ -104,5 +104,15 @@
     "prevalence_assumed": 0.1,
     "supersedes": "p_tumor 0.970 with four-way-entropy deferral at 0.0378, which deferred 41.2% of scans and 61.8% of unseen healthy scans, and which locked the confidence display to 'Low' for every answer because no call could ever be 0.25 away from a 0.970 threshold.",
     "detail": "analysis/results/safety/clinic_operating_point.json"
-  }
+  },
+  "defer_budget_internal_val": 0.02,
+  "defer_threshold_fitted_with": "app.core.model.run_mc_dropout on internal_val, i.e. the exact quantity the app computes at inference time",
+  "defer_threshold_history": [
+    {
+      "previous": 0.01158844232559204,
+      "why_it_was_wrong": "Fitted on the prediction caches, where mutual_information is one model's value from 20 MC passes. The app pools posterior samples across all 5 ensemble members, so its mutual information has a much heavier tail. The old cutoff sat inside that tail and deferred 31% of unseen scans.",
+      "why_this_value": "Measured on 800 unseen BRISC images: deferring 5.6% and deferring 33.6% both send home the same 1 tumour in 422. Extra deferral bought no safety at all, and cost 28 points of usability. This is the tightest budget on that flat stretch.",
+      "evidence": "analysis/results/safety/defer_threshold_fit.json"
+    }
+  ]
 }

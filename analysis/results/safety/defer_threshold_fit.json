@@ -1,0 +1,68 @@
+{
+  "problem": "the cutoff was fitted on single-model mutual information from the prediction caches, but app/core/model.run_mc_dropout pools samples across the whole ensemble and reports a larger value",
+  "fitted_on": "internal_val, using the app's own computation",
+  "defer_budget": 0.1,
+  "old_cutoff": 0.01158844232559204,
+  "new_cutoff": 0.029944795370101935,
+  "single_model_mi_median": 0.006443113088607788,
+  "ensemble_mi_median": 0.0015333741903305054,
+  "internal_val": {
+    "n": 1109,
+    "defer_rate_old": 0.13345356176735798,
+    "defer_rate_new": 0.10009017132551848
+  },
+  "budget_sweep": [
+    {
+      "budget": 0.02,
+      "cutoff": 0.3948388803005215,
+      "clean_defer_rate": 0.05625,
+      "tumours_sent_home": 1
+    },
+    {
+      "budget": 0.05,
+      "cutoff": 0.1971523612737653,
+      "clean_defer_rate": 0.15,
+      "tumours_sent_home": 1
+    },
+    {
+      "budget": 0.08,
+      "cutoff": 0.057216915488243134,
+      "clean_defer_rate": 0.23,
+      "tumours_sent_home": 1
+    },
+    {
+      "budget": 0.1,
+      "cutoff": 0.029944795370101935,
+      "clean_defer_rate": 0.2625,
+      "tumours_sent_home": 1
+    },
+    {
+      "budget": 0.15,
+      "cutoff": 0.007211787998676296,
+      "clean_defer_rate": 0.33625,
+      "tumours_sent_home": 1
+    },
+    {
+      "budget": 0.2,
+      "cutoff": 0.0031560063362121586,
+      "clean_defer_rate": 0.41,
+      "tumours_sent_home": 0
+    }
+  ],
+  "brisc_clean_old": {
+    "n": 800,
+    "defer_rate": 0.31,
+    "refer_rate": 0.45125,
+    "clear_rate": 0.23875,
+    "tumours_sent_home": 1,
+    "n_tumour": 422
+  },
+  "brisc_clean_new": {
+    "n": 800,
+    "defer_rate": 0.2625,
+    "refer_rate": 0.46375,
+    "clear_rate": 0.27375,
+    "tumours_sent_home": 1,
+    "n_tumour": 422
+  }
+}

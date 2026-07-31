@@ -110,11 +110,17 @@ State this plainly to anyone who asks:
   slices of the same patient cannot be identified as such, only guessed at by
   image similarity.
 - **Ground-truth labels were never verified by a radiologist for this project.**
-  We inherited them. The SARTAJ component in particular has known label-quality
-  complaints in the wider literature, and our own overlap check found 5 images
-  where the BRISC authors' expert re-annotation disagrees with the label we
-  trained on, 3 of them in the direction of "we called it a tumor, the
-  radiologists called it no tumor".
+  We inherited them. Two specific reasons that matters:
+  - The SARTAJ component had **documented mislabelling in its glioma class**.
+    The Kaggle aggregator's published fix was to discard SARTAJ's glioma images
+    and substitute Figshare ones. That correction is widely noted in the
+    literature using this dataset. It is a known-good fix, but it is a fix
+    somebody else made, that we inherited without checking.
+  - Our own overlap check found 5 images where the BRISC authors' expert
+    re-annotation disagrees with the label we trained on, **3 of them in the
+    direction of "we called it a tumor, the radiologists called it no tumor"**.
+    Five out of 4,802 matched images is not a crisis. It is a reminder that
+    nobody clinically qualified has ever looked at our labels.
 
 ### No demographic data exists, so no fairness analysis was possible
 

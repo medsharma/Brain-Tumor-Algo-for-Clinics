@@ -71,7 +71,13 @@ is permitted.** This resolves the placeholder that previously sat in
    a fresh download.** Anyone reproducing should verify their own copy against
    `data/split_manifest.csv`, which lists all 7,200 filepaths.
 
-3. **No patient-level provenance survives.** The merge is slice-level. Scanner
+3. **The labels carry an inherited correction we never checked.** SARTAJ's
+   glioma class had documented mislabelling. The aggregator's fix was to drop
+   SARTAJ's glioma images and substitute Figshare ones, a correction now widely
+   noted in the literature that uses this dataset. It is very likely the right
+   call. We took it on trust, as does everyone else using this dataset.
+
+4. **No patient-level provenance survives.** The merge is slice-level. Scanner
    make, field strength, sequence parameters, acquisition site, scan date and
    all patient demographics are absent and are not recoverable from the files.
    `results/leakage_audit.md` documents that patient IDs are parseable for

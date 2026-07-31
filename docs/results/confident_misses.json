@@ -1,0 +1,838 @@
+{
+  "summary": {
+    "_what_this_is": "Tumors called no-tumor on the internal held-out test split (n=1112). Same pool the model trained on, held out at near-duplicate-cluster level. NOT an external result.",
+    "_confident_threshold_p_notumor": 0.8,
+    "_entropy_units": "bits (src/code.py uses torch.log2)",
+    "n_distinct_images_missed_by_any_model_or_seed": 18,
+    "n_distinct_images_missed_confidently": 11,
+    "n_missed_by_all_5_seeds_of_a_backbone": 9,
+    "by_true_class": {
+      "glioma": 16,
+      "meningioma": 11
+    },
+    "confident_by_true_class": {
+      "glioma": 10,
+      "meningioma": 6
+    }
+  },
+  "cases": [
+    {
+      "model": "vit",
+      "test_index": 37,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_372.jpg",
+      "filename": "Te-gl_372.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 303,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.9444935917854309,
+      "min_entropy_bits": 0.39486798644065857,
+      "confident": true,
+      "events": [
+        {
+          "seed": 31,
+          "p_notumor": 0.9444935917854309,
+          "entropy_bits": 0.39486798644065857
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.9311337471008301,
+          "entropy_bits": 0.469858855009079
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.9259229898452759,
+          "entropy_bits": 0.4956059157848358
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.9237918853759766,
+          "entropy_bits": 0.509307861328125
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.8948677182197571,
+          "entropy_bits": 0.6513265371322632
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 419,
+      "filepath": "data\\brain_tumor\\meningioma\\Tr-me_202.jpg",
+      "filename": "Tr-me_202.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 2716,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.9419132471084595,
+      "min_entropy_bits": 0.41010987758636475,
+      "confident": true,
+      "events": [
+        {
+          "seed": 31,
+          "p_notumor": 0.9419132471084595,
+          "entropy_bits": 0.41010987758636475
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.9330593943595886,
+          "entropy_bits": 0.4580177664756775
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.932019054889679,
+          "entropy_bits": 0.4658041000366211
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.9270803332328796,
+          "entropy_bits": 0.49227312207221985
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.911872386932373,
+          "entropy_bits": 0.5677683353424072
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 59,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_97.jpg",
+      "filename": "Te-gl_97.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 397,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.9410141110420227,
+      "min_entropy_bits": 0.4164237976074219,
+      "confident": true,
+      "events": [
+        {
+          "seed": 31,
+          "p_notumor": 0.9410141110420227,
+          "entropy_bits": 0.4164237976074219
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.936383843421936,
+          "entropy_bits": 0.4420863389968872
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.926529049873352,
+          "entropy_bits": 0.49492549896240234
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.9256291389465332,
+          "entropy_bits": 0.4992644488811493
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.888032078742981,
+          "entropy_bits": 0.6810246706008911
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 55,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_74.jpg",
+      "filename": "Te-gl_74.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 372,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.9333898425102234,
+      "min_entropy_bits": 0.4583096206188202,
+      "confident": true,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.9333898425102234,
+          "entropy_bits": 0.4583096206188202
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.911450207233429,
+          "entropy_bits": 0.5700773000717163
+        },
+        {
+          "seed": 31,
+          "p_notumor": 0.8663718104362488,
+          "entropy_bits": 0.7682415246963501
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.6191466450691223,
+          "entropy_bits": 1.2973759174346924
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.6136044263839722,
+          "entropy_bits": 1.5294880867004395
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 8,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_143.jpg",
+      "filename": "Te-gl_143.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 370,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.9293054342269897,
+      "min_entropy_bits": 0.47974860668182373,
+      "confident": true,
+      "events": [
+        {
+          "seed": 7,
+          "p_notumor": 0.9293054342269897,
+          "entropy_bits": 0.47974860668182373
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.8855559229850769,
+          "entropy_bits": 0.6920182704925537
+        },
+        {
+          "seed": 31,
+          "p_notumor": 0.7765219807624817,
+          "entropy_bits": 1.0575302839279175
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.6106327772140503,
+          "entropy_bits": 1.4674755334854126
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.5009756684303284,
+          "entropy_bits": 1.4195401668548584
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 53,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_72.jpg",
+      "filename": "Te-gl_72.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 370,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.9292187690734863,
+      "min_entropy_bits": 0.48040488362312317,
+      "confident": true,
+      "events": [
+        {
+          "seed": 7,
+          "p_notumor": 0.9292187690734863,
+          "entropy_bits": 0.48040488362312317
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.8619390726089478,
+          "entropy_bits": 0.7934314012527466
+        },
+        {
+          "seed": 31,
+          "p_notumor": 0.7702045440673828,
+          "entropy_bits": 1.0747157335281372
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.6326996088027954,
+          "entropy_bits": 1.415682077407837
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.509320855140686,
+          "entropy_bits": 1.398322582244873
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 55,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_74.jpg",
+      "filename": "Te-gl_74.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 372,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.9275214076042175,
+      "min_entropy_bits": 0.4898848831653595,
+      "confident": true,
+      "events": [
+        {
+          "seed": 31,
+          "p_notumor": 0.9275214076042175,
+          "entropy_bits": 0.4898848831653595
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.9239147305488586,
+          "entropy_bits": 0.5087460279464722
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.891099750995636,
+          "entropy_bits": 0.6675413250923157
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.8653327226638794,
+          "entropy_bits": 0.7744847536087036
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.8229034543037415,
+          "entropy_bits": 0.9334928393363953
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 322,
+      "filepath": "data\\brain_tumor\\meningioma\\Te-me_279.jpg",
+      "filename": "Te-me_279.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 3486,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.8809407949447632,
+      "min_entropy_bits": 0.6998471021652222,
+      "confident": true,
+      "events": [
+        {
+          "seed": 7,
+          "p_notumor": 0.8809407949447632,
+          "entropy_bits": 0.6998471021652222
+        },
+        {
+          "seed": 31,
+          "p_notumor": 0.8657869100570679,
+          "entropy_bits": 0.7605108618736267
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.8509422540664673,
+          "entropy_bits": 0.8215976357460022
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.7984863519668579,
+          "entropy_bits": 1.0282649993896484
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.5959290266036987,
+          "entropy_bits": 1.4264687299728394
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 528,
+      "filepath": "data\\brain_tumor\\meningioma\\Tr-me_897.jpg",
+      "filename": "Tr-me_897.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 3486,
+      "n_seeds_missed": 5,
+      "max_p_notumor": 0.8640525937080383,
+      "min_entropy_bits": 0.7695325613021851,
+      "confident": true,
+      "events": [
+        {
+          "seed": 31,
+          "p_notumor": 0.8640525937080383,
+          "entropy_bits": 0.7695325613021851
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.8563855886459351,
+          "entropy_bits": 0.8040204048156738
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.831795871257782,
+          "entropy_bits": 0.8966249823570251
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.798257052898407,
+          "entropy_bits": 1.0275959968566895
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.6120980381965637,
+          "entropy_bits": 1.4026823043823242
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 37,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_372.jpg",
+      "filename": "Te-gl_372.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 303,
+      "n_seeds_missed": 4,
+      "max_p_notumor": 0.9107198715209961,
+      "min_entropy_bits": 0.5753708481788635,
+      "confident": true,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.9107198715209961,
+          "entropy_bits": 0.5753708481788635
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.8778946995735168,
+          "entropy_bits": 0.7227569818496704
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.7078667879104614,
+          "entropy_bits": 1.2956100702285767
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.6678846478462219,
+          "entropy_bits": 1.3695564270019531
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 59,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_97.jpg",
+      "filename": "Te-gl_97.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 397,
+      "n_seeds_missed": 4,
+      "max_p_notumor": 0.8931716680526733,
+      "min_entropy_bits": 0.6576553583145142,
+      "confident": true,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.8931716680526733,
+          "entropy_bits": 0.6576553583145142
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.8167878985404968,
+          "entropy_bits": 0.9392810463905334
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.810694694519043,
+          "entropy_bits": 0.9618034958839417
+        },
+        {
+          "seed": 31,
+          "p_notumor": 0.7397372722625732,
+          "entropy_bits": 1.1671867370605469
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 32,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_351.jpg",
+      "filename": "Te-gl_351.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 280,
+      "n_seeds_missed": 4,
+      "max_p_notumor": 0.832526683807373,
+      "min_entropy_bits": 0.8999481797218323,
+      "confident": true,
+      "events": [
+        {
+          "seed": 2024,
+          "p_notumor": 0.832526683807373,
+          "entropy_bits": 0.8999481797218323
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.7296265363693237,
+          "entropy_bits": 1.2348089218139648
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.5068291425704956,
+          "entropy_bits": 1.6308557987213135
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.42083102464675903,
+          "entropy_bits": 1.87001633644104
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 50,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_58.jpg",
+      "filename": "Te-gl_58.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 354,
+      "n_seeds_missed": 4,
+      "max_p_notumor": 0.7445051074028015,
+      "min_entropy_bits": 1.1899017095565796,
+      "confident": false,
+      "events": [
+        {
+          "seed": 2024,
+          "p_notumor": 0.7445051074028015,
+          "entropy_bits": 1.1899017095565796
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.6158588528633118,
+          "entropy_bits": 1.5070199966430664
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.5169780254364014,
+          "entropy_bits": 1.6830010414123535
+        },
+        {
+          "seed": 31,
+          "p_notumor": 0.44627803564071655,
+          "entropy_bits": 1.6792243719100952
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 32,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_351.jpg",
+      "filename": "Te-gl_351.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 280,
+      "n_seeds_missed": 3,
+      "max_p_notumor": 0.9434178471565247,
+      "min_entropy_bits": 0.40184810757637024,
+      "confident": true,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.9434178471565247,
+          "entropy_bits": 0.40184810757637024
+        },
+        {
+          "seed": 31,
+          "p_notumor": 0.71604323387146,
+          "entropy_bits": 1.2991894483566284
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.644404947757721,
+          "entropy_bits": 1.476067304611206
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 419,
+      "filepath": "data\\brain_tumor\\meningioma\\Tr-me_202.jpg",
+      "filename": "Tr-me_202.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 2716,
+      "n_seeds_missed": 3,
+      "max_p_notumor": 0.8306983709335327,
+      "min_entropy_bits": 0.9140059947967529,
+      "confident": true,
+      "events": [
+        {
+          "seed": 2024,
+          "p_notumor": 0.8306983709335327,
+          "entropy_bits": 0.9140059947967529
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.7587828040122986,
+          "entropy_bits": 1.1388479471206665
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.6659652590751648,
+          "entropy_bits": 1.307725191116333
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 528,
+      "filepath": "data\\brain_tumor\\meningioma\\Tr-me_897.jpg",
+      "filename": "Tr-me_897.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 3486,
+      "n_seeds_missed": 3,
+      "max_p_notumor": 0.7165718078613281,
+      "min_entropy_bits": 1.2593045234680176,
+      "confident": false,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.7165718078613281,
+          "entropy_bits": 1.2593045234680176
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.49248114228248596,
+          "entropy_bits": 1.49772310256958
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.48862236738204956,
+          "entropy_bits": 1.7223068475723267
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 322,
+      "filepath": "data\\brain_tumor\\meningioma\\Te-me_279.jpg",
+      "filename": "Te-me_279.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 3486,
+      "n_seeds_missed": 3,
+      "max_p_notumor": 0.6976791024208069,
+      "min_entropy_bits": 1.3068122863769531,
+      "confident": false,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.6976791024208069,
+          "entropy_bits": 1.3068122863769531
+        },
+        {
+          "seed": 2024,
+          "p_notumor": 0.529629647731781,
+          "entropy_bits": 1.429931879043579
+        },
+        {
+          "seed": 7,
+          "p_notumor": 0.4966804087162018,
+          "entropy_bits": 1.7082961797714233
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 27,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_275.jpg",
+      "filename": "Te-gl_275.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 195,
+      "n_seeds_missed": 3,
+      "max_p_notumor": 0.5277672410011292,
+      "min_entropy_bits": 1.4722461700439453,
+      "confident": false,
+      "events": [
+        {
+          "seed": 2024,
+          "p_notumor": 0.5277672410011292,
+          "entropy_bits": 1.634465217590332
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.4747103750705719,
+          "entropy_bits": 1.4722461700439453
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.4317423701286316,
+          "entropy_bits": 1.8851410150527954
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 319,
+      "filepath": "data\\brain_tumor\\meningioma\\Te-me_266.jpg",
+      "filename": "Te-me_266.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 2578,
+      "n_seeds_missed": 2,
+      "max_p_notumor": 0.8106620907783508,
+      "min_entropy_bits": 0.9779126644134521,
+      "confident": true,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.8106620907783508,
+          "entropy_bits": 0.9779126644134521
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.5498674511909485,
+          "entropy_bits": 1.6051316261291504
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 393,
+      "filepath": "data\\brain_tumor\\meningioma\\Tr-me_1249.jpg",
+      "filename": "Tr-me_1249.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 2578,
+      "n_seeds_missed": 2,
+      "max_p_notumor": 0.8023607134819031,
+      "min_entropy_bits": 1.0087578296661377,
+      "confident": true,
+      "events": [
+        {
+          "seed": 42,
+          "p_notumor": 0.8023607134819031,
+          "entropy_bits": 1.0087578296661377
+        },
+        {
+          "seed": 123,
+          "p_notumor": 0.5054989457130432,
+          "entropy_bits": 1.6814467906951904
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 158,
+      "filepath": "data\\brain_tumor\\glioma\\Tr-gl_352.jpg",
+      "filename": "Tr-gl_352.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 1082,
+      "n_seeds_missed": 2,
+      "max_p_notumor": 0.7923705577850342,
+      "min_entropy_bits": 1.0636072158813477,
+      "confident": false,
+      "events": [
+        {
+          "seed": 123,
+          "p_notumor": 0.7923705577850342,
+          "entropy_bits": 1.0636072158813477
+        },
+        {
+          "seed": 42,
+          "p_notumor": 0.5874695181846619,
+          "entropy_bits": 1.5986287593841553
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 425,
+      "filepath": "data\\brain_tumor\\meningioma\\Tr-me_239.jpg",
+      "filename": "Tr-me_239.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 2756,
+      "n_seeds_missed": 1,
+      "max_p_notumor": 0.7011862397193909,
+      "min_entropy_bits": 1.3028239011764526,
+      "confident": false,
+      "events": [
+        {
+          "seed": 2024,
+          "p_notumor": 0.7011862397193909,
+          "entropy_bits": 1.3028239011764526
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 302,
+      "filepath": "data\\brain_tumor\\meningioma\\Te-me_167.jpg",
+      "filename": "Te-me_167.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 2756,
+      "n_seeds_missed": 1,
+      "max_p_notumor": 0.6913877129554749,
+      "min_entropy_bits": 1.3271011114120483,
+      "confident": false,
+      "events": [
+        {
+          "seed": 2024,
+          "p_notumor": 0.6913877129554749,
+          "entropy_bits": 1.3271011114120483
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 8,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_143.jpg",
+      "filename": "Te-gl_143.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 370,
+      "n_seeds_missed": 1,
+      "max_p_notumor": 0.47931259870529175,
+      "min_entropy_bits": 1.5137929916381836,
+      "confident": false,
+      "events": [
+        {
+          "seed": 7,
+          "p_notumor": 0.47931259870529175,
+          "entropy_bits": 1.5137929916381836
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 53,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_72.jpg",
+      "filename": "Te-gl_72.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 370,
+      "n_seeds_missed": 1,
+      "max_p_notumor": 0.45395126938819885,
+      "min_entropy_bits": 1.5110535621643066,
+      "confident": false,
+      "events": [
+        {
+          "seed": 7,
+          "p_notumor": 0.45395126938819885,
+          "entropy_bits": 1.5110535621643066
+        }
+      ]
+    },
+    {
+      "model": "resnet50",
+      "test_index": 29,
+      "filepath": "data\\brain_tumor\\glioma\\Te-gl_295.jpg",
+      "filename": "Te-gl_295.jpg",
+      "true_class": "glioma",
+      "phash_cluster": 217,
+      "n_seeds_missed": 1,
+      "max_p_notumor": 0.4239038825035095,
+      "min_entropy_bits": 1.7499353885650635,
+      "confident": false,
+      "events": [
+        {
+          "seed": 31,
+          "p_notumor": 0.4239038825035095,
+          "entropy_bits": 1.7499353885650635
+        }
+      ]
+    },
+    {
+      "model": "vit",
+      "test_index": 297,
+      "filepath": "data\\brain_tumor\\meningioma\\Te-me_144.jpg",
+      "filename": "Te-me_144.jpg",
+      "true_class": "meningioma",
+      "phash_cluster": 3120,
+      "n_seeds_missed": 1,
+      "max_p_notumor": 0.345165491104126,
+      "min_entropy_bits": 1.9224522113800049,
+      "confident": false,
+      "events": [
+        {
+          "seed": 31,
+          "p_notumor": 0.345165491104126,
+          "entropy_bits": 1.9224522113800049
+        }
+      ]
+    }
+  ]
+}

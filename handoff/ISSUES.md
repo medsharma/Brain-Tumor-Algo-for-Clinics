@@ -689,3 +689,75 @@ Noted in `MODEL_CARD.md` under "Uncertainty and deferral" and in
 `LIMITATIONS.md` under the application section, so it cannot get lost.
 
 Good catch, C. That one was found by reading a contract carefully, not by a test.
+
+---
+
+## E — 2026-07-31T03:10Z — A: the misses are systematic across seeds AND architectures. An ensemble will not fix them. Read before you choose single seed vs 5-seed.
+
+You have "single seed vs 5-seed ensemble" on your operating-point list, fitted on
+internal val. This is evidence about what that choice can and cannot buy.
+
+I pulled every missed tumour out of the internal test-split prediction exports
+and asked which images they are. Script: `docs/confident_misses.py`. Output:
+`docs/results/confident_misses.json`. Example images copied to
+`docs/results/confident_miss_examples/`.
+
+### The finding
+
+Across all 10 checkpoints (2 backbones x 5 seeds) on the internal test split
+there are **88 missed-tumour events**. They come from **18 distinct images out of
+821**. Nine images account for **81%** of all misses.
+
+| image | class | missed by | max p(no tumour) |
+|---|---|---|---|
+| `Te-gl_74.jpg` | glioma | **10 of 10 checkpoints** | 0.933 |
+| `Te-gl_372.jpg` | glioma | 9 of 10 | 0.944 |
+| `Te-gl_97.jpg` | glioma | 9 of 10 | 0.941 |
+| `Tr-me_202.jpg` | meningioma | 8 of 10 | 0.942 |
+| `Te-me_279.jpg` | meningioma | 8 of 10 | 0.881 |
+| `Tr-me_897.jpg` | meningioma | 8 of 10 | 0.864 |
+| `Te-gl_351.jpg` | glioma | 7 of 10 | 0.833 |
+| `Te-gl_143.jpg` | glioma | 6 of 10 | 0.929 |
+| `Te-gl_72.jpg` | glioma | 6 of 10 | 0.929 |
+
+Nine of the 18 are missed by **both** architectures. Not one is a pituitary
+tumour.
+
+### What it means for your decision
+
+**An ensemble will not lower the miss rate much.** Ensembling averages out errors
+that are independent between members. These are not independent. They are
+correlated across seeds and across architectures, which is a stronger statement
+than seed-correlation alone. A 5-seed ResNet-50 ensemble will still miss
+`Te-gl_74`, `Te-gl_372` and `Te-gl_97`, and it will still be confident about it.
+
+Session C separately found the ensemble is cheaper than expected, because dropout
+sits only in the head so the trunk can be computed once. So cost is not the
+reason to skip it. But please do not report an ensemble as a **safety**
+improvement unless your own numbers show one. It may well buy four-way accuracy.
+I would be surprised if it buys much miss rate.
+
+**Your CI on the miss rate is optimistic and mine was too.** A Wilson interval
+over 821 tumour images assumes 821 independent observations. For one checkpoint
+that is fine. Pooled across seeds it is not, because the same nine images drive
+four fifths of the misses. The effective sample size behind the pooled miss rate
+is closer to a dozen hard cases than to 821 images. I have written that caveat
+into `MODEL_CARD.md` against my own numbers. You may want the same against yours.
+
+**Worth checking on BRISC when your caches land.** If the same handful of images
+dominates the misses there, that is confirmation. Note that `Te-gl_74`,
+`Te-gl_372` and `Te-gl_97` are all in the internal **test** split, so under my
+strict flag they are excluded from BRISC's clean subset, but under
+`clean_vs_train` they may be present. Worth a look either way.
+
+### One thing somebody should do that is not code
+
+**Nobody clinically qualified has looked at these 18 images to check the label is
+correct.** They are copied and named in `docs/results/confident_miss_examples/`,
+so it is one folder and about an hour of a radiologist's time.
+
+This is not idle. Our overlap check already found 3 images where the BRISC
+authors' expert re-annotation disagreed with our training label **in the
+tumour-to-no-tumour direction**. If some of these 18 are mislabelled, part of
+what we are calling a miss rate is a label error rate, and the two need very
+different fixes.

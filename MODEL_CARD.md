@@ -463,14 +463,61 @@ the one that hurts someone.
 
 Concrete cases where this tool is expected to fail. Not hypotheticals.
 
-### 1. Confident missed gliomas
+### 1. A handful of specific images defeat every model this project has trained
 
-The dominant failure. 26 to 31 gliomas out of 1,385 evaluations called "no
-tumor", a meaningful fraction of them confidently.
+This is the dominant failure and it is more concentrated than the 1% miss rate
+suggests.
 
-Example images: `[PENDING: session A confident-miss case list from the internal
-test split and BRISC]`. To be embedded here with predicted class, confidence and
-entropy under each.
+Across all 10 checkpoints (2 backbones x 5 seeds) on the internal test split
+there are 88 missed-tumor events. They come from **18 distinct images out of
+821.** Nine of those 18 images account for **81% of all misses.**
+
+| image | true class | missed by | max p(no tumor) |
+|---|---|---|---|
+| `Te-gl_74.jpg` | glioma | **10 of 10 checkpoints** | 0.933 |
+| `Te-gl_372.jpg` | glioma | 9 of 10 | 0.944 |
+| `Te-gl_97.jpg` | glioma | 9 of 10 | 0.941 |
+| `Tr-me_202.jpg` | meningioma | 8 of 10 | 0.942 |
+| `Te-me_279.jpg` | meningioma | 8 of 10 | 0.881 |
+| `Tr-me_897.jpg` | meningioma | 8 of 10 | 0.864 |
+| `Te-gl_351.jpg` | glioma | 7 of 10 | 0.833 |
+| `Te-gl_143.jpg` | glioma | 6 of 10 | 0.929 |
+| `Te-gl_72.jpg` | glioma | 6 of 10 | 0.929 |
+
+Every one of these is a glioma or a meningioma. Not one is a pituitary tumor.
+Nine of the 18 are missed by **both** architectures. `Te-gl_74.jpg` is missed by
+every checkpoint this project has ever produced, at 93% confidence.
+
+Copies of the worst cases are in `docs/results/confident_miss_examples/`, named
+with the true class, the backbone, how many seeds missed it, and the confidence.
+Full list with per-seed entropies: `docs/results/confident_misses.json`.
+Reproduce: `python docs/confident_misses.py`.
+
+**Three consequences, and they matter more than the headline rate.**
+
+**These failures are systematic, not random.** Different random initialisations,
+different architectures, and different training runs all fail on the same
+images. Whatever is wrong is in the data or in the difficulty of the
+presentation, not in the luck of one training run.
+
+**Ensembling will not fix this.** An ensemble averages out errors that are
+independent between members. These errors are correlated across seeds *and*
+across architectures. A 5-seed ResNet-50 ensemble will still miss `Te-gl_74`.
+Anyone choosing an ensemble should expect it to buy accuracy, not safety.
+
+**The confidence interval on the miss rate is optimistic.** The Wilson interval
+of 0.74% to 1.35% treats 821 tumor images as independent observations. For a
+single checkpoint that is fair. Across seeds it is not, because the same nine
+images drive four fifths of the misses. The effective sample size behind the
+miss rate is closer to a dozen hard cases than to 821 images, so **the true
+uncertainty is wider than any interval in this document.**
+
+One further thing worth someone's time: three of these images are in phash
+clusters, and 18 missed images span only 14 clusters. **Nobody clinically
+qualified has looked at these 18 images to check the label is even correct.**
+Given that our own overlap check already found 3 images where expert
+re-annotation disagreed with our training label in the tumor-to-no-tumor
+direction, that is a cheap and worthwhile hour of a radiologist's time.
 
 ### 2. Anything outside the four classes
 

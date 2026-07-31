@@ -39,6 +39,28 @@ cases still leaves 3 missed tumors (ResNet-50) or 17 (ViT) out of 821. The
 uncertainty machinery is real and it helps. It is not a safety net that catches
 everything, and it must never be described as one.
 
+**4. The misses are systematic, so the confidence intervals in this project are
+optimistic.**
+
+Across all 10 checkpoints there are 88 missed-tumor events on the internal test
+split, and they come from **18 distinct images out of 821**. Nine images account
+for 81% of all misses. One image, `Te-gl_74.jpg`, is missed by every checkpoint
+this project has ever trained, at 93% confidence.
+
+Two consequences:
+
+- **Ensembling will not fix it.** These errors are correlated across seeds and
+  across architectures, so averaging members does not cancel them.
+- **Every pooled confidence interval in this repository is narrower than the
+  evidence justifies.** A Wilson interval over 821 tumor images assumes 821
+  independent observations. Pooled across seeds, the effective sample size behind
+  the miss rate is closer to a dozen hard cases. Treat the stated intervals as a
+  floor on the uncertainty, not a description of it.
+
+Nobody clinically qualified has checked whether those 18 images are even labelled
+correctly. They are collected in `docs/results/confident_miss_examples/` and it
+is about an hour of a radiologist's time.
+
 ---
 
 ## Clinical evidence: none

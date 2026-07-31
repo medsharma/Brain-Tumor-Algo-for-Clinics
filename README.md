@@ -84,6 +84,12 @@ families. The class this tool is worst at is the one where delay costs most.
 a human still leaves 3 missed tumors out of 821 for ResNet-50, and 17 for ViT.
 The confidence score is useful. It is not a safety net.
 
+**The misses are systematic.** All 88 missed-tumor events across all 10
+checkpoints come from just 18 images, and 9 images account for 81% of them. One
+image is missed by every model this project has ever trained, at 93% confidence.
+That means training more seeds and ensembling them will not fix it, and it means
+every confidence interval here is narrower than the evidence really justifies.
+
 Full breakdown, including deferral behaviour and per-seed spread:
 [MODEL_CARD.md](MODEL_CARD.md).
 

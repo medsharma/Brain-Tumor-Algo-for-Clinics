@@ -1,25 +1,37 @@
+# Conda environment for the brain MRI triage project.
+#
+# 2026-07-31, session E: the previous version of this file could not have
+# worked. It asked conda for `pytorch=2.12.1` and `torchvision=0.27.1` from
+# the `pytorch` channel. That channel stopped publishing; its newest build is
+# 2.5.1, last touched March 2025. `conda env create` against the old file
+# would fail at the solve step.
+#
+# PyTorch's own current guidance is to install torch via pip. So torch,
+# torchvision and every other exact pin go through the pip section below, and
+# conda supplies only the interpreter.
+#
+# The pip path (`pip install -r reproducibility/requirements.txt`) is the
+# verified one: resolved cleanly against PyPI on 2026-07-31, Python 3.10.11,
+# Windows 11. This conda file has NOT been verified end to end, because conda
+# is not installed on the machine this project was built on. See
+# reproducibility/README.md, "What is verified and what is not".
+
 name: mri-algo
 channels:
-  - pytorch
-  - nvidia
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.10
+  - python=3.10.11
   - pip
-  - numpy=2.2.6
-  - pandas=2.3.3
-  - scipy=1.15.3
-  - scikit-learn=1.7.2
-  - matplotlib=3.10.9
-  - pillow=11.3.0
-  # CPU build shown here for portability. Training runs need a CUDA build
-  # matching the training host's driver — see README.md "Hardware" section
-  # — e.g. swap for: pytorch-cuda=12.1 pytorch torchvision -c pytorch -c nvidia
-  - pytorch=2.12.1
-  - torchvision=0.27.1
-  - cpuonly
   - pip:
-      - ImageHash==4.3.2
-      - opencv-python==4.13.0.92
-      - seaborn>=0.13
+      - -r requirements.txt
+
+# CUDA note. The pins in requirements.txt are the CPU builds the reported run
+# actually used. Training on GPU needs a CUDA build matching your driver.
+# Replace the torch and torchvision lines with the index URL for your CUDA
+# version from https://pytorch.org/get-started/locally/, for example:
+#
+#     pip install torch==2.12.1 torchvision==0.27.1 \
+#         --index-url https://download.pytorch.org/whl/cu121
+#
+# Results will not be bit-identical between CPU and CUDA builds even with the
+# seeds fixed. Expect differences in the third decimal place.

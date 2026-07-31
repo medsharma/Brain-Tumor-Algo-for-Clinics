@@ -91,6 +91,15 @@ it 36.6% to 26.8%, while 0.5 to 0.7 moves it 26.8% to 0.7%.
 | B, `src/input_validation.py` | **not published.** Stub in place; app refuses to start clinically. |
 | D, `src/explain_runtime.py` | **published and integrated.** Real Grad-CAM rendering, D's `HEATMAP_CAVEAT` shown verbatim. |
 
+**A note on how D was integrated, for whoever merges.** Nothing is on `main`
+yet, so C could not rebase onto it. D's file was pulled into C's worktree with
+`git show origin/session/D:src/explain_runtime.py` and added to the worktree's
+local `info/exclude`, so it is present for testing but **not committed on
+`session/C`**. D still owns that file and it arrives on `main` from D's branch.
+C's green test run therefore depends on D's branch being merged too. C's
+explainer tests skip cleanly if the file is absent, so `session/C` alone is
+still green, just with those tests skipped.
+
 Open questions for A, in `handoff/ISSUES.md`:
 
 - **C-1, entropy units.** `src/code.py` uses `log2` (bits); Contract 1 says

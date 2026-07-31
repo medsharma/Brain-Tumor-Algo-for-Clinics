@@ -54,6 +54,18 @@ datas = [
     (str(REPO_ROOT / "analysis" / "results" / "safety"), "analysis/results/safety"),
 ]
 
+# Excluding the research stack roughly halves the bundle, which matters when a
+# clinic installs from a USB stick. Nothing here is imported by the app.
+#
+# Do NOT add "unittest" or "test" to this list. It looks like free savings and
+# is not: torch.utils._config_module imports unittest at module scope, so the
+# frozen build dies with ModuleNotFoundError before it reaches any of the
+# app's own code. Learned the hard way; the build ran fine and the executable
+# did not start.
+#
+# Likewise leave torch's own submodules alone. torch.utils.data pulls in
+# torch.distributed, which pulls in more than is obvious from the import
+# graph, and pruning it saves little for real breakage risk.
 excludes = [
     "matplotlib",
     "scipy",
@@ -63,12 +75,8 @@ excludes = [
     "notebook",
     "jupyter",
     "tkinter",
-    "torch.distributions",
-    "torchvision.datasets",
-    "torchvision.io",
-    "test",
-    "unittest",
     "pytest",
+    "_pytest",
 ]
 
 a = Analysis(

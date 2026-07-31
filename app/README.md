@@ -81,6 +81,9 @@ app\packaging\build_windows.bat
 That produces `dist\BrainMRITriage\`. Copy that folder to the clinic laptop.
 It runs by double-clicking `BrainMRITriage.exe`.
 
+The folder is about **700 MB**, most of which is PyTorch. Add roughly 220 MB
+for the model file. A 2 GB USB stick is enough; a 1 GB one is not.
+
 ---
 
 ## Two files you must add before it will work

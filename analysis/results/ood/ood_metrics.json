@@ -1,0 +1,657 @@
+{
+  "schema_version": "1.0",
+  "model": "resnet50",
+  "seed": 42,
+  "mc_T": 20,
+  "entropy_units": "bits (log base 2), matching src/code.py",
+  "n": {
+    "internal_train": 4979,
+    "internal_val": 1109,
+    "internal_test": 1112,
+    "out_of_scope": 1800,
+    "brisc": 6000
+  },
+  "n_out_of_scope_by_category": {
+    "cat1_corruption": 1560,
+    "cat3_nonmedical": 240
+  },
+  "fitting_data": "internal train + internal val (in scope) and the out-of-scope fit half",
+  "brisc_used_for": "measuring false rejection only, never for fitting",
+  "precheck": {
+    "alpha": 0.002,
+    "margin": 0.2,
+    "min_catch": 0.02,
+    "rules": {
+      "color_spread": {
+        "feature": "color_spread",
+        "low": null,
+        "high": 0.017178874466568232,
+        "reason": "the image is in colour, and MRI is not",
+        "catch_rate_oos_fit": 0.25666666666666665,
+        "false_reject_in_scope_fit": 0.000328515111695138
+      },
+      "intensity_std": {
+        "feature": "intensity_std",
+        "low": 0.040745813971757874,
+        "high": null,
+        "reason": "the image is nearly blank",
+        "catch_rate_oos_fit": 0.2222222222222222,
+        "false_reject_in_scope_fit": 0.0
+      },
+      "dynamic_range": {
+        "feature": "dynamic_range",
+        "low": 0.23846589198112486,
+        "high": null,
+        "reason": "the image has almost no contrast",
+        "catch_rate_oos_fit": 0.23,
+        "false_reject_in_scope_fit": 0.0
+      },
+      "frac_dark": {
+        "feature": "frac_dark",
+        "low": -0.15288895263671876,
+        "high": 0.9173337158203125,
+        "reason": "the image does not have the dark background a brain scan has",
+        "catch_rate_oos_fit": 0.13444444444444445,
+        "false_reject_in_scope_fit": 0.0
+      },
+      "frac_bright": {
+        "feature": "frac_bright",
+        "low": null,
+        "high": 0.15652716064453126,
+        "reason": "too much of the image is blown out to white",
+        "catch_rate_oos_fit": 0.19444444444444445,
+        "false_reject_in_scope_fit": 0.0004927726675427069
+      },
+      "border_mean": {
+        "feature": "border_mean",
+        "low": null,
+        "high": 0.3967418015241627,
+        "reason": "the edges of the image are bright, and a brain scan has air at its edges",
+        "catch_rate_oos_fit": 0.32222222222222224,
+        "false_reject_in_scope_fit": 0.0004927726675427069
+      },
+      "hist_entropy": {
+        "feature": "hist_entropy",
+        "low": 1.6207419852182334,
+        "high": null,
+        "reason": "the image carries almost no detail",
+        "catch_rate_oos_fit": 0.31666666666666665,
+        "false_reject_in_scope_fit": 0.0
+      },
+      "fg_area_frac": {
+        "feature": "fg_area_frac",
+        "low": -0.09287326660156249,
+        "high": 0.833032080078125,
+        "reason": "no single object of brain-like size was found",
+        "catch_rate_oos_fit": 0.02666666666666667,
+        "false_reject_in_scope_fit": 0.0
+      },
+      "fg_centroid_offset": {
+        "feature": "fg_centroid_offset",
+        "low": null,
+        "high": 0.5839509012059367,
+        "reason": "the main object is not near the centre, and a brain slice is centred",
+        "catch_rate_oos_fit": 0.11333333333333333,
+        "false_reject_in_scope_fit": 0.0009855453350854138
+      },
+      "fg_border_touch": {
+        "feature": "fg_border_touch",
+        "low": null,
+        "high": 0.33334588235294227,
+        "reason": "the main object runs off the edge of the image, and a brain does not",
+        "catch_rate_oos_fit": 0.14666666666666667,
+        "false_reject_in_scope_fit": 0.0016425755584756898
+      },
+      "fg_n_components": {
+        "feature": "fg_n_components",
+        "low": null,
+        "high": 8.2,
+        "reason": "the image contains many separate objects, and a brain slice has one",
+        "catch_rate_oos_fit": 0.027777777777777776,
+        "false_reject_in_scope_fit": 0.0008212877792378449
+      }
+    },
+    "false_rejection_internal_val": 0.005410279531109108,
+    "false_rejection_internal_test": 0.0008992805755395684,
+    "rejection_out_of_scope_all": 0.5833333333333334,
+    "rejection_out_of_scope_eval": 0.5855555555555556,
+    "rejection_by_category": {
+      "cat1_corruption": 0.5192307692307693,
+      "cat3_nonmedical": 1.0
+    },
+    "false_rejection_brisc": 0.0021666666666666666
+  },
+  "methods": {
+    "entropy": {
+      "auroc_selection_internal_val_vs_oos_fit": 0.883429516080553,
+      "aupr_selection_internal_val_vs_oos_fit": 0.8910065111001706,
+      "auroc_report_internal_test_vs_oos_eval": 0.8684792166266986,
+      "aupr_report_internal_test_vs_oos_eval": 0.8735357412439316,
+      "auroc_brisc_vs_oos_eval": 0.8440592592592594,
+      "aupr_brisc_vs_oos_eval": 0.528225502654511,
+      "threshold_at_target_frr": 0.7483058333396905,
+      "target_frr": 0.05,
+      "rejection_oos_eval_at_threshold": 0.7155555555555555,
+      "false_rejection_internal_test": 0.0710431654676259,
+      "false_rejection_brisc": 0.1105,
+      "false_rejection_brisc_clean": 0.2624740124740125
+    },
+    "mutual_information": {
+      "auroc_selection_internal_val_vs_oos_fit": 0.83540677286845,
+      "aupr_selection_internal_val_vs_oos_fit": 0.8102539253337765,
+      "auroc_report_internal_test_vs_oos_eval": 0.8425329736211031,
+      "aupr_report_internal_test_vs_oos_eval": 0.8192879694656018,
+      "auroc_brisc_vs_oos_eval": 0.8059189814814816,
+      "aupr_brisc_vs_oos_eval": 0.38687008319890576,
+      "threshold_at_target_frr": 0.011462604999542237,
+      "target_frr": 0.05,
+      "rejection_oos_eval_at_threshold": 0.5966666666666667,
+      "false_rejection_internal_test": 0.06564748201438848,
+      "false_rejection_brisc": 0.105,
+      "false_rejection_brisc_clean": 0.24532224532224534
+    },
+    "max_softmax": {
+      "auroc_selection_internal_val_vs_oos_fit": 0.8808010219416892,
+      "aupr_selection_internal_val_vs_oos_fit": 0.8801736485075753,
+      "auroc_report_internal_test_vs_oos_eval": 0.8659692246203037,
+      "aupr_report_internal_test_vs_oos_eval": 0.8626326428672766,
+      "auroc_brisc_vs_oos_eval": 0.8394437037037037,
+      "aupr_brisc_vs_oos_eval": 0.48443424251745754,
+      "threshold_at_target_frr": 0.867110526561737,
+      "target_frr": 0.05,
+      "rejection_oos_eval_at_threshold": 0.7077777777777777,
+      "false_rejection_internal_test": 0.06924460431654676,
+      "false_rejection_brisc": 0.108,
+      "false_rejection_brisc_clean": 0.2577962577962578
+    },
+    "mahalanobis": {
+      "auroc_selection_internal_val_vs_oos_fit": 0.9396718765654745,
+      "aupr_selection_internal_val_vs_oos_fit": 0.9380151213087145,
+      "auroc_report_internal_test_vs_oos_eval": 0.9535151878497202,
+      "aupr_report_internal_test_vs_oos_eval": 0.9514599333399707,
+      "auroc_brisc_vs_oos_eval": 0.9334207407407407,
+      "aupr_brisc_vs_oos_eval": 0.7561657599107166,
+      "threshold_at_target_frr": 80.47880177264928,
+      "target_frr": 0.05,
+      "rejection_oos_eval_at_threshold": 0.7422222222222222,
+      "false_rejection_internal_test": 0.0368705035971223,
+      "false_rejection_brisc": 0.12166666666666667,
+      "false_rejection_brisc_clean": 0.36746361746361744
+    },
+    "knn": {
+      "auroc_selection_internal_val_vs_oos_fit": 0.9137295862138062,
+      "aupr_selection_internal_val_vs_oos_fit": 0.9149826886631233,
+      "auroc_report_internal_test_vs_oos_eval": 0.8966406874500399,
+      "aupr_report_internal_test_vs_oos_eval": 0.903544367317944,
+      "auroc_brisc_vs_oos_eval": 0.8713255555555556,
+      "aupr_brisc_vs_oos_eval": 0.5953283627069982,
+      "threshold_at_target_frr": 0.773669958114624,
+      "target_frr": 0.05,
+      "rejection_oos_eval_at_threshold": 0.74,
+      "false_rejection_internal_test": 0.06115107913669065,
+      "false_rejection_brisc": 0.13516666666666666,
+      "false_rejection_brisc_clean": 0.3633056133056133
+    }
+  },
+  "deferral_comparison": {
+    "deferral_threshold_entropy_bits": 0.03780069116592899,
+    "deferral_threshold_source": "session A deployment_config.json",
+    "target_defer_rate": 0.1,
+    "note": "Input validation and deferral answer different questions and must not be reported as one number. This block measures only how far the two signals happen to agree.",
+    "internal_train": {
+      "n": 4979,
+      "flagged_by_rejector": 0.004418557943362121,
+      "flagged_by_deferral": 1.0,
+      "flagged_by_both": 0.004418557943362121,
+      "rejector_only": 0.0,
+      "deferral_only": 0.9955814420566379,
+      "flagged_by_neither": 0.0,
+      "jaccard": 0.004418557943362121
+    },
+    "internal_val": {
+      "n": 1109,
+      "flagged_by_rejector": 0.005410279531109108,
+      "flagged_by_deferral": 1.0,
+      "flagged_by_both": 0.005410279531109108,
+      "rejector_only": 0.0,
+      "deferral_only": 0.9945897204688909,
+      "flagged_by_neither": 0.0,
+      "jaccard": 0.005410279531109108
+    },
+    "internal_test": {
+      "n": 1112,
+      "flagged_by_rejector": 0.0008992805755395684,
+      "flagged_by_deferral": 1.0,
+      "flagged_by_both": 0.0008992805755395684,
+      "rejector_only": 0.0,
+      "deferral_only": 0.9991007194244604,
+      "flagged_by_neither": 0.0,
+      "jaccard": 0.0008992805755395684
+    },
+    "out_of_scope": {
+      "n": 1800,
+      "flagged_by_rejector": 0.5833333333333334,
+      "flagged_by_deferral": 1.0,
+      "flagged_by_both": 0.5833333333333334,
+      "rejector_only": 0.0,
+      "deferral_only": 0.4166666666666667,
+      "flagged_by_neither": 0.0,
+      "jaccard": 0.5833333333333334
+    },
+    "brisc": {
+      "n": 6000,
+      "flagged_by_rejector": 0.0021666666666666666,
+      "flagged_by_deferral": 1.0,
+      "flagged_by_both": 0.0021666666666666666,
+      "rejector_only": 0.0,
+      "deferral_only": 0.9978333333333333,
+      "flagged_by_neither": 0.0,
+      "jaccard": 0.0021666666666666666
+    },
+    "brisc_clean": {
+      "n": 1924,
+      "flagged_by_rejector": 0.0,
+      "flagged_by_deferral": 1.0,
+      "flagged_by_both": 0.0,
+      "rejector_only": 0.0,
+      "deferral_only": 1.0,
+      "flagged_by_neither": 0.0,
+      "jaccard": 0.0
+    },
+    "out_of_scope_by_category": {
+      "cat1_corruption": {
+        "rejector_catches": 0.5192307692307693,
+        "deferral_alone_would_catch": 1.0,
+        "caught_only_because_of_input_validation": 0.0,
+        "missed_by_both": 0.0
+      },
+      "cat3_nonmedical": {
+        "rejector_catches": 1.0,
+        "deferral_alone_would_catch": 1.0,
+        "caught_only_because_of_input_validation": 0.0,
+        "missed_by_both": 0.0
+      }
+    }
+  },
+  "score_stage_enabled": false,
+  "chosen": {
+    "method": "mahalanobis",
+    "threshold": 80.47712553755798,
+    "threshold_units": "distance",
+    "higher_is_out_of_scope": true,
+    "precheck_enabled": true,
+    "target_combined_frr_internal_val": 0.05,
+    "score_frr_among_precheck_survivors": 0.044832275611967363
+  },
+  "combined_rejector": {
+    "rejection_rate_out_of_scope_all": 0.5833333333333334,
+    "rejection_rate_out_of_scope_eval": 0.5855555555555556,
+    "false_rejection_rate_internal_val": 0.005410279531109108,
+    "false_rejection_rate_internal_test": 0.0008992805755395684,
+    "rejection_rate_by_category": {
+      "cat1_corruption": {
+        "n_total": 1560,
+        "n_eval_half": 780,
+        "rejection_rate_eval": 0.5217948717948718,
+        "rejection_rate_eval_ci95": [
+          0.4867182696231506,
+          0.5566578488728977
+        ],
+        "rejection_rate_all": 0.5192307692307693,
+        "accepted_rate_all": 0.4807692307692308,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.5192307692307693
+      },
+      "cat3_nonmedical": {
+        "n_total": 240,
+        "n_eval_half": 120,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9689808335671897,
+          1.0
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_rate_all": 0.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0
+      }
+    },
+    "rejection_rate_by_subcategory": {
+      "blur_heavy": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.1,
+        "rejection_rate_eval_ci95": [
+          0.04664283446577444,
+          0.20149464726913086
+        ],
+        "rejection_rate_all": 0.08333333333333333,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.08333333333333333,
+        "is_orientation_only": false
+      },
+      "chart_screenshot": {
+        "category": "cat3_nonmedical",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9398281478313683,
+          0.9999999999999999
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0,
+        "is_orientation_only": false
+      },
+      "corner_crop": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.48333333333333334,
+        "rejection_rate_eval_ci95": [
+          0.3617504953707321,
+          0.6069218997015555
+        ],
+        "rejection_rate_all": 0.5,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.5,
+        "is_orientation_only": false
+      },
+      "document": {
+        "category": "cat3_nonmedical",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9398281478313683,
+          0.9999999999999999
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0,
+        "is_orientation_only": false
+      },
+      "jpeg_q5": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.0,
+        "rejection_rate_eval_ci95": [
+          0.0,
+          0.060171852168631655
+        ],
+        "rejection_rate_all": 0.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.0,
+        "is_orientation_only": false
+      },
+      "near_black": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9398281478313683,
+          0.9999999999999999
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0,
+        "is_orientation_only": false
+      },
+      "near_white": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9398281478313683,
+          0.9999999999999999
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0,
+        "is_orientation_only": false
+      },
+      "noise_heavy": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9398281478313683,
+          0.9999999999999999
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0,
+        "is_orientation_only": false
+      },
+      "overexposed": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.36666666666666664,
+        "rejection_rate_eval_ci95": [
+          0.25620916684954254,
+          0.49316999372875914
+        ],
+        "rejection_rate_all": 0.30833333333333335,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.30833333333333335,
+        "is_orientation_only": false
+      },
+      "pure_noise": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9398281478313683,
+          0.9999999999999999
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0,
+        "is_orientation_only": false
+      },
+      "rotated_90": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.0,
+        "rejection_rate_eval_ci95": [
+          0.0,
+          0.060171852168631655
+        ],
+        "rejection_rate_all": 0.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.0,
+        "is_orientation_only": true
+      },
+      "solid_colour": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 1.0,
+        "rejection_rate_eval_ci95": [
+          0.9398281478313683,
+          0.9999999999999999
+        ],
+        "rejection_rate_all": 1.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 1.0,
+        "is_orientation_only": false
+      },
+      "thumbnail": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.016666666666666666,
+        "rejection_rate_eval_ci95": [
+          0.0029481597938164905,
+          0.08855129730252745
+        ],
+        "rejection_rate_all": 0.016666666666666666,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.016666666666666666,
+        "is_orientation_only": false
+      },
+      "underexposed": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.8166666666666667,
+        "rejection_rate_eval_ci95": [
+          0.700802462504736,
+          0.8944220311217972
+        ],
+        "rejection_rate_all": 0.8416666666666667,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.8416666666666667,
+        "is_orientation_only": false
+      },
+      "upside_down": {
+        "category": "cat1_corruption",
+        "n_total": 120,
+        "n_eval_half": 60,
+        "rejection_rate_eval": 0.0,
+        "rejection_rate_eval_ci95": [
+          0.0,
+          0.060171852168631655
+        ],
+        "rejection_rate_all": 0.0,
+        "accepted_and_confident_rate_all": 0.0,
+        "precheck_alone_rate_all": 0.0,
+        "is_orientation_only": true
+      }
+    },
+    "brisc": {
+      "full": {
+        "n": 6000,
+        "note": "all 6,000 BRISC images. About 80% are pixel-identical to internal training data (session A). Reference only, not an external number.",
+        "false_rejection_rate": 0.0021666666666666666,
+        "ci95": [
+          0.001266688234061045,
+          0.0037037059755738195
+        ],
+        "precheck_alone": 0.0021666666666666666,
+        "by_class": {
+          "glioma": 0.0,
+          "meningioma": 0.00672782874617737,
+          "pituitary": 0.0011383039271485487,
+          "notumor": 0.0
+        },
+        "by_plane": {
+          "axial": 0.002007024586051179,
+          "coronal": 0.004543160020191822,
+          "sagittal": 0.0
+        },
+        "n_by_class": {
+          "glioma": 1401,
+          "meningioma": 1635,
+          "pituitary": 1757,
+          "notumor": 1207
+        }
+      },
+      "clean_vs_fitted": {
+        "n": 1924,
+        "note": "far from everything session B fitted on, internal train and val. The primary honest false rejection number.",
+        "false_rejection_rate": 0.0,
+        "ci95": [
+          0.0,
+          0.0019926217505683267
+        ],
+        "precheck_alone": 0.0,
+        "by_class": {
+          "glioma": 0.0,
+          "meningioma": 0.0,
+          "pituitary": 0.0,
+          "notumor": 0.0
+        },
+        "by_plane": {
+          "axial": 0.0,
+          "coronal": 0.0,
+          "sagittal": 0.0
+        },
+        "n_by_class": {
+          "glioma": 229,
+          "meningioma": 271,
+          "pituitary": 277,
+          "notumor": 1147
+        }
+      },
+      "clean_vs_train": {
+        "n": 2634,
+        "note": "session A's definition, far from internal train.",
+        "false_rejection_rate": 0.0015186028853454822,
+        "ci95": [
+          0.0005907085473425605,
+          0.00389836291784814
+        ],
+        "precheck_alone": 0.0015186028853454822,
+        "by_class": {
+          "glioma": 0.0,
+          "meningioma": 0.007984031936127744,
+          "pituitary": 0.0,
+          "notumor": 0.0
+        },
+        "by_plane": {
+          "axial": 0.0022497187851518562,
+          "coronal": 0.002369668246445498,
+          "sagittal": 0.0
+        },
+        "n_by_class": {
+          "glioma": 436,
+          "meningioma": 501,
+          "pituitary": 539,
+          "notumor": 1158
+        }
+      },
+      "clean_vs_any": {
+        "n": 1198,
+        "note": "far from every internal split. Strictest, but about 95% no-tumor, so it mostly measures false rejection on healthy brains.",
+        "false_rejection_rate": 0.0,
+        "ci95": [
+          2.168404344971009e-19,
+          0.003196310789828091
+        ],
+        "precheck_alone": 0.0,
+        "by_class": {
+          "glioma": 0.0,
+          "meningioma": 0.0,
+          "notumor": 0.0
+        },
+        "by_plane": {
+          "axial": 0.0,
+          "coronal": 0.0,
+          "sagittal": 0.0
+        },
+        "n_by_class": {
+          "glioma": 25,
+          "meningioma": 33,
+          "pituitary": 0,
+          "notumor": 1140
+        }
+      }
+    },
+    "false_rejection_rate_brisc": 0.0,
+    "false_rejection_rate_brisc_ci95": [
+      0.0,
+      0.0019926217505683267
+    ],
+    "false_rejection_rate_brisc_basis": "clean_vs_fitted",
+    "false_rejection_rate_brisc_full_contaminated": 0.0021666666666666666
+  },
+  "wrongly_accepted": {
+    "n_accepted": 750,
+    "n_accepted_and_confident": 0,
+    "n_extracted": {
+      "cat1_corruption": 750,
+      "cat3_nonmedical": 0
+    },
+    "path": "analysis/results/ood/wrongly_accepted/"
+  }
+}

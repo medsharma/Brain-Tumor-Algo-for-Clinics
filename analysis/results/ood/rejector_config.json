@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "created_utc": "2026-07-31T03:59:09.782800+00:00",
+  "method": "precheck_only",
+  "threshold": 80.47712553755798,
+  "threshold_units": "distance",
+  "higher_is_out_of_scope": true,
+  "score_stage_enabled": false,
+  "score_stage_disabled_because": "The best score method (mahalanobis) wrongly rejects 12.2% of BRISC and 27.7% of the genuinely-unseen BRISC subset. Its false rejection RISES as images get less like the training data (12.3% on full BRISC, 27.7% clean-vs-train, 57.8% clean-vs-any), which is the signature of a 'not my training set' detector rather than an out-of-scope detector. A clinic with a different scanner would have most of its scans refused. The precheck's false rejection is flat across the same subsets (0.22%, 0.15%, 0.00%). The threshold above is kept so a human can re-enable this with --enable-score-stage.",
+  "mc_T": 20,
+  "model": "resnet50",
+  "seed": 42,
+  "fitted_on": "internal_train+internal_val+out_of_scope",
+  "precheck_enabled": true,
+  "precheck_rules": {
+    "color_spread": {
+      "feature": "color_spread",
+      "low": null,
+      "high": 0.017178874466568232,
+      "reason": "the image is in colour, and MRI is not"
+    },
+    "intensity_std": {
+      "feature": "intensity_std",
+      "low": 0.040745813971757874,
+      "high": null,
+      "reason": "the image is nearly blank"
+    },
+    "dynamic_range": {
+      "feature": "dynamic_range",
+      "low": 0.23846589198112486,
+      "high": null,
+      "reason": "the image has almost no contrast"
+    },
+    "frac_dark": {
+      "feature": "frac_dark",
+      "low": -0.15288895263671876,
+      "high": 0.9173337158203125,
+      "reason": "the image does not have the dark background a brain scan has"
+    },
+    "frac_bright": {
+      "feature": "frac_bright",
+      "low": null,
+      "high": 0.15652716064453126,
+      "reason": "too much of the image is blown out to white"
+    },
+    "border_mean": {
+      "feature": "border_mean",
+      "low": null,
+      "high": 0.3967418015241627,
+      "reason": "the edges of the image are bright, and a brain scan has air at its edges"
+    },
+    "hist_entropy": {
+      "feature": "hist_entropy",
+      "low": 1.6207419852182334,
+      "high": null,
+      "reason": "the image carries almost no detail"
+    },
+    "fg_area_frac": {
+      "feature": "fg_area_frac",
+      "low": -0.09287326660156249,
+      "high": 0.833032080078125,
+      "reason": "no single object of brain-like size was found"
+    },
+    "fg_centroid_offset": {
+      "feature": "fg_centroid_offset",
+      "low": null,
+      "high": 0.5839509012059367,
+      "reason": "the main object is not near the centre, and a brain slice is centred"
+    },
+    "fg_border_touch": {
+      "feature": "fg_border_touch",
+      "low": null,
+      "high": 0.33334588235294227,
+      "reason": "the main object runs off the edge of the image, and a brain does not"
+    },
+    "fg_n_components": {
+      "feature": "fg_n_components",
+      "low": null,
+      "high": 8.2,
+      "reason": "the image contains many separate objects, and a brain slice has one"
+    }
+  },
+  "fitted_statistics_path": "analysis/results/ood/rejector_stats.npz",
+  "measured": {
+    "rejection_rate_by_category": {
+      "cat1_corruption": 0.5217948717948718,
+      "cat3_nonmedical": 1.0
+    },
+    "false_rejection_rate_internal_test": 0.0008992805755395684,
+    "false_rejection_rate_brisc": 0.0
+  },
+  "notes": "Input validation, not deferral. This decides whether the model may judge an image at all. Deferral decides whether a human should double-check an in-scope judgement. Do not merge the two numbers. Entropy and mutual information are in bits (log base 2), matching src/code.py. No threshold here was fitted on BRISC."
+}

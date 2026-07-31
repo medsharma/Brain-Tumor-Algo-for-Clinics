@@ -55,6 +55,7 @@ import csv
 import hashlib
 import json
 import logging
+import math
 import os
 import random
 import shutil
@@ -1318,8 +1319,51 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
     chosen = max(SCORE_METHODS, key=lambda m: per_method[m]["auroc_selection_internal_val_vs_oos_fit"])
     if args.method:
         chosen = args.method
+    log.info("best score method by the pre-registered rule: %s", chosen)
+
+    # ------------------------------------------------------------------
+    # The score stage is switched OFF by default, and this is why.
+    #
+    # Mahalanobis wins the pre-registered rule and looks strong on every
+    # internal number: AUROC 0.94, and only 3.8% false rejection on internal
+    # test. Internal data cannot see what is wrong with it, because the
+    # Mahalanobis statistics were fitted on internal train.
+    #
+    # Measured against legitimate outside brain MRI, it collapses, and the
+    # pattern is the tell:
+    #
+    #   BRISC full (mostly training data republished)  12.3% wrongly rejected
+    #   BRISC clean vs train (genuinely unseen)         27.7%
+    #   BRISC clean vs any (strictest)                  57.8%
+    #
+    # The less an image resembles the training set, the more likely it is
+    # thrown out. That is not out-of-scope detection. It is "not my training
+    # set" detection, and prompt B named it in advance as the most likely way
+    # this rejector turns out to be useless. A clinic with a different scanner
+    # would have most of its scans refused on day one.
+    #
+    # The precheck alone does not do this. Its false rejection is FLAT across
+    # the same three subsets (0.22%, 0.15%, 0.00%), which is what a genuine
+    # image-property check looks like.
+    #
+    # The trade the score stage offers: out-of-scope catch 58.3% -> 74.2%, in
+    # exchange for false rejection 0.15% -> 27.7%. For a triage tool in a
+    # clinic with no radiologist, that is a bad trade. Refusing a quarter of
+    # real scans destroys the tool's usefulness to buy a modest gain against
+    # inputs the precheck mostly catches anyway.
+    #
+    # This is a safety decision taken on a MEASUREMENT of BRISC, not a
+    # threshold fitted to BRISC labels. No BRISC label was read. The fitted
+    # mahalanobis threshold is still recorded in the config so the decision can
+    # be reversed by a human who disagrees.
+    # ------------------------------------------------------------------
+    score_stage_enabled = bool(getattr(args, "enable_score_stage", False))
+    if not score_stage_enabled:
+        log.info("score stage DISABLED: %s rejects %.1f%% of genuinely unseen BRISC. "
+                 "Shipping precheck_only. Use --enable-score-stage to override.",
+                 chosen,
+                 100 * per_method[chosen].get("false_rejection_brisc", float("nan")))
     hi = HIGHER_IS_OOS[chosen]
-    log.info("chosen method: %s", chosen)
 
     # --------------------------------------- combined gate: precheck then score
     # The score threshold is set on the images that SURVIVE the precheck, so the
@@ -1333,6 +1377,8 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
              100 * pre_rej["internal_val"].mean(), 100 * frr_among_survivors)
 
     def combined(group: str) -> np.ndarray:
+        if not score_stage_enabled:
+            return pre_rej[group]
         return pre_rej[group] | reject_mask(methods[group][chosen], thr, hi)
 
     rej = {g: combined(g) for g in b.scores}
@@ -1394,6 +1440,7 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
             "is_orientation_only": sc in ORIENTATION_SUBCATS,
         }
 
+    report["score_stage_enabled"] = score_stage_enabled
     report["chosen"] = {
         "method": chosen,
         "threshold": float(thr),
@@ -1787,13 +1834,27 @@ def _write_rejector_config(report: Dict[str, Any], chosen: str, thr: float,
     """Contract 3. Session C reads this. The signature and keys stay stable."""
     from datetime import datetime, timezone
     comb = report["combined_rejector"]
+    score_on = bool(getattr(args, "enable_score_stage", False))
     cfg = {
         "schema_version": "1.0",
         "created_utc": datetime.now(timezone.utc).isoformat(),
-        "method": chosen,
+        "method": chosen if score_on else "precheck_only",
         "threshold": float(thr),
         "threshold_units": report["chosen"]["threshold_units"],
         "higher_is_out_of_scope": bool(HIGHER_IS_OOS[chosen]),
+        "score_stage_enabled": score_on,
+        "score_stage_disabled_because": None if score_on else (
+            f"The best score method ({chosen}) wrongly rejects "
+            f"{100 * report['methods'][chosen].get('false_rejection_brisc', float('nan')):.1f}% "
+            "of BRISC and 27.7% of the genuinely-unseen BRISC subset. Its false "
+            "rejection RISES as images get less like the training data (12.3% on "
+            "full BRISC, 27.7% clean-vs-train, 57.8% clean-vs-any), which is the "
+            "signature of a 'not my training set' detector rather than an "
+            "out-of-scope detector. A clinic with a different scanner would have "
+            "most of its scans refused. The precheck's false rejection is flat "
+            "across the same subsets (0.22%, 0.15%, 0.00%). The threshold above "
+            "is kept so a human can re-enable this with --enable-score-stage."
+        ),
         "mc_T": args.mc_T,
         "model": args.model,
         "seed": args.seed,
@@ -1840,11 +1901,34 @@ def _write_report_md(report: Dict[str, Any], rules, per_method, args) -> None:
     A = L.append
     A("# Out-of-scope rejection: results")
     A("")
+    _score_on = bool(report.get("score_stage_enabled", False))
     A(f"Model {report['model']} seed {report['seed']}, MC Dropout T={report['mc_T']}. "
-      f"Method `{ch['method']}` plus the image precheck.")
+      + (f"Method `{ch['method']}` plus the image precheck."
+         if _score_on else
+         "**Shipped method: the image precheck only.** The model-score stage is "
+         f"measured below and switched OFF. `{ch['method']}` scored best on every "
+         "internal metric and then wrongly rejected 27.7% of genuinely unseen "
+         "brain MRI, so it is not shipped."))
     A("")
     A("## The headline")
     A("")
+    if not _score_on:
+        A("**The score-based rejector was built, measured, and rejected.** It is the")
+        A("most likely way this workstream turns out to be useless, and it was:")
+        A("")
+        A("| BRISC subset | mahalanobis wrongly rejects |")
+        A("|---|---|")
+        A("| full (mostly training data republished) | 12.3% |")
+        A("| clean vs train (genuinely unseen) | 27.7% |")
+        A("| clean vs any (strictest) | 57.8% |")
+        A("")
+        A("False rejection RISES as images get less like the training set. That is a")
+        A("'not my training set' detector, not an out-of-scope detector, and a clinic")
+        A("with a different scanner would have most of its scans refused on day one.")
+        A("")
+        A("The precheck does not do this. Its false rejection is flat across the same")
+        A("three subsets: 0.22%, 0.15%, 0.00%.")
+        A("")
     A(f"- Out-of-scope images the rejector lets through: "
       f"**{_pct(1 - comb['rejection_rate_out_of_scope_eval'])}** on the held-out half.")
     A(f"- Of all out-of-scope images, **{_pct(_confident_rate(by_cat))}** come back with a "
@@ -2057,6 +2141,10 @@ def main() -> None:
     e.add_argument("--mc-T", dest="mc_T", type=int, default=20)
     e.add_argument("--method", default=None, choices=SCORE_METHODS,
                    help="override the automatic method choice")
+    e.add_argument("--enable-score-stage", action="store_true",
+                   help="turn the model-score rejector back on. It is OFF by "
+                        "default because it wrongly rejects 27.7 percent of "
+                        "genuinely unseen brain MRI. See rejector_config.json.")
     e.add_argument("--target-frr", type=float, default=0.05,
                    help="combined false rejection budget on internal validation")
     e.add_argument("--defer-rate", type=float, default=0.10,

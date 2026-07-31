@@ -11,10 +11,32 @@
 
 <div id="mode-banner" class="mode-banner hidden" role="alert"></div>
 
+<!-- Inline, because nothing here may reach the network. Drawn rather than
+     photographed: a real patient's scan used as decoration would be both a
+     privacy question and a claim about a specific person's brain. This is a
+     coronal outline over scan rings, and it means nothing clinically. -->
+<svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="brain-mark">
+      <circle cx="32" cy="32" r="29" class="mk-ring" />
+      <circle cx="32" cy="32" r="21.5" class="mk-ring mk-ring-2" />
+      <path class="mk-stroke" d="M32 13.5v37" />
+      <path class="mk-stroke" d="M32 17.5c-4.6-3.4-10.6-1.4-11.9 3.9-3.9.6-6 4.6-4.4 8.1-2.7 2.6-2.2 7 1 8.9-.6 4.2 3.1 7.7 7.2 6.9 1.8 3.5 6.3 4.3 9.1 1.7" />
+      <path class="mk-stroke" d="M32 17.5c4.6-3.4 10.6-1.4 11.9 3.9 3.9.6 6 4.6 4.4 8.1 2.7 2.6 2.2 7-1 8.9.6 4.2-3.1 7.7-7.2 6.9-1.8 3.5-6.3 4.3-9.1 1.7" />
+      <path class="mk-stroke mk-faint" d="M24 24c2.6.6 4.2 2.6 4.4 5.2M40 24c-2.6.6-4.2 2.6-4.4 5.2M23 34c3 .2 5 1.9 5.4 4.6M41 34c-3 .2-5 1.9-5.4 4.6" />
+    </g>
+  </defs>
+</svg>
+
 <header class="topbar">
-  <div>
-    <h1>Brain MRI Triage</h1>
-    <p class="subtitle">Offline second opinion. Not a diagnosis.</p>
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <use href="#brain-mark" />
+    </svg>
+    <div>
+      <h1>Brain MRI Triage</h1>
+      <p class="subtitle">Offline second opinion. Not a diagnosis.</p>
+    </div>
   </div>
   <div class="version">
     <span id="app-version"></span>
@@ -29,8 +51,11 @@
     <h2>Load a scan</h2>
     <div id="dropzone" class="dropzone" tabindex="0" role="button"
          aria-label="Choose an MRI image file">
-      <p class="dropzone-main">Click here, or drag an image in</p>
-      <p class="dropzone-sub">One brain MRI slice at a time. JPEG or PNG.</p>
+      <svg class="dropzone-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <use href="#brain-mark" />
+      </svg>
+      <p class="dropzone-main">Drop a scan here</p>
+      <p class="dropzone-sub">or click to choose. One brain MRI slice at a time. JPEG or PNG.</p>
       <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.bmp,.tif,.tiff" hidden>
     </div>
 

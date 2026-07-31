@@ -1,6 +1,12 @@
-/* Brain MRI Triage — all styling is local. No web fonts, no CDN.
-   The font stack is whatever the operating system already has. A clinic
-   laptop that has never been online must render this identically.
+/* Brain MRI Triage — all styling is local. No web fonts, no CDN, no images.
+   The font stack is whatever the operating system already has and the only
+   artwork is inline SVG. A clinic laptop that has never been online must render
+   this identically.
+
+   Dark, always. Not a preference toggle: a reading room is kept dim so the
+   screen is the brightest thing in it, and an MRI slice is mostly black. A white
+   page around a black scan is glare around the one thing you are meant to look
+   at. So the interface gets out of the way and the image carries the light.
 
    Design brief, in priority order:
 
@@ -9,79 +15,51 @@
      3. The safety wording must never look like small print. It is the most
         important text on the page.
 
-   That third rule is why this is restrained rather than styled. A triage tool
-   that looks slicker than its evidence invites trust it has not earned, and
-   this model still sends about 2 tumours in 1,000 home confidently. Calm and
-   plain is the honest register. The polish goes into spacing, type scale and
-   hierarchy, not into colour and ornament.
-
-   Light and dark are both supported. A clinic room at night is a real place. */
+   Restrained on purpose. A triage tool that looks slicker than its evidence
+   invites trust it has not earned, and this model still sends about 2 tumours
+   in 1,000 home confidently. The polish goes into type, spacing and depth, not
+   into colour and ornament. */
 
 /* ------------------------------------------------------------------ tokens */
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
-  --bg: #fbfbfa;
-  --surface: #ffffff;
-  --surface-2: #f4f4f2;
-  --line: #e4e4e0;
-  --line-strong: #cfcfc9;
+  --bg: #08090b;
+  --bg-glow: #0d1014;
+  --surface: #0f1114;
+  --surface-2: #15181c;
+  --line: #1d2126;
+  --line-strong: #2b3138;
 
-  --text: #16181d;
-  --text-2: #545861;
-  --text-3: #82868e;
+  --text: #f0f2f4;
+  --text-2: #9aa1aa;
+  --text-3: #6b737d;
 
-  --accent: #1f5f8b;
-  --accent-soft: #eaf1f7;
+  /* One accent. Cold, instrument-like, and it reads as "machine", which is
+     what this is. */
+  --accent: #56b6e6;
+  --accent-dim: #2b6f95;
+  --accent-soft: #0e1c25;
 
-  --danger: #a4241c;
-  --danger-soft: #fbeceb;
-  --warn: #8a5a00;
-  --warn-soft: #fdf4e3;
-  --ok: #1f6b3a;
-  --ok-soft: #ebf4ee;
-  --neutral: #455a64;
-  --neutral-soft: #eceff1;
+  --danger: #ff7a6b;
+  --danger-soft: #22100e;
+  --warn: #e8b562;
+  --warn-soft: #1f1810;
+  --ok: #6fd39a;
+  --ok-soft: #0d1c14;
+  --neutral: #8c98a4;
+  --neutral-soft: #14171b;
 
   --radius: 10px;
-  --radius-lg: 14px;
+  --radius-lg: 16px;
 
-  --shadow: 0 1px 2px rgba(16, 18, 22, 0.05),
-            0 6px 20px -12px rgba(16, 18, 22, 0.20);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset,
+            0 18px 40px -28px rgba(0, 0, 0, 0.9);
 
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
           Arial, sans-serif;
   --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #101215;
-    --surface: #171a1e;
-    --surface-2: #1e2227;
-    --line: #282d33;
-    --line-strong: #383e46;
-
-    --text: #eceef1;
-    --text-2: #a9aeb6;
-    --text-3: #7d838c;
-
-    --accent: #74b6e2;
-    --accent-soft: #16242f;
-
-    --danger: #f28e84;
-    --danger-soft: #2a1917;
-    --warn: #e2b568;
-    --warn-soft: #262019;
-    --ok: #82cb9c;
-    --ok-soft: #16241b;
-    --neutral: #9fb0b8;
-    --neutral-soft: #1d2226;
-
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
-              0 8px 24px -14px rgba(0, 0, 0, 0.7);
-  }
 }
 
 * { box-sizing: border-box; }
@@ -90,7 +68,10 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(900px 520px at 50% -12%, var(--bg-glow), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font);
   font-size: 16px;
@@ -663,4 +644,86 @@ footer p { margin-bottom: 0.4rem; max-width: 78ch; }
   main { padding: 1.1rem 0.9rem 3rem; gap: 1.1rem; }
   .topbar { padding: 1.6rem 0.9rem 0; }
   footer { padding: 1.4rem 0.9rem 3rem; }
+}
+
+/* ------------------------------------------------------------- brain mark */
+
+/* The <defs> block that holds the shared mark. It renders nothing itself and
+   must not occupy layout. A style="" attribute here would be simpler and the
+   Content-Security-Policy forbids inline styles, so it lives in the stylesheet
+   like everything else. */
+.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* Drawn, not photographed. A real patient's scan used as decoration would be a
+   privacy question and a claim about a specific person's brain. This is a
+   coronal outline over scan rings and it means nothing clinically. */
+
+.brand { display: flex; align-items: center; gap: 0.85rem; }
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 0 14px rgba(86, 182, 230, 0.20));
+}
+
+.mk-ring {
+  fill: none;
+  stroke: var(--accent-dim);
+  stroke-width: 1;
+  opacity: 0.55;
+}
+
+.mk-ring-2 { stroke-dasharray: 3 5; opacity: 0.4; }
+
+.mk-stroke {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mk-faint { opacity: 0.45; stroke-width: 1.1; }
+
+/* Large and very quiet behind the dropzone text. It should register as texture
+   first and a brain second; if you notice it before you notice the words, it is
+   too loud. */
+.dropzone { position: relative; overflow: hidden; }
+
+.dropzone-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 190px;
+  height: 190px;
+  transform: translate(-50%, -50%);
+  opacity: 0.055;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.dropzone:hover .dropzone-mark,
+.dropzone:focus-visible .dropzone-mark { opacity: 0.10; }
+
+.dropzone.dragover .dropzone-mark {
+  opacity: 0.16;
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+.dropzone-main,
+.dropzone-sub { position: relative; }
+
+.dropzone-main {
+  font-size: 1.12rem;
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone-mark { transition: none; }
+}
+
+@media (max-width: 620px) {
+  .brand-mark { width: 32px; height: 32px; }
+  .dropzone-mark { width: 140px; height: 140px; }
 }

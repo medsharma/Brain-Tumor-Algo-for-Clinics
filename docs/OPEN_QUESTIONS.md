@@ -117,3 +117,87 @@ Someone should download the current version, diff the filename list against
 `data/split_manifest.csv`, and record the answer in `docs/DATA_PROVENANCE.md`. If
 the datasets differ in content rather than count, that affects every claim about
 what the model trained on.
+
+---
+
+## The deferral trade: 41% of scans back to a human, or a higher miss rate?
+
+**Status: unresolved, and it is the most consequential open decision here.**
+
+The shipped configuration is the 5-seed ViT ensemble. It has the lowest measured
+tumour miss rate of any candidate, 0.27% on the 2,634 BRISC images the model has
+not seen. To get the safety benefit its entropy threshold sends **41.2% of
+scans** to a human.
+
+The alternative, a single ViT seed, defers 25.9% and misses 0.68%.
+
+| | 5-seed ensemble (shipped) | single seed |
+|---|---|---|
+| tumour miss rate | **0.27%** | 0.68% |
+| scans deferred to a human | **41.2%** | 25.9% |
+| miss rate among kept scans | 0.09% | 0.09% |
+| inference cost per scan | 805 ms | 133 ms |
+
+Both are measured, in `analysis/results/safety/ensemble_vs_single.csv`.
+
+**Why code cannot settle this.** The tool exists for clinics with no
+radiologist. Handing four scans in ten straight back to a human is either
+acceptable, because the human only has to look at the hard ones, or it destroys
+the entire value proposition, because there is no human to hand them to. That
+depends on the clinic, not on the model.
+
+Ask a target clinic what deferral rate they could actually absorb, then pick the
+configuration. Do not let a `min()` call pick it, which is what happened the
+first time.
+
+**Caution on the numbers.** The ensemble's advantage rests on 4 missed tumours
+against 10. Read it as a direction, not a measurement.
+
+---
+
+## Is the SARTAJ gap a model failure or a labelling failure?
+
+**Status: unresolved. Needs a radiologist, not a GPU.**
+
+Split by original source, the model's tumour miss rate is 2.49% on SARTAJ images
+and 0.09% on Figshare images. Roughly 27 times worse. Both backbones agree.
+
+Two explanations fit equally well:
+
+1. SARTAJ images are genuinely harder, and the model fails on them.
+2. SARTAJ labels are wrong, and the model is right but scored wrong.
+
+Explanation 2 is not far-fetched. SARTAJ's glioma class has *documented*
+mislabelling, which is why the Kaggle aggregator replaced those images with
+Figshare ones.
+
+These have opposite consequences. If it is the model, the tool is weaker than
+the headline suggests on a third of its own training distribution. If it is the
+labels, every metric in this project is measured against partly-wrong ground
+truth and the real performance is unknown in both directions.
+
+**What would settle it:** a radiologist reviewing a sample of SARTAJ images the
+model got "wrong". That is perhaps an hour of qualified time and it would tell
+us more than another training run.
+
+---
+
+## Nobody clinically qualified has looked at anything
+
+**Status: unresolved, and it underlies every other question here.**
+
+Not one label, not one heatmap, not one missed tumour, not one output has been
+reviewed by a radiologist at any point in this project.
+
+Three specific things are sitting ready for that hour of attention:
+
+- **The 18 images that cause every internal miss.** In
+  `docs/results/confident_miss_examples/`, named, with per-seed confidences. One
+  is missed by every checkpoint ever trained here, at 93% confidence.
+- **The heatmaps.** Session D measured them landing on the tumour 41% of the
+  time for the shipped model. Whether a 41% hit rate helps a real reader under
+  time pressure or actively misleads one is not answerable by measurement.
+- **The SARTAJ disagreements**, above.
+
+This is the cheapest high-value work remaining in the project and it cannot be
+done by adding code.

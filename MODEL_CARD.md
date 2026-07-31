@@ -242,11 +242,30 @@ Code: `docs/check_brisc_overlap.py`. Per-image flags:
 Every number below carries the dataset it came from. A number without a dataset
 name is not a number, it is a rumour.
 
-**The deployment configuration has not been finalised.** Session A owns the
-choice of backbone, seed or ensemble, temperature and thresholds, and had not
-published `analysis/results/safety/deployment_config.json` when this card was
-written. Until it exists, no configuration of this tool is the deployed one, and
-the app refuses to start on a stub.
+**The deployment configuration is now published**, at
+`analysis/results/safety/deployment_config.json`.
+
+| setting | value |
+|---|---|
+| backbone | ViT-B/16 |
+| seeds | 5-seed ensemble (42, 123, 7, 2024, 31) |
+| MC-Dropout passes | T = 20 |
+| temperature | 0.527, fitted on internal validation |
+| refer if `p_tumor` >= | 0.970 |
+| defer to a human if entropy >= | 0.0378 **nats** |
+| thresholds fitted on | internal validation split, never BRISC |
+
+**Read the deferral threshold with the operating cost attached: this
+configuration sends 41.2% of scans to a human.** That is the price of the lowest
+measured miss rate. In a clinic with no radiologist, four scans in ten coming
+straight back may not be a tool anyone can use. A single-seed configuration
+defers 25.9% and misses more. Both are measured in
+`analysis/results/safety/ensemble_vs_single.csv`. **Which trade to take is a
+human decision and it has not been made.**
+
+The backbone choice was originally made by buggy code that selected ViT on the
+strength of the 5-seed ensemble and then shipped the single seed, which was the
+worst of the four candidates on the tumour miss rate. See `handoff/ISSUES.md`.
 
 On the evidence in this document, ResNet-50 is the better choice on safety
 grounds. See [Uncertainty and deferral](#what-it-catches-and-what-it-does-not).
@@ -282,17 +301,29 @@ Treat every confidence interval on this page as a floor on the uncertainty.
 **Plain reading: roughly 1 tumor in 100 is missed, on the easiest data this model
 will ever see.**
 
-**Dataset: BRISC 2025. No number is reported here, and that is deliberate.**
+**Dataset: BRISC 2025 clean subset, n = 2,634 (1,476 tumors).** 5-seed ensemble.
 
-Session A's BRISC evaluation had not published a miss rate when this card was
-written. But even when it does, **a BRISC miss rate is not a generalisation
-estimate and will not be presented as one in this document.** 98.8% of BRISC's
-tumor images are images the model trained on. The clean subset contains 58
-tumors, which cannot support a rate.
+| backbone | tumor miss rate | 95% CI | glioma | meningioma | pituitary |
+|---|---|---|---|---|---|
+| ViT-B/16 (shipped) | **0.27%** | 0.07 to 0.55 | 0.00% | 0.80% | 0.00% |
+| ResNet-50 | 0.20% | 0.00 to 0.47 | 0.00% | 0.60% | 0.00% |
 
-When session A publishes, the numbers will be in
-`analysis/results/safety/` and `analysis/results/brisc/`, stratified by overlap.
-Read them with the overlap section above in hand.
+**This is lower than the internal number, and that needs explaining rather than
+celebrating.** It is not evidence the model generalises well. The clean subset
+has a different class mix, and the shipped configuration is a 5-seed ensemble
+tuned for exactly this metric, while the 1-in-100 figure above is a single-seed
+internal measurement. It also rests on **4 missed tumors**. Four. Every
+conclusion drawn from it should be read as a direction, not a measurement.
+
+Note also which class moved: meningioma is now the only class missing anything,
+where internally glioma was worst.
+
+**A BRISC miss rate is still not a generalisation estimate and is not presented
+as one in this document.** These 2,634 images share sources, scanners and
+preprocessing with the training data, and patient-level overlap cannot be ruled
+out. An earlier draft of this card said the clean subset held 58 tumors and
+could not support a rate; that was the *strictest* subset (`clean_vs_any`), not
+the canonical one session A reports on.
 
 **The honest position stands regardless of what that number turns out to be:
 this model's tumor miss rate on data it has not seen is unmeasured.**
@@ -341,11 +372,29 @@ denominator of 1,455 is not 1,455 independent images, so the interval above is
 narrower than the evidence really justifies. A false-alarm rate estimated on 291
 images is not a precise quantity.
 
-**Dataset: BRISC 2025:** **Not available.** Session A's BRISC evaluation had not published results when this card was written. When it lands it will be in
-`analysis/results/safety/`, stratified by overlap. Note that BRISC's own test
-split contains 140 no-tumor images, of which 139 are unseen by the model, so a
-specificity estimate from BRISC is one of the few things the clean subset can
-actually support.
+**Dataset: BRISC 2025 clean subset, n = 2,634** (1,476 tumor, 1,158 no-tumor).
+5-seed ensemble, `p_tumor` at 0.5. These are the images whose nearest internal
+*training* image is more than perceptual-hash distance 5 away.
+
+| backbone | sensitivity | 95% CI | specificity | 95% CI | false alarms |
+|---|---|---|---|---|---|
+| ViT-B/16 (shipped) | 99.73% | 99.45 to 99.93 | **90.67%** | 88.98 to 92.34 | 108 / 1,158 |
+| ResNet-50 | 99.80% | 99.53 to 100.00 | **81.61%** | 79.32 to 83.81 | 213 / 1,158 |
+
+**This is the most important table on the page and it does not say what people
+expect.** Sensitivity holds up on outside data. **Specificity collapses.**
+
+Internal specificity was 98.0 to 98.3%. On images the model has not seen it is
+90.7% for the shipped ViT ensemble and 81.6% for ResNet-50. ResNet-50 raises a
+false alarm on nearly one healthy scan in five.
+
+For a rural clinic that is a real cost, not a rounding error. Every false alarm
+is a patient told they may have a brain tumour, and a referral that costs
+travel, money, time and fear. At 90.7% specificity, roughly 1 healthy person in
+11 gets that.
+
+The tool is safe in the direction it was designed to be safe in and expensive in
+the other direction. Both belong in any decision to deploy it.
 
 ### Four-way classification accuracy
 
@@ -363,28 +412,106 @@ between the two backbones in any of 5 seeds.
 not a real-world accuracy and it must never be quoted as one.** It is the least
 important number on this page and it is the one people will want to quote.
 
-**Dataset: BRISC 2025:** **Not available.** Session A's BRISC evaluation had not published results when this card was written. Session A reported a preliminary sanity
-figure of 0.9728 for ViT seed 42 on the full 6,000, against 0.9613 on the
-internal test split. **That gap is the contamination signature, not a result.**
-A model does not beat its own held-out test set on genuinely new data. It is
-recorded here only because it is the cheapest available warning sign, and it
-should never be quoted as performance.
+**Dataset: BRISC 2025 clean subset, n = 2,634.** 5-seed ensemble.
+
+| backbone | four-way accuracy | 95% CI | macro F1 | macro AUC | ECE (15-bin) |
+|---|---|---|---|---|---|
+| ViT-B/16 (shipped) | 96.20% | 95.52 to 96.92 | 95.92% | 99.68% | 0.109 |
+| ResNet-50 | 94.50% | 93.58 to 95.37 | 94.46% | 99.68% | 0.126 |
+
+**What the contamination was worth, same checkpoints, same day:**
+
+| subset | ViT accuracy | ResNet-50 accuracy |
+|---|---|---|
+| BRISC images the model trained on (n=3,366) | 99.47% | 99.64% |
+| BRISC images it did not (n=2,634) | 96.20% | 94.50% |
+
+Three to five points of accuracy were memorisation. The full-BRISC figure of
+0.9728 that first exposed the problem is not on this page as a result, because
+it is not one. A model does not beat its own held-out test set on genuinely new
+data, and that gap was the cheapest available warning sign.
+
+**Calibration gets worse on outside data, not better.** ECE rises from 0.077
+internal to 0.109 external for ViT. Temperature scaling fitted on internal
+validation does bring it down to 0.009 on the clean subset, which is the good
+case and was not guaranteed.
+
+**McNemar on the clean subset: the two backbones are now distinguishable**
+(chi2 = 12.18, p = 0.00048). Internally they were not. Outside data separated
+them, and it separated them mostly on specificity.
 
 ### Plane subgroups
 
-**Dataset: BRISC 2025** (the only dataset with plane labels; the training data
-has none): **Not available.** Session A's BRISC evaluation had not published results when this card was written.
+**Dataset: BRISC 2025 clean subset, n = 2,634.** 5-seed ensemble.
 
-**Plane subgroup performance is effectively unmeasurable in this project**, and
-saying so is more useful than waiting for a number. BRISC's plane split is
-roughly even (1,993 axial / 1,981 coronal / 2,026 sagittal), but 80% of those
-images are training data, and the clean subset is 1,198 images that are 95%
-no-tumor. Split three ways, that is around 19 tumors per plane. Nothing
-meaningful can be estimated from that.
+**An earlier draft of this card said plane subgroups were "effectively
+unmeasurable" here. That was wrong, and the reason is worth recording.** It was
+reasoning from the *strictest* clean subset (`clean_vs_any`, 1,198 images, 95%
+no-tumor, around 19 tumors per plane). The canonical subset session A reports on
+is `clean_vs_train`, which holds 2,634 images and roughly 490 tumors per plane.
+That is plenty. The caution was right in general and the specific claim was
+wrong.
 
-Note in advance that plane subgroup results on BRISC inherit the overlap problem.
-The clean subset holds 1,198 images spread across 3 planes and is 95% no-tumor,
-so a per-plane miss rate on clean data is not going to be estimable either.
+| plane | n | ViT miss rate | ViT specificity | ResNet-50 specificity |
+|---|---|---|---|---|
+| axial | 889 | 0.82% (0.20-1.67) | 96.02% | 95.77% |
+| coronal | 844 | 0.00% (0.00-0.00) | 81.98% | 77.33% |
+| sagittal | 901 | 0.00% (0.00-0.00) | 92.72% | **71.36%** |
+
+**The miss rate is flat across planes. Specificity is not, and the spread is
+large.**
+
+Every missed tumor in the clean subset is axial. Coronal and sagittal miss
+nothing, but they raise far more false alarms: ViT's specificity drops 14 points
+from axial to coronal, and ResNet-50's drops 24 points from axial to sagittal,
+where it wrongly flags nearly 3 healthy scans in 10.
+
+The likely cause is that the training pool is mostly axial. Session A's symmetry
+analysis estimates around 30% of internal training images are sagittal, with the
+axial/coronal split unrecoverable, so this is consistent but not proven.
+
+**Practical consequence:** a clinic that images mostly coronal or sagittal will
+see a far higher false-alarm rate than these headline numbers suggest, on the
+shipped configuration as well as the alternative.
+
+### Performance by original data source
+
+The training pool is three separately-collected datasets merged into one. Split
+back apart, the model performs very differently on each. **This is the only
+generalisation signal available without acquiring a new cohort**, and it had
+been flagged as unattempted since long before it was done.
+
+Dataset: internal held-out test split, pooled over 5 seeds.
+
+| inferred source | n | ViT accuracy | ViT tumor miss rate | ResNet-50 miss rate |
+|---|---|---|---|---|
+| Br35H | 1,445 | 98.27% | n/a (no-tumor only) | n/a |
+| Figshare (Cheng et al.) | 2,300 | 97.43% | **0.09%** | 0.04% |
+| **SARTAJ** | 1,805 | **92.80%** | **2.49%** | **2.33%** |
+
+**The miss rate on SARTAJ images is roughly 27 times the miss rate on Figshare
+images.** Both backbones agree, so this is not a quirk of one model.
+
+**Two readings, and this project cannot distinguish them.** SARTAJ is the
+component with *documented* label problems: its glioma class was known to be
+mislabelled, and the Kaggle aggregator's published fix was to discard those
+images and substitute Figshare ones. So the gap may be the model failing on
+harder images, or it may be the model disagreeing with wrong labels and being
+counted wrong for it. Telling those apart needs a radiologist looking at SARTAJ
+images. Nobody has.
+
+Either way it is a warning: **performance is not uniform across the sources this
+model was built from, and a new clinic is a fourth source.**
+
+**How the source was inferred.** No source column survived the merge. Source is
+inferred from PIL image mode, which did survive: grayscale tumor images are
+Figshare, RGB no-tumor is Br35H, RGB tumor is SARTAJ. The grayscale fingerprint
+reproduces Figshare's published per-class counts almost exactly (pituitary 930
+against 930, meningioma 709 against 708, glioma 1,399 against 1,426). The
+Br35H/SARTAJ split is weaker and rests on the documented construction of the
+merge. 29 grayscale no-tumor images fit no source and are reported separately
+rather than forced into one. Method and code:
+`analysis/source_stratification.py`.
 
 ### Calibration
 
@@ -406,10 +533,51 @@ scanner.
 
 ### Out-of-scope input rejection
 
-**Not available.** Session B owns the input check and had not published
-`analysis/results/ood/rejector_config.json` when this card was written. Until it
-does, **the tool has no measured ability to reject an input it should not
-judge**, and the application refuses to start rather than run without one.
+**Published.** `analysis/results/ood/rejector_config.json`, method
+`precheck_only`: a cheap image-property check that runs before the model.
+
+| what it is shown | rejected |
+|---|---|
+| non-medical photographs and screenshots | **100%** |
+| corrupted or tampered brain scans | 52% |
+| **legitimate brain MRI (the cost)** | **0.15%** of the clean BRISC subset |
+
+**The model-based rejector was built, measured and deliberately thrown away.**
+Mahalanobis distance in feature space won on every internal metric (AUROC 0.94,
+3.8% false rejection on internal test). Against legitimate outside brain MRI it
+collapsed, and the pattern is the whole point:
+
+| BRISC subset | Mahalanobis wrongly rejects |
+|---|---|
+| full (mostly training data republished) | 12.3% |
+| genuinely unseen | **27.7%** |
+| strictest unseen | **57.8%** |
+
+False rejection *rises* the less an image resembles the training set. That is a
+"not my training set" detector, not an out-of-scope detector. A clinic with a
+different scanner would have had most of its scans refused on day one. Internal
+data could never have shown this, because the statistics were fitted on internal
+training data.
+
+The precheck's false rejection is flat across the same three subsets (0.22%,
+0.15%, 0.00%), which is what a genuine image check looks like. That is why the
+dumb one shipped.
+
+**What the precheck does not catch**, and a clinic should know:
+
+| input | rejected |
+|---|---|
+| heavy JPEG compression | 0.0% |
+| rotated 90 degrees | 0.0% |
+| upside down | 0.0% |
+| thumbnail | 1.7% |
+| **heavy blur / motion corruption** | **8.3%** |
+
+Heavy blur is the one that matters. A motion-corrupted scan is a common, real
+event in a clinic, and it goes straight through to a model that will return a
+confident four-way answer. The entropy deferral catches most of what the
+precheck misses (0.0% of out-of-scope images come back as a confident class with
+no warning at all), but that is a second mechanism doing the first one's job.
 
 Two things are already true and will not change when the numbers arrive:
 
@@ -452,14 +620,18 @@ unit.
 
 ### What threshold
 
-**No threshold has been fixed yet.** Session A fits it on the internal
-validation split (1,109 images) and had not published it when this card was
-written.
+**The threshold is fixed: defer when predictive entropy >= 0.0378 nats.**
+Fitted on the internal validation split (1,109 images), applied to everything
+else unchanged. The unit is declared explicitly in
+`deployment_config.json` as `entropy_units: "nats"`, because
+`src/code.py` reports entropy in *bits* and the two differ by a factor of 1.44.
+Reading one as the other would make the tool under-defer, and under-deferring
+surfaces as confident "no tumor" calls.
 
-The numbers below therefore use a rule that does not depend on one: defer the
-most uncertain X% of cases by entropy. That is deliberately unit-invariant, which
-matters given the bits-versus-nats problem above. A fitted absolute threshold will
-behave differently, and its unit must be stated in the file that carries it.
+**At that threshold the tool defers 41.2% of scans.** Among the scans it does
+not defer, the miss rate falls from 0.27% to 0.09%. Deferral works. It is also
+expensive, and the numbers below use the unit-invariant "defer the most
+uncertain X%" rule so they can be read independently of that choice.
 
 ### What it catches, and what it does not
 
@@ -572,8 +744,15 @@ lymphoma, abscesses, strokes, bleeds and demyelinating disease all land somewher
 and "no tumor" is one of the places they can land. This is untested, because no
 labelled data for these conditions exists in this project.
 
-**Untested.** Session B had not published a result for this category when this
-card was written.
+**Still untested, and this is now a deliberate, recorded gap rather than a
+pending one.** Session B built its out-of-scope set from image corruptions
+(category 1) and non-medical photographs (category 3). Category 4, brain MRI
+showing pathology the model has no class for, needs real clinical data under a
+permissive licence, and none was obtained.
+
+So the honest position is unchanged: rejecting a photo of a document at 100%
+proves close to nothing about clinical safety. **The one rejection case that
+would matter most in a clinic has never been tested.**
 
 This is the most clinically serious untested case in the project and it deserves
 naming plainly. A brain MRI showing a stroke, a haemorrhage, an abscess or a
@@ -585,25 +764,55 @@ wrong.
 
 ### 3. Inputs that are not brain MRI at all
 
-**Untested.** Session B had not published rejection rates by category when this
-card was written. Results will land in `analysis/results/ood/`.
+**Measured.** Non-medical images (photographs, screenshots, documents) are
+rejected at **100%** by the image precheck, before the model runs. Corrupted or
+tampered brain scans are rejected at 52%.
 
-Until then, assume the tool will produce a confident four-class answer for any
-image you give it, including images that are not brain MRI at all.
+The gap is corruption, not wrong-modality: heavy blur is caught only 8.3% of the
+time, heavy JPEG compression and rotations not at all. A motion-corrupted scan
+will reach the model. Full per-category table in `analysis/results/ood/` and in
+the out-of-scope section above.
 
 ### 4. Heatmaps that look plausible and are not
 
-**Not systematically measured.** Session D had published the runtime heatmap
-generator and its consistency tests when this card was written, but not a
-clinical localisation analysis. That will land in
-`analysis/results/explainability_clinical/`.
+**Now measured, against BRISC's 4,793 radiologist-reviewed segmentation masks.
+The answer is that the heatmaps mostly do not point at the tumor.**
 
-What is already known: the offline explainability run
-(`analysis/results/explainability/`) produced heatmaps for all 5 seeds and both
-backbones, including for misclassified cases. **Nobody has checked whether the
-highlighted region corresponds to the actual tumor**, because that check needs
-segmentation masks, and the internal dataset has none. BRISC ships masks for
-4,793 images, which makes this measurable in principle. It has not been measured.
+Clean subset, n = 1,476. Does the single hottest pixel land inside the tumor?
+
+| path | pointing accuracy | chance | activation inside mask |
+|---|---|---|---|
+| ViT-B/16 attention rollout (shipped) | **41.0%** (38.5-43.5) | 1.7% | 5.7% |
+| ResNet-50 Grad-CAM | **8.4%** (7.1-9.9) | 1.7% | 3.0% |
+
+Both beat chance. Neither is good enough to point a clinician at a mass. The
+shipped ViT path is wrong roughly 6 times out of 10.
+
+**It is worst where it would matter most.** On the smallest quartile of tumors,
+ViT drops to 23% and ResNet-50 to 2%. A small tumor is the one a human is most
+likely to miss unaided.
+
+By class, ViT localises meningioma at 72% but glioma and pituitary at 25% each.
+
+**The finding that decides what the interface may say: heatmap quality does not
+predict correctness.**
+
+| path | pointing when the model was RIGHT | when it was WRONG |
+|---|---|---|
+| ViT | 40.8% | 46.9% |
+| ResNet-50 | 8.2% | 14.0% |
+
+The overlay is very slightly *more* likely to land on the tumor when the model
+got the answer wrong. The wrong-case samples are small (49 and 43 images), so
+the honest reading is not that it is inverted, but that **the heatmap carries no
+usable signal about whether to trust a given call.** No text in this tool may
+suggest otherwise.
+
+Both paths pass the model-randomisation sanity check (correlation 0.046 and
+0.338 against a randomised model), so the maps do reflect the trained weights
+rather than image edges.
+
+Full analysis: `analysis/results/explainability_clinical/EXPLAINABILITY_RESULTS.md`.
 
 A heatmap is a trust signal and trust signals cut both ways. A confident wrong
 answer with a plausible-looking heatmap over roughly the right area is harder for

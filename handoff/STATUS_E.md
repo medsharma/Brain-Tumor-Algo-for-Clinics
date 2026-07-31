@@ -128,3 +128,76 @@ without acquiring a cohort.
 **And one hour of a radiologist's time is worth more than another training run.**
 The 18 images that cause every miss are sitting in one folder. Nobody clinically
 qualified has ever looked at them, or at any label in this project.
+
+---
+
+# Integration update, 2026-07-30T23:40Z. Every slot is filled.
+
+A, B and D published. Every `Not available` / `Untested` / `had not published`
+marker in `MODEL_CARD.md`, `LIMITATIONS.md` and `README.md` now carries a real
+number with its dataset and its n. Verified: the grep from the exit criteria
+returns nothing.
+
+## Three places where my own text was wrong, corrected in place
+
+**1. Plane subgroups are measurable after all.** I wrote that they were
+"effectively unmeasurable" because the clean subset was 1,198 images at 95%
+no-tumor. That was `clean_vs_any`, the strictest subset. Session A's canonical
+subset is `clean_vs_train`: 2,634 images, roughly 490 tumours per plane. The
+breakdown is now in the card, and it found something: the miss rate is flat
+across planes but **specificity is not**. ResNet-50 drops to 71.4% on sagittal.
+
+**2. Same error on the miss rate.** I wrote "the clean subset contains 58
+tumors, which cannot support a rate". Also `clean_vs_any`. The canonical subset
+has 1,476 tumours.
+
+**3. "Ensembling will not fix the miss rate" was too strong.** My correlated-
+error finding is real: 18 images cause all 88 internal misses and they are
+missed across seeds *and* architectures. But the inference did not hold. On the
+clean BRISC subset the 5-seed ensemble roughly halved the miss rate, 0.68% to
+0.27%. Corrected in the README with the reasoning shown, not silently.
+
+The lesson for whoever reads this: I was reasoning from the strictest subset in
+two places, and it made me argue against measuring things that were measurable.
+"Not enough data" is a claim that needs checking like any other.
+
+## The finding I would put in front of a clinician first
+
+**It is not the miss rate. It is specificity.**
+
+| | internal test | BRISC clean subset |
+|---|---|---|
+| tumour miss rate | 1.00% | 0.27% |
+| specificity | 98.3% | **90.7%** |
+
+The number this project watches hardest holds up on unseen data. The one nobody
+was watching fell 8 points, and for ResNet-50 nearly 17. **Roughly 1 healthy
+person in 11 gets a false alarm**, and in a rural setting that is travel, money,
+time and fear.
+
+The tool is safe in the direction it was designed to be safe in and expensive in
+the other one. Both are now in the README and the card, in that order.
+
+## What I added beyond filling slots
+
+- **Per-source performance** in the model card. Sources inferred from a PIL
+  image-mode fingerprint that reproduces Figshare's published class counts to
+  within one image on two of three classes. SARTAJ's miss rate is ~27x
+  Figshare's. This was the "cheapest unfinished work in this project" I flagged
+  last run, and it is done.
+- **Three new entries in `docs/OPEN_QUESTIONS.md`**: the 41% deferral trade, the
+  SARTAJ model-vs-labels ambiguity, and the fact that nobody clinically
+  qualified has looked at anything.
+
+## What has not changed and must not be softened
+
+The lead paragraph still says nobody knows whether this works on new patients.
+That is still true. 2,634 images that survived removing byte-identical overlap
+are not an external cohort: same sources, same preprocessing, and patient-level
+overlap cannot be excluded because neither dataset ships patient identifiers.
+
+**The app's "NOT FOR CLINICAL USE" banner nearly disappeared during this
+integration**, because readiness state flipped to `clinical` the moment the
+config files stopped being stubs. Session C fixed it with a fail-safe check.
+Worth knowing that the overclaim almost arrived through the state machine rather
+than through prose.

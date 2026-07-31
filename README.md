@@ -91,8 +91,50 @@ The confidence score is useful. It is not a safety net.
 **The misses are systematic.** All 88 missed-tumor events across all 10
 checkpoints come from just 18 images, and 9 images account for 81% of them. One
 image is missed by every model this project has ever trained, at 93% confidence.
-That means training more seeds and ensembling them will not fix it, and it means
-every confidence interval here is narrower than the evidence really justifies.
+That means every confidence interval here is narrower than the evidence really
+justifies.
+
+*An earlier version of this section also concluded that ensembling therefore
+could not help. That went further than the evidence: on the uncontaminated BRISC
+subset a 5-seed ensemble roughly halved the miss rate. It is measured below. The
+correlated-error finding is real; the inference drawn from it was too strong.*
+
+---
+
+## The one number that is not from the training pool
+
+After removing every BRISC image that overlaps the training data, **2,634 images
+remain that the model genuinely has not seen.** This is the closest thing to an
+external result this project has, and it is still not one: those images share
+sources, scanners and preprocessing with the training data, and patient-level
+overlap cannot be ruled out because neither dataset ships patient identifiers.
+
+Shipped configuration: **ViT-B/16, 5-seed ensemble**, MC-Dropout T=20.
+
+| what | number | 95% CI |
+|---|---|---|
+| **Tumor called "no tumor"** | **0.27%** | 0.07 to 0.55 |
+| Sensitivity (tumor vs no tumor) | 99.73% | 99.45 to 99.93 |
+| **Healthy scan flagged as tumor** | **9.33%** | 7.66 to 11.02 |
+| Four-way accuracy | 96.20% | 95.52 to 96.92 |
+
+**Read the third row.** The miss rate is the number this project watches hardest
+and it holds up. Specificity is what degrades: from 98.3% internally to 90.7%
+here. Roughly **1 healthy person in 11 gets a false alarm**, which in a rural
+setting means a referral costing travel, money, time and fear. The alternative
+ResNet-50 configuration is worse again, at nearly 1 in 5.
+
+**The tool is safe in the direction it was built to be safe in, and expensive in
+the other.**
+
+Two more things a clinic would feel:
+
+- **It defers 41% of scans to a human.** That is the price of the lowest miss
+  rate. In a clinic with no radiologist, four scans in ten come straight back.
+  Whether that is usable is a decision nobody has made yet.
+- **Coronal and sagittal scans get far more false alarms than axial ones.** ViT
+  specificity is 96% axial, 82% coronal, 93% sagittal. The training pool is
+  mostly axial.
 
 Full breakdown, including deferral behaviour and per-seed spread:
 [MODEL_CARD.md](MODEL_CARD.md).

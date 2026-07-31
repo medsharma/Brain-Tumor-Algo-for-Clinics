@@ -138,16 +138,28 @@ is about an hour of a radiologist's time.
 - **The 5 seeds score the same 1,112 images.** Pooled confidence intervals across
   seeds are optimistic because the reads are correlated. Per-seed ranges are the
   honest spread.
-- **Calibration was measured in-distribution only.** Calibration is known to
-  degrade under distribution shift. Untested here, because there is no shifted
-  data to test on.
-- **The deferral threshold has not been validated against clinician workload.**
-  Deferring 20% of scans may be operationally impossible in the target setting,
-  and 20% is where the miss rate gets tolerable.
-- **No test-retest or repeatability measurement.** MC-Dropout is stochastic. The
-  same image run twice can give different confidences. The size of that variation
-  has not been characterised, and a clinician seeing two different numbers for
-  one scan is a trust problem.
+- **Calibration degrades on the uncontaminated subset, as expected.** ECE rises
+  from 0.077 internal to 0.109 on the 2,634 BRISC images the model has not seen.
+  Temperature scaling fitted on internal validation brings it back to 0.009
+  there, which is the good case and was not guaranteed. This is a weak shift,
+  not a real one: same sources, same preprocessing. Calibration under a genuine
+  scanner change is still untested.
+- **The deferral threshold has not been validated against clinician workload,
+  and the shipped configuration defers 41.2%.** That is not a hypothetical
+  concern any more. Four scans in ten come back to a human in a clinic that has
+  no radiologist, which is the situation the tool exists to address. A
+  single-seed configuration defers 25.9% and misses more tumours. Nobody has
+  decided which trade is right, and nobody has asked a clinic.
+- **Test-retest variation is now partly characterised, and it is not small.**
+  Running the identical pipeline on CPU and on GPU, which differ only in how
+  MC-Dropout draws its random masks, flips **0.17% of predicted labels**. Mean
+  predictive entropy moves by 0.026 nats. Session C separately measured that a
+  deferral threshold placed near 0.5 bits makes two runs disagree on whether to
+  defer the same scan **27% of the time**. The tumour miss rate itself was
+  unchanged to four decimal places, so the headline number is stable even though
+  individual calls are not. A clinician seeing two different answers for one scan
+  is still a trust problem, and no repeatability study on a fixed machine has
+  been run.
 - **Latency measured, but not on target hardware.** About 130 ms per image on
   CPU (Windows 11, 8 threads, ResNet-50, single seed, MC-Dropout T=20), plus
   0.5 s model load. That was measured on a 24-core development laptop, **not on
@@ -178,11 +190,17 @@ is about an hour of a radiologist's time.
 
 ## Out-of-scope input handling
 
-- **The rejector has no published measurements.** Session B had not published
-  `analysis/results/ood/rejector_config.json` when this was written, so **there
-  is currently no measured evidence that the tool can refuse an input it should
-  not judge.** The application refuses to start without one, which is the correct
-  behaviour, but it means the end-to-end system has never been evaluated.
+- **The rejector is published and it is the simple one.** It rejects 100% of
+  non-medical images and 52% of corrupted scans, at a cost of 0.15% of real
+  brain MRI. The model-based rejector that scored better on every internal
+  metric was measured against outside brain MRI, found to reject 27.7% of it,
+  and deliberately not shipped: its false rejection *rose* the less an image
+  resembled the training set, which is a "not my training set" detector.
+- **The precheck barely catches blur.** Heavy blur is rejected 8.3% of the time,
+  heavy JPEG compression and rotations not at all. A motion-corrupted scan, a
+  common real event, reaches the model and gets a confident answer. The entropy
+  deferral catches most of it downstream, but that is a second mechanism doing
+  the first one's job.
 - **The category-4 case is untested and is the most serious hole in the
   project.** A genuine brain MRI carrying pathology the model has no class for, a
   stroke, a bleed, an abscess, a metastasis, is fully in-distribution to any

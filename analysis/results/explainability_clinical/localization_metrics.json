@@ -1,0 +1,325 @@
+{
+  "seed": 42,
+  "n_pairs": 4793,
+  "localisation": {
+    "resnet50": {
+      "all_brisc_CONTAMINATED": {
+        "n": 20,
+        "pointing_accuracy": 0.0,
+        "pointing_ci": [
+          0.0,
+          0.16112515811625733
+        ],
+        "mean_mask_area_frac": 0.02588787440326996,
+        "pointing_chance_baseline": 0.02588787440326996,
+        "mean_mass_in_mask": 0.0166890046683875,
+        "mean_mass_lift_over_chance": 0.7088004289708649,
+        "mean_best_iou": 0.023827157689884478
+      },
+      "clean_vs_train": {
+        "n": 6,
+        "pointing_accuracy": 0.0,
+        "pointing_ci": [
+          0.0,
+          0.390334288013856
+        ],
+        "mean_mask_area_frac": 0.034322517341934144,
+        "pointing_chance_baseline": 0.034322517341934144,
+        "mean_mass_in_mask": 0.019971046594643365,
+        "mean_mass_lift_over_chance": 0.5372405202388605,
+        "mean_best_iou": 0.021556405417064387
+      },
+      "by_class": {
+        "glioma": {
+          "n": 6,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.390334288013856
+          ],
+          "mean_mask_area_frac": 0.034322517341934144,
+          "pointing_chance_baseline": 0.034322517341934144,
+          "mean_mass_in_mask": 0.019971046594643365,
+          "mean_mass_lift_over_chance": 0.5372405202388605,
+          "mean_best_iou": 0.021556405417064387
+        }
+      },
+      "by_plane": {
+        "axial": {
+          "n": 6,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.390334288013856
+          ],
+          "mean_mask_area_frac": 0.034322517341934144,
+          "pointing_chance_baseline": 0.034322517341934144,
+          "mean_mass_in_mask": 0.019971046594643365,
+          "mean_mass_lift_over_chance": 0.5372405202388605,
+          "mean_best_iou": 0.021556405417064387
+        }
+      },
+      "by_correctness": {
+        "True": {
+          "n": 6,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.390334288013856
+          ],
+          "mean_mask_area_frac": 0.034322517341934144,
+          "pointing_chance_baseline": 0.034322517341934144,
+          "mean_mass_in_mask": 0.019971046594643365,
+          "mean_mass_lift_over_chance": 0.5372405202388605,
+          "mean_best_iou": 0.021556405417064387
+        }
+      },
+      "by_tumour_size": {
+        "smallest": {
+          "n": 2,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.6576197725990219
+          ],
+          "mean_mask_area_frac": 0.01092155568767339,
+          "pointing_chance_baseline": 0.01092155568767339,
+          "mean_mass_in_mask": 0.0098746465455406,
+          "mean_mass_lift_over_chance": 0.5139423497429475,
+          "mean_best_iou": 0.013251919795221842
+        },
+        "small": {
+          "n": 1,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.7934506856996815
+          ],
+          "mean_mask_area_frac": 0.020328443497419357,
+          "pointing_chance_baseline": 0.020328443497419357,
+          "mean_mass_in_mask": 0.003633713349699974,
+          "mean_mass_lift_over_chance": 0.1787502004352308,
+          "mean_best_iou": 0.0032297379646556977
+        },
+        "large": {
+          "n": 1,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.7934506856996815
+          ],
+          "mean_mask_area_frac": 0.0316685251891613,
+          "pointing_chance_baseline": 0.0316685251891613,
+          "mean_mass_in_mask": 0.03348555415868759,
+          "mean_mass_lift_over_chance": 1.05737649475853,
+          "mean_best_iou": 0.042450002724647155
+        },
+        "largest": {
+          "n": 2,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.6576197725990219
+          ],
+          "mean_mask_area_frac": 0.06604751199483871,
+          "pointing_chance_baseline": 0.06604751199483871,
+          "mean_mass_in_mask": 0.03147885948419571,
+          "mean_mass_lift_over_chance": 0.47971586337675365,
+          "mean_best_iou": 0.0285774261113199
+        }
+      }
+    },
+    "vit": {
+      "all_brisc_CONTAMINATED": {
+        "n": 20,
+        "pointing_accuracy": 0.5,
+        "pointing_ci": [
+          0.29929800815870233,
+          0.7007019918412977
+        ],
+        "mean_mask_area_frac": 0.02588787440326996,
+        "pointing_chance_baseline": 0.02588787440326996,
+        "mean_mass_in_mask": 0.07141452800715342,
+        "mean_mass_lift_over_chance": 3.3445284496007113,
+        "mean_best_iou": 0.25891921121915773
+      },
+      "clean_vs_train": {
+        "n": 6,
+        "pointing_accuracy": 0.3333333333333333,
+        "pointing_ci": [
+          0.09677141107923537,
+          0.7000066849253832
+        ],
+        "mean_mask_area_frac": 0.034322517341934144,
+        "pointing_chance_baseline": 0.034322517341934144,
+        "mean_mass_in_mask": 0.07638801758488019,
+        "mean_mass_lift_over_chance": 2.670213754220768,
+        "mean_best_iou": 0.1857030011006009
+      },
+      "by_class": {
+        "glioma": {
+          "n": 6,
+          "pointing_accuracy": 0.3333333333333333,
+          "pointing_ci": [
+            0.09677141107923537,
+            0.7000066849253832
+          ],
+          "mean_mask_area_frac": 0.034322517341934144,
+          "pointing_chance_baseline": 0.034322517341934144,
+          "mean_mass_in_mask": 0.07638801758488019,
+          "mean_mass_lift_over_chance": 2.670213754220768,
+          "mean_best_iou": 0.1857030011006009
+        }
+      },
+      "by_plane": {
+        "axial": {
+          "n": 6,
+          "pointing_accuracy": 0.3333333333333333,
+          "pointing_ci": [
+            0.09677141107923537,
+            0.7000066849253832
+          ],
+          "mean_mask_area_frac": 0.034322517341934144,
+          "pointing_chance_baseline": 0.034322517341934144,
+          "mean_mass_in_mask": 0.07638801758488019,
+          "mean_mass_lift_over_chance": 2.670213754220768,
+          "mean_best_iou": 0.1857030011006009
+        }
+      },
+      "by_correctness": {
+        "True": {
+          "n": 6,
+          "pointing_accuracy": 0.3333333333333333,
+          "pointing_ci": [
+            0.09677141107923537,
+            0.7000066849253832
+          ],
+          "mean_mask_area_frac": 0.034322517341934144,
+          "pointing_chance_baseline": 0.034322517341934144,
+          "mean_mass_in_mask": 0.07638801758488019,
+          "mean_mass_lift_over_chance": 2.670213754220768,
+          "mean_best_iou": 0.1857030011006009
+        }
+      },
+      "by_tumour_size": {
+        "smallest": {
+          "n": 2,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.6576197725990219
+          ],
+          "mean_mask_area_frac": 0.01092155568767339,
+          "pointing_chance_baseline": 0.01092155568767339,
+          "mean_mass_in_mask": 0.028735680505633354,
+          "mean_mass_lift_over_chance": 3.1361051031798506,
+          "mean_best_iou": 0.0775334140398048
+        },
+        "small": {
+          "n": 1,
+          "pointing_accuracy": 1.0,
+          "pointing_ci": [
+            0.20654931430031861,
+            1.0
+          ],
+          "mean_mask_area_frac": 0.020328443497419357,
+          "pointing_chance_baseline": 0.020328443497419357,
+          "mean_mass_in_mask": 0.05594535544514656,
+          "mean_mass_lift_over_chance": 2.752072752262055,
+          "mean_best_iou": 0.18359150889271372
+        },
+        "large": {
+          "n": 1,
+          "pointing_accuracy": 1.0,
+          "pointing_ci": [
+            0.20654931430031861,
+            1.0
+          ],
+          "mean_mask_area_frac": 0.0316685251891613,
+          "pointing_chance_baseline": 0.0316685251891613,
+          "mean_mass_in_mask": 0.11007539182901382,
+          "mean_mass_lift_over_chance": 3.475861006204597,
+          "mean_best_iou": 0.47776417788657694
+        },
+        "largest": {
+          "n": 2,
+          "pointing_accuracy": 0.0,
+          "pointing_ci": [
+            0.0,
+            0.6576197725990219
+          ],
+          "mean_mask_area_frac": 0.06604751199483871,
+          "pointing_chance_baseline": 0.06604751199483871,
+          "mean_mass_in_mask": 0.11741799861192703,
+          "mean_mass_lift_over_chance": 1.760569280249127,
+          "mean_best_iou": 0.14889774587235266
+        }
+      }
+    }
+  },
+  "faithfulness": {
+    "resnet50": {
+      "n_sampled": 5,
+      "subset": "clean_vs_train",
+      "steps": 20,
+      "deletion_auc_real": {
+        "mean": 0.8389452254772187,
+        "std": 0.053542876183794844,
+        "n": 5
+      },
+      "deletion_auc_random": {
+        "mean": 0.3741922467201948,
+        "std": 0.15927980845515294,
+        "n": 5
+      },
+      "insertion_auc_real": {
+        "mean": 0.7732046495378018,
+        "std": 0.043471945280177365,
+        "n": 5
+      },
+      "insertion_auc_random": {
+        "mean": 0.35917350970208645,
+        "std": 0.1430512066457542,
+        "n": 5
+      },
+      "model_randomisation_corr": {
+        "mean": -0.1329659320466093,
+        "std": 0.08958910366382819,
+        "n": 5
+      },
+      "reading": "Deletion AUC lower is better: a faithful map kills the tumour probability fast when its own top pixels are removed. Insertion AUC higher is better. Compare each against the random baseline; the gap is the evidence. Model-randomisation correlation near 1 means the map ignores the trained weights and is tracking image structure."
+    },
+    "vit": {
+      "n_sampled": 5,
+      "subset": "clean_vs_train",
+      "steps": 20,
+      "deletion_auc_real": {
+        "mean": 0.429108276590705,
+        "std": 0.06103125643781807,
+        "n": 5
+      },
+      "deletion_auc_random": {
+        "mean": 0.5047459708154202,
+        "std": 0.15562050167558084,
+        "n": 5
+      },
+      "insertion_auc_real": {
+        "mean": 0.6067782636731864,
+        "std": 0.18154584627472464,
+        "n": 5
+      },
+      "insertion_auc_random": {
+        "mean": 0.5128228003531695,
+        "std": 0.17827169074590252,
+        "n": 5
+      },
+      "model_randomisation_corr": {
+        "mean": 1.0,
+        "std": 1.1102230246251565e-16,
+        "n": 5
+      },
+      "reading": "Deletion AUC lower is better: a faithful map kills the tumour probability fast when its own top pixels are removed. Insertion AUC higher is better. Compare each against the random baseline; the gap is the evidence. Model-randomisation correlation near 1 means the map ignores the trained weights and is tracking image structure."
+    }
+  },
+  "contamination_note": "BRISC is ~80% the training set republished (session A). Headline numbers are the clean_vs_train subset. The contaminated all-BRISC number is kept beside it and labelled, never quoted alone."
+}

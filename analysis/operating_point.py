@@ -408,23 +408,48 @@ def main() -> None:
     choice_df.to_csv(SAFETY_OUT / "backbone_selection_internal_val.csv", index=False)
     out["backbone_selection_internal_val"] = choice_rows
 
-    # Decision rule, stated before looking: lowest internal-val miss rate wins;
-    # ties within 0.5 percentage points go to the cheaper single-seed config.
+    # Decision rule: lowest internal-val tumour miss rate wins, ties broken by
+    # accuracy. The candidate is the (backbone, config) PAIR. Nothing else.
+    #
+    # This replaces an earlier two-stage rule that had a bug with a direct
+    # patient-safety consequence, so the reasoning is written out here.
+    #
+    # The old rule picked the backbone with `min(...)` over all four candidates,
+    # which selected on the ENSEMBLE's miss rate (vit/ensemble5, 0.0037), and
+    # then ran a separate single-vs-ensemble test that discarded the ensemble by
+    # 0.0001. The shipped config was therefore vit/single_seed42 at 0.0086: the
+    # WORST of the four candidates on the very metric the rule claimed to
+    # optimise, and worse than resnet50/single_seed42 at 0.0049. The backbone had
+    # been chosen on the strength of a configuration that was then thrown away.
+    #
+    # The 5x cost penalty that justified the single-seed preference does not
+    # survive measurement either. Session C benchmarked the 5-seed ensemble at
+    # 805 ms against a 30 s budget, which is 2.7 percent of it, and said so
+    # directly in handoff/ISSUES.md as C-6: choose on the miss rate, not on
+    # speed. A cost that small cannot buy a worse miss rate.
+    #
+    # So: one criterion, applied to all four candidates at once.
     best = min(choice_rows, key=lambda r: (r["val_miss_rate"], -r["val_accuracy"]))
-    same_model = [r for r in choice_rows if r["model"] == best["model"]]
-    single = next(r for r in same_model if r["config"] == "single_seed42")
-    ens = next(r for r in same_model if r["config"] == "ensemble5")
-    if ens["val_miss_rate"] - single["val_miss_rate"] > -0.005:
-        chosen_cfg, chosen_seeds = "single_seed42", [42]
-    else:
-        chosen_cfg, chosen_seeds = "ensemble5", list(SEEDS)
     chosen_model = best["model"]
+    chosen_cfg = best["config"]
+    chosen_seeds = [42] if chosen_cfg == "single_seed42" else list(SEEDS)
     print(f"\n  chosen: {chosen_model} / {chosen_cfg}  (decided on internal val)")
+    print("  candidates, internal val, sorted by the criterion:")
+    for r in sorted(choice_rows, key=lambda r: (r["val_miss_rate"], -r["val_accuracy"])):
+        mark = "  <- chosen" if (r["model"], r["config"]) == (chosen_model, chosen_cfg) else ""
+        print(f"    {r['model']:9s} {r['config']:14s} val miss {r['val_miss_rate']:.4f}"
+              f"  val acc {r['val_accuracy']:.4f}{mark}")
     out["choice"] = {
         "backbone": chosen_model, "config": chosen_cfg, "seeds": chosen_seeds,
-        "rule": "lowest internal-val tumour miss rate; the 5-seed ensemble is "
-                "only taken if it beats the single seed by more than 0.5 "
-                "percentage points, because it costs 5x the inference time on a laptop",
+        "rule": "lowest internal-val tumour miss rate over all four (backbone, "
+                "config) candidates jointly, ties broken by internal-val "
+                "accuracy. No cost penalty: session C measured the 5-seed "
+                "ensemble at 805 ms against a 30 s budget (2.7 percent), so "
+                "inference cost cannot justify a worse miss rate.",
+        "supersedes": "An earlier two-stage rule chose the backbone using the "
+                      "ensemble's miss rate and then discarded the ensemble, "
+                      "shipping vit/single_seed42 (val miss 0.0086), the worst "
+                      "of the four candidates. See handoff/ISSUES.md.",
     }
 
     val_raw = load_set(chosen_model, chosen_seeds, "val")

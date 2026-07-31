@@ -1,0 +1,559 @@
+{
+  "generated_utc": "2026-07-31T02:50:11.219394+00:00",
+  "backbone_selection_internal_val": [
+    {
+      "model": "vit",
+      "config": "single_seed42",
+      "n_seeds": 1,
+      "val_accuracy": 0.9765554553651938,
+      "val_macro_f1": 0.9761593210190571,
+      "val_ece": 0.08655783472241745,
+      "val_miss_rate": 0.008631319358816275,
+      "val_sensitivity@0.5": 0.9938347718865598,
+      "val_specificity@0.5": 1.0
+    },
+    {
+      "model": "vit",
+      "config": "ensemble5",
+      "n_seeds": 5,
+      "val_accuracy": 0.9801623083859333,
+      "val_macro_f1": 0.9797667497612391,
+      "val_ece": 0.08632627414746037,
+      "val_miss_rate": 0.0036991368680641184,
+      "val_sensitivity@0.5": 0.9963008631319359,
+      "val_specificity@0.5": 0.9966442953020134
+    },
+    {
+      "model": "resnet50",
+      "config": "single_seed42",
+      "n_seeds": 1,
+      "val_accuracy": 0.9747520288548241,
+      "val_macro_f1": 0.9743883742756843,
+      "val_ece": 0.07194470768043648,
+      "val_miss_rate": 0.004932182490752158,
+      "val_sensitivity@0.5": 0.9950678175092479,
+      "val_specificity@0.5": 0.9899328859060402
+    },
+    {
+      "model": "resnet50",
+      "config": "ensemble5",
+      "n_seeds": 5,
+      "val_accuracy": 0.9801623083859333,
+      "val_macro_f1": 0.9798686519422413,
+      "val_ece": 0.0864530366774047,
+      "val_miss_rate": 0.004932182490752158,
+      "val_sensitivity@0.5": 0.9950678175092479,
+      "val_specificity@0.5": 0.9865771812080537
+    }
+  ],
+  "choice": {
+    "backbone": "vit",
+    "config": "ensemble5",
+    "seeds": [
+      42,
+      123,
+      7,
+      2024,
+      31
+    ],
+    "rule": "lowest internal-val tumour miss rate over all four (backbone, config) candidates jointly, ties broken by internal-val accuracy. No cost penalty: session C measured the 5-seed ensemble at 805 ms against a 30 s budget (2.7 percent), so inference cost cannot justify a worse miss rate.",
+    "supersedes": "An earlier two-stage rule chose the backbone using the ensemble's miss rate and then discarded the ensemble, shipping vit/single_seed42 (val miss 0.0086), the worst of the four candidates. See handoff/ISSUES.md."
+  },
+  "temperature_scaling": {
+    "fit": {
+      "temperature": 0.5271263718605042,
+      "val_nll_before": 0.13993273675441742,
+      "val_nll_after": 0.06632563471794128
+    },
+    "internal_val": {
+      "n": 1109,
+      "temperature": 0.5271263718605042,
+      "ece_before": 0.08632627414746037,
+      "ece_after": 0.004571272531388174,
+      "brier_before": 0.041127619710992463,
+      "brier_after": 0.030957236604125415,
+      "ece_improved": true,
+      "brier_improved": true
+    },
+    "internal_test": {
+      "n": 1112,
+      "temperature": 0.5271263718605042,
+      "ece_before": 0.07697109403926218,
+      "ece_after": 0.015387574277051471,
+      "brier_before": 0.058476112545149936,
+      "brier_after": 0.05146434852149985,
+      "ece_improved": true,
+      "brier_improved": true
+    },
+    "brisc": {
+      "n": 2634,
+      "temperature": 0.5271263718605042,
+      "ece_before": 0.10889034144348428,
+      "ece_after": 0.009783335014674587,
+      "brier_before": 0.08056538319586569,
+      "brier_after": 0.0606117009032269,
+      "ece_improved": true,
+      "brier_improved": true
+    }
+  },
+  "threshold_picks_internal_val": {
+    "sens_0.95": {
+      "min_sensitivity": 0.95,
+      "feasible": true,
+      "threshold": 0.995,
+      "val_sensitivity": 0.9531442663378545,
+      "val_specificity": 1.0,
+      "val_miss_rate": 0.0468557336621455,
+      "val_false_referral_rate": 0.0,
+      "val_ppv": 1.0,
+      "val_npv": 0.8869047619047619,
+      "val_referrals_per_100": 69.702434625789
+    },
+    "sens_0.98": {
+      "min_sensitivity": 0.98,
+      "feasible": true,
+      "threshold": 0.97,
+      "val_sensitivity": 0.9815043156596794,
+      "val_specificity": 1.0,
+      "val_miss_rate": 0.018495684340320593,
+      "val_false_referral_rate": 0.0,
+      "val_ppv": 1.0,
+      "val_npv": 0.952076677316294,
+      "val_referrals_per_100": 71.77637511271416
+    },
+    "sens_0.99": {
+      "min_sensitivity": 0.99,
+      "feasible": true,
+      "threshold": 0.896,
+      "val_sensitivity": 0.9901356350184957,
+      "val_specificity": 1.0,
+      "val_miss_rate": 0.009864364981504316,
+      "val_false_referral_rate": 0.0,
+      "val_ppv": 1.0,
+      "val_npv": 0.9738562091503268,
+      "val_referrals_per_100": 72.40757439134356
+    }
+  },
+  "projected_clinic_ppv_npv": {
+    "sens_0.95": [
+      {
+        "prevalence": 0.02,
+        "ppv": 1.0,
+        "npv": 0.9990446740578727,
+        "referrals_per_100": 1.906288532675709,
+        "missed_per_100": 0.09371146732429092
+      },
+      {
+        "prevalence": 0.05,
+        "ppv": 1.0,
+        "npv": 0.997539975399754,
+        "referrals_per_100": 4.7657213316892735,
+        "missed_per_100": 0.2342786683107273
+      },
+      {
+        "prevalence": 0.1,
+        "ppv": 1.0,
+        "npv": 0.9948207714324656,
+        "referrals_per_100": 9.531442663378547,
+        "missed_per_100": 0.4685573366214546
+      }
+    ],
+    "sens_0.98": [
+      {
+        "prevalence": 0.02,
+        "ppv": 1.0,
+        "npv": 0.9996226794787946,
+        "referrals_per_100": 1.963008631319359,
+        "missed_per_100": 0.036991368680641123
+      },
+      {
+        "prevalence": 0.05,
+        "ppv": 1.0,
+        "npv": 0.999027489626556,
+        "referrals_per_100": 4.907521578298398,
+        "missed_per_100": 0.09247842170160281
+      },
+      {
+        "prevalence": 0.1,
+        "ppv": 1.0,
+        "npv": 0.9979491386382281,
+        "referrals_per_100": 9.815043156596795,
+        "missed_per_100": 0.18495684340320562
+      }
+    ],
+    "sens_0.99": [
+      {
+        "prevalence": 0.02,
+        "ppv": 1.0,
+        "npv": 0.9997987269479458,
+        "referrals_per_100": 1.9802712700369915,
+        "missed_per_100": 0.019728729963008673
+      },
+      {
+        "prevalence": 0.05,
+        "ppv": 1.0,
+        "npv": 0.999481092300707,
+        "referrals_per_100": 4.950678175092479,
+        "missed_per_100": 0.04932182490752168
+      },
+      {
+        "prevalence": 0.1,
+        "ppv": 1.0,
+        "npv": 0.9989051594361571,
+        "referrals_per_100": 9.901356350184958,
+        "missed_per_100": 0.09864364981504337
+      }
+    ]
+  },
+  "deferral": {
+    "entropy_cutoffs_nats_fitted_on_internal_val": {
+      "0.05": 0.32337539806546767,
+      "0.1": 0.09057447510257807,
+      "0.2": 0.03780069116592899,
+      "0.3": 0.03226965390792376
+    },
+    "internal_test": [
+      {
+        "target_defer_rate": 0.05,
+        "entropy_threshold_nats": 0.32337539806546767,
+        "actual_defer_rate": 0.046762589928057596,
+        "n_kept": 1060,
+        "n_deferred": 52,
+        "miss_rate_kept": 0.010309278350515464,
+        "miss_rate_kept_ci": [
+          0.0038753470460041197,
+          0.01797642059975791
+        ],
+        "n_tumors_kept": 776,
+        "accuracy_kept": 0.9811320754716981,
+        "n_missed_total": 9,
+        "n_missed_caught_by_defer": 1,
+        "n_missed_still_missed": 8
+      },
+      {
+        "target_defer_rate": 0.1,
+        "entropy_threshold_nats": 0.09057447510257807,
+        "actual_defer_rate": 0.11241007194244601,
+        "n_kept": 987,
+        "n_deferred": 125,
+        "miss_rate_kept": 0.005657708628005658,
+        "miss_rate_kept_ci": [
+          0.0013849936590767157,
+          0.011746867501999452
+        ],
+        "n_tumors_kept": 707,
+        "accuracy_kept": 0.9918946301925026,
+        "n_missed_total": 9,
+        "n_missed_caught_by_defer": 5,
+        "n_missed_still_missed": 4
+      },
+      {
+        "target_defer_rate": 0.2,
+        "entropy_threshold_nats": 0.03780069116592899,
+        "actual_defer_rate": 0.22212230215827333,
+        "n_kept": 865,
+        "n_deferred": 247,
+        "miss_rate_kept": 0.0049261083743842365,
+        "miss_rate_kept_ci": [
+          0.0,
+          0.011292155425219939
+        ],
+        "n_tumors_kept": 609,
+        "accuracy_kept": 0.9965317919075144,
+        "n_missed_total": 9,
+        "n_missed_caught_by_defer": 6,
+        "n_missed_still_missed": 3
+      },
+      {
+        "target_defer_rate": 0.3,
+        "entropy_threshold_nats": 0.03226965390792376,
+        "actual_defer_rate": 0.31294964028776984,
+        "n_kept": 764,
+        "n_deferred": 348,
+        "miss_rate_kept": 0.005597014925373134,
+        "miss_rate_kept_ci": [
+          0.0,
+          0.012988222206099301
+        ],
+        "n_tumors_kept": 536,
+        "accuracy_kept": 0.9960732984293194,
+        "n_missed_total": 9,
+        "n_missed_caught_by_defer": 6,
+        "n_missed_still_missed": 3
+      }
+    ],
+    "brisc": [
+      {
+        "target_defer_rate": 0.05,
+        "entropy_threshold_nats": 0.32337539806546767,
+        "actual_defer_rate": 0.13097949886104787,
+        "n_kept": 2289,
+        "n_deferred": 345,
+        "miss_rate_kept": 0.002863278453829635,
+        "miss_rate_kept_ci": [
+          0.0007052186177715092,
+          0.00629392666157372
+        ],
+        "n_tumors_kept": 1397,
+        "accuracy_kept": 0.9886413280908694,
+        "n_missed_total": 4,
+        "n_missed_caught_by_defer": 0,
+        "n_missed_still_missed": 4
+      },
+      {
+        "target_defer_rate": 0.1,
+        "entropy_threshold_nats": 0.09057447510257807,
+        "actual_defer_rate": 0.25930144267274113,
+        "n_kept": 1951,
+        "n_deferred": 683,
+        "miss_rate_kept": 0.002331002331002331,
+        "miss_rate_kept_ci": [
+          0.0,
+          0.005355879110127936
+        ],
+        "n_tumors_kept": 1287,
+        "accuracy_kept": 0.9964120963608406,
+        "n_missed_total": 4,
+        "n_missed_caught_by_defer": 1,
+        "n_missed_still_missed": 3
+      },
+      {
+        "target_defer_rate": 0.2,
+        "entropy_threshold_nats": 0.03780069116592899,
+        "actual_defer_rate": 0.41192103264996205,
+        "n_kept": 1549,
+        "n_deferred": 1085,
+        "miss_rate_kept": 0.0009033423667570009,
+        "miss_rate_kept_ci": [
+          0.0,
+          0.0027449912919429676
+        ],
+        "n_tumors_kept": 1107,
+        "accuracy_kept": 0.9987088444157521,
+        "n_missed_total": 4,
+        "n_missed_caught_by_defer": 3,
+        "n_missed_still_missed": 1
+      },
+      {
+        "target_defer_rate": 0.3,
+        "entropy_threshold_nats": 0.03226965390792376,
+        "actual_defer_rate": 0.49240698557327256,
+        "n_kept": 1337,
+        "n_deferred": 1297,
+        "miss_rate_kept": 0.0010416666666666667,
+        "miss_rate_kept_ci": [
+          0.0,
+          0.003212077500912302
+        ],
+        "n_tumors_kept": 960,
+        "accuracy_kept": 0.9985041136873598,
+        "n_missed_total": 4,
+        "n_missed_caught_by_defer": 3,
+        "n_missed_still_missed": 1
+      }
+    ],
+    "baseline_miss_rate_brisc": {
+      "value": 0.0027100271002710027,
+      "ci_lo": 0.0006608841076067146,
+      "ci_hi": 0.005479639964672943,
+      "n": 1476
+    },
+    "baseline_miss_rate_internal_test": {
+      "value": 0.010962241169305725,
+      "ci_lo": 0.004889826283469316,
+      "ci_hi": 0.018659635178301232,
+      "n": 821
+    }
+  },
+  "ensemble_vs_single_brisc": [
+    {
+      "model": "vit",
+      "config": "single_seed42",
+      "n_seeds": 1,
+      "relative_inference_cost": 1,
+      "own_temperature": 0.5600767135620117,
+      "own_threshold": 0.863,
+      "brisc_miss_rate": 0.006775067750677507,
+      "brisc_miss_rate_ci_lo": 0.0032418402598095386,
+      "brisc_miss_rate_ci_hi": 0.011572498298162015,
+      "brisc_sensitivity": 0.9898373983739838,
+      "brisc_specificity": 0.9887737478411054,
+      "brisc_referrals_per_100": 55.960516324981015,
+      "brisc_accuracy": 0.9681093394077449,
+      "brisc_macro_f1": 0.9635752750152995,
+      "brisc_ece": 0.00913338834682475,
+      "brisc_miss_rate_after_20pct_defer": 0.0008960573476702509
+    },
+    {
+      "model": "vit",
+      "config": "ensemble5",
+      "n_seeds": 5,
+      "relative_inference_cost": 5,
+      "own_temperature": 0.5271263718605042,
+      "own_threshold": 0.97,
+      "brisc_miss_rate": 0.0027100271002710027,
+      "brisc_miss_rate_ci_lo": 0.0006608841076067146,
+      "brisc_miss_rate_ci_hi": 0.005479639964672943,
+      "brisc_sensitivity": 0.9911924119241192,
+      "brisc_specificity": 0.9861830742659758,
+      "brisc_referrals_per_100": 56.15034168564921,
+      "brisc_accuracy": 0.9620349278663629,
+      "brisc_macro_f1": 0.9592420219421636,
+      "brisc_ece": 0.009783335014674587,
+      "brisc_miss_rate_after_20pct_defer": 0.0009033423667570009
+    },
+    {
+      "model": "resnet50",
+      "config": "single_seed42",
+      "n_seeds": 1,
+      "relative_inference_cost": 1,
+      "own_temperature": 0.6393370628356934,
+      "own_threshold": 0.984,
+      "brisc_miss_rate": 0.0040650406504065045,
+      "brisc_miss_rate_ci_lo": 0.0013368092691622103,
+      "brisc_miss_rate_ci_hi": 0.007488598266332417,
+      "brisc_sensitivity": 0.9769647696476965,
+      "brisc_specificity": 0.9853195164075993,
+      "brisc_referrals_per_100": 55.391040242976466,
+      "brisc_accuracy": 0.9369779802581625,
+      "brisc_macro_f1": 0.9382439402929925,
+      "brisc_ece": 0.022965388616096222,
+      "brisc_miss_rate_after_20pct_defer": 0.001728608470181504
+    },
+    {
+      "model": "resnet50",
+      "config": "ensemble5",
+      "n_seeds": 5,
+      "relative_inference_cost": 5,
+      "own_temperature": 0.533545732498169,
+      "own_threshold": 0.988,
+      "brisc_miss_rate": 0.0020325203252032522,
+      "brisc_miss_rate_ci_lo": 0.0,
+      "brisc_miss_rate_ci_hi": 0.004676096846098614,
+      "brisc_sensitivity": 0.9857723577235772,
+      "brisc_specificity": 0.9991364421416234,
+      "brisc_referrals_per_100": 55.277145026575546,
+      "brisc_accuracy": 0.9449506454062263,
+      "brisc_macro_f1": 0.9445903123180515,
+      "brisc_ece": 0.010169259303212046,
+      "brisc_miss_rate_after_20pct_defer": 0.0
+    }
+  ],
+  "full_brisc_for_reference_only": {
+    "n": 6000,
+    "WARNING": "56 percent of these images are in the training set. Not an external result. Do not quote.",
+    "tumor_miss_rate": {
+      "value": 0.0008345503859795535,
+      "ci_lo": 0.0002075970128970206,
+      "ci_hi": 0.001671585700222176,
+      "n": 4793
+    },
+    "four_way_accuracy": {
+      "value": 0.9803333333333333,
+      "ci_lo": 0.9765,
+      "ci_hi": 0.9836666666666667,
+      "n": 6000
+    }
+  },
+  "deployment_config": {
+    "schema_version": "1.0",
+    "created_utc": "2026-07-31T02:50:49.187118+00:00",
+    "chosen_backbone": "vit",
+    "chosen_seeds": [
+      42,
+      123,
+      7,
+      2024,
+      31
+    ],
+    "ensemble": true,
+    "mc_T": 20,
+    "temperature": 0.5271263718605042,
+    "tumor_threshold": 0.97,
+    "entropy_defer_threshold": 0.03780069116592899,
+    "thresholds_fitted_on": "internal_val",
+    "class_names": [
+      "glioma",
+      "meningioma",
+      "pituitary",
+      "notumor"
+    ],
+    "preprocessing": {
+      "resize": [
+        224,
+        224
+      ],
+      "normalize_mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "normalize_std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "checkpoints": [
+      {
+        "model": "vit",
+        "seed": 42,
+        "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_42\\best_vit_seed42.pth",
+        "sha256": "803b48ca9403cab5c2d752593701e063250715d20088f49506a69f9d4e9716ba"
+      },
+      {
+        "model": "vit",
+        "seed": 123,
+        "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_123\\best_vit_seed123.pth",
+        "sha256": "4f77571c6b62ae06c931cf65a8b9564c911a2faa9132a743ad961d8d25b33f44"
+      },
+      {
+        "model": "vit",
+        "seed": 7,
+        "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_7\\best_vit_seed7.pth",
+        "sha256": "e2ba3e74705f6e0109f8ff4d89efeff4a0cf3cf8757b50d916139db4d12de9ed"
+      },
+      {
+        "model": "vit",
+        "seed": 2024,
+        "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_2024\\best_vit_seed2024.pth",
+        "sha256": "2f2990ff42dc179ce90ee374106508f09f1f73432ff003f7e950c05e16c5b0fd"
+      },
+      {
+        "model": "vit",
+        "seed": 31,
+        "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_31\\best_vit_seed31.pth",
+        "sha256": "28c6ae7da2c00c957538026bedc614f18972c3a0c0dcff5a383fb44564f08c2c"
+      }
+    ],
+    "expected_performance": {
+      "dataset": "BRISC2025_clean_subset",
+      "n": 2634,
+      "subset_definition": "BRISC images whose nearest internal TRAINING image is more than perceptual-hash Hamming distance 5 away. The other 56 percent of BRISC 2025 is near-duplicate of the training data and is excluded.",
+      "tumor_miss_rate": 0.0027100271002710027,
+      "tumor_miss_rate_ci": [
+        0.0006608841076067146,
+        0.005479639964672943
+      ],
+      "binary_sensitivity": 0.9911924119241192,
+      "binary_specificity": 0.9861830742659758,
+      "four_way_accuracy": 0.9620349278663629,
+      "defer_rate": 0.41192103264996205,
+      "miss_rate_after_defer": 0.0009033423667570009,
+      "_caveats": [
+        "These numbers are from the CLEAN subset of BRISC 2025 only. About 56 percent of BRISC is near-duplicate of the training data and was excluded. Full-BRISC numbers are training accuracy, not external.",
+        "Image-level duplication is excluded. PATIENT-level leakage cannot be ruled out: neither dataset ships patient identifiers, so other slices from the same patients may still be in training. The clean subset is therefore an upper bound on true external performance.",
+        "Class balance in the clean subset is not the same as full BRISC. PPV and NPV measured here do not transfer to a clinic. Use sensitivity and specificity and the prevalence projections in OPERATING_POINT.md.",
+        "BRISC is entirely T1 across three planes. Performance on other sequences is unmeasured.",
+        "tumor_miss_rate here is argmax-based: a real tumour displayed as notumor. binary_sensitivity uses the p_tumor threshold."
+      ]
+    },
+    "entropy_units": "nats",
+    "notes": [
+      "entropy_defer_threshold is in nats and is compared against the predictive entropy of the MC-Dropout mean over mc_T passes.",
+      "temperature is applied as softmax(log(mean_probs)/T); it does not change the predicted class, only the displayed confidence.",
+      "tumor_threshold is applied to p_tumor = p_glioma + p_meningioma + p_pituitary AFTER temperature scaling.",
+      "Every threshold here was fitted on the internal validation split and applied to BRISC unchanged."
+    ]
+  }
+}

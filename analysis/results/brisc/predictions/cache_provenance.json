@@ -1,0 +1,393 @@
+{
+  "created_utc": "2026-07-31T02:26:46.275136+00:00",
+  "mc_T": 20,
+  "device": "cuda",
+  "torch": "2.12.1+cu130",
+  "checkpoints_dir": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524",
+  "brisc_dir": "C:\\Users\\medha\\Downloads\\archive (1)\\brisc2025",
+  "preprocessing": {
+    "pipeline": [
+      "Resize",
+      "ToTensor",
+      "Normalize"
+    ],
+    "resize": [
+      224,
+      224
+    ],
+    "normalize_mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "normalize_std": [
+      0.229,
+      0.224,
+      0.225
+    ],
+    "source": "src/code.py get_transforms('test')"
+  },
+  "sha256_spot_check": {
+    "n_checked": 50,
+    "n_mismatch": 0,
+    "seed": 0
+  },
+  "brisc_to_internal": {
+    "glioma": "glioma",
+    "meningioma": "meningioma",
+    "pituitary": "pituitary",
+    "no_tumor": "notumor"
+  },
+  "label_index": {
+    "glioma": 0,
+    "meningioma": 1,
+    "pituitary": 2,
+    "notumor": 3
+  },
+  "entropy_units": "nats (column 'entropy'); 'entropy_bits' is the same quantity in bits",
+  "inference_only": "torch.no_grad throughout; no optimizer, no backward, no BRISC-fitted parameter",
+  "fast_path": {
+    "vit_seed42": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "vit_seed123": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "vit_seed7": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "vit_seed2024": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "vit_seed31": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "resnet50_seed42": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "resnet50_seed123": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "resnet50_seed7": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "resnet50_seed2024": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    },
+    "resnet50_seed31": {
+      "bit_identical_to_predict_with_uncertainty": true,
+      "max_abs_diff": 0.0
+    }
+  },
+  "runs": [
+    {
+      "model": "vit",
+      "seed": 42,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9745,
+      "tumor_miss_rate": 0.003755476736907991,
+      "seconds": 46.4,
+      "path": "analysis\\results\\brisc\\predictions\\vit_seed42.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 42,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9765554553651938,
+      "tumor_miss_rate": 0.008631319358816275,
+      "seconds": 9.8,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed42_val.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 42,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9613309352517986,
+      "tumor_miss_rate": 0.012180267965895249,
+      "seconds": 9.9,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed42_test.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 123,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9553333333333334,
+      "tumor_miss_rate": 0.001669100771959107,
+      "seconds": 46.1,
+      "path": "analysis\\results\\brisc\\predictions\\vit_seed123.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 123,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9738503155996393,
+      "tumor_miss_rate": 0.006165228113440197,
+      "seconds": 8.8,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed123_val.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 123,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9640287769784173,
+      "tumor_miss_rate": 0.012180267965895249,
+      "seconds": 8.9,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed123_test.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 7,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9676666666666667,
+      "tumor_miss_rate": 0.002086375964948884,
+      "seconds": 46.9,
+      "path": "analysis\\results\\brisc\\predictions\\vit_seed7.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 7,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9693417493237151,
+      "tumor_miss_rate": 0.004932182490752158,
+      "seconds": 8.5,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed7_val.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 7,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.960431654676259,
+      "tumor_miss_rate": 0.010962241169305725,
+      "seconds": 8.5,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed7_test.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 2024,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9731666666666666,
+      "tumor_miss_rate": 0.001043187982474442,
+      "seconds": 46.0,
+      "path": "analysis\\results\\brisc\\predictions\\vit_seed2024.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 2024,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9783588818755635,
+      "tumor_miss_rate": 0.0036991368680641184,
+      "seconds": 8.9,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed2024_val.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 2024,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9622302158273381,
+      "tumor_miss_rate": 0.010962241169305725,
+      "seconds": 8.8,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed2024_test.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 31,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9476666666666667,
+      "tumor_miss_rate": 0.0022950135614437724,
+      "seconds": 47.1,
+      "path": "analysis\\results\\brisc\\predictions\\vit_seed31.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 31,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9693417493237151,
+      "tumor_miss_rate": 0.008631319358816275,
+      "seconds": 8.6,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed31_val.parquet"
+    },
+    {
+      "model": "vit",
+      "seed": 31,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9559352517985612,
+      "tumor_miss_rate": 0.010962241169305725,
+      "seconds": 8.7,
+      "path": "analysis\\results\\internal\\predictions\\vit_seed31_test.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 42,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9695,
+      "tumor_miss_rate": 0.0012518255789693302,
+      "seconds": 25.1,
+      "path": "analysis\\results\\brisc\\predictions\\resnet50_seed42.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 42,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9747520288548241,
+      "tumor_miss_rate": 0.004932182490752158,
+      "seconds": 4.5,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed42_val.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 42,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9640287769784173,
+      "tumor_miss_rate": 0.013398294762484775,
+      "seconds": 4.5,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed42_test.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 123,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.958,
+      "tumor_miss_rate": 0.001043187982474442,
+      "seconds": 26.5,
+      "path": "analysis\\results\\brisc\\predictions\\resnet50_seed123.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 123,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9720468890892696,
+      "tumor_miss_rate": 0.004932182490752158,
+      "seconds": 4.6,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed123_val.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 123,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9595323741007195,
+      "tumor_miss_rate": 0.008526187576126675,
+      "seconds": 4.3,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed123_test.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 7,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9591666666666666,
+      "tumor_miss_rate": 0.0008345503859795535,
+      "seconds": 25.4,
+      "path": "analysis\\results\\brisc\\predictions\\resnet50_seed7.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 7,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9738503155996393,
+      "tumor_miss_rate": 0.006165228113440197,
+      "seconds": 4.4,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed7_val.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 7,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9658273381294964,
+      "tumor_miss_rate": 0.0097442143727162,
+      "seconds": 4.5,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed7_test.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 2024,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9593333333333334,
+      "tumor_miss_rate": 0.002712288754433549,
+      "seconds": 24.5,
+      "path": "analysis\\results\\brisc\\predictions\\resnet50_seed2024.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 2024,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9783588818755635,
+      "tumor_miss_rate": 0.006165228113440197,
+      "seconds": 5.7,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed2024_val.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 2024,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.966726618705036,
+      "tumor_miss_rate": 0.014616321559074299,
+      "seconds": 4.2,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed2024_test.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 31,
+      "split": "brisc",
+      "n": 6000,
+      "accuracy": 0.9508333333333333,
+      "tumor_miss_rate": 0.00041727519298977677,
+      "seconds": 24.8,
+      "path": "analysis\\results\\brisc\\predictions\\resnet50_seed31.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 31,
+      "split": "val",
+      "n": 1109,
+      "accuracy": 0.9684400360685302,
+      "tumor_miss_rate": 0.004932182490752158,
+      "seconds": 5.2,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed31_val.parquet"
+    },
+    {
+      "model": "resnet50",
+      "seed": 31,
+      "split": "test",
+      "n": 1112,
+      "accuracy": 0.9649280575539568,
+      "tumor_miss_rate": 0.0060901339829476245,
+      "seconds": 4.3,
+      "path": "analysis\\results\\internal\\predictions\\resnet50_seed31_test.parquet"
+    }
+  ]
+}

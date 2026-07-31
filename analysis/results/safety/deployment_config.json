@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "created_utc": "2026-07-31T02:50:49.187118+00:00",
+  "chosen_backbone": "vit",
+  "chosen_seeds": [
+    42,
+    123,
+    7,
+    2024,
+    31
+  ],
+  "ensemble": true,
+  "mc_T": 20,
+  "temperature": 0.5271263718605042,
+  "tumor_threshold": 0.97,
+  "entropy_defer_threshold": 0.03780069116592899,
+  "thresholds_fitted_on": "internal_val",
+  "class_names": [
+    "glioma",
+    "meningioma",
+    "pituitary",
+    "notumor"
+  ],
+  "preprocessing": {
+    "resize": [
+      224,
+      224
+    ],
+    "normalize_mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "normalize_std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "checkpoints": [
+    {
+      "model": "vit",
+      "seed": 42,
+      "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_42\\best_vit_seed42.pth",
+      "sha256": "803b48ca9403cab5c2d752593701e063250715d20088f49506a69f9d4e9716ba"
+    },
+    {
+      "model": "vit",
+      "seed": 123,
+      "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_123\\best_vit_seed123.pth",
+      "sha256": "4f77571c6b62ae06c931cf65a8b9564c911a2faa9132a743ad961d8d25b33f44"
+    },
+    {
+      "model": "vit",
+      "seed": 7,
+      "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_7\\best_vit_seed7.pth",
+      "sha256": "e2ba3e74705f6e0109f8ff4d89efeff4a0cf3cf8757b50d916139db4d12de9ed"
+    },
+    {
+      "model": "vit",
+      "seed": 2024,
+      "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_2024\\best_vit_seed2024.pth",
+      "sha256": "2f2990ff42dc179ce90ee374106508f09f1f73432ff003f7e950c05e16c5b0fd"
+    },
+    {
+      "model": "vit",
+      "seed": 31,
+      "path": "C:\\Users\\medha\\OneDrive\\Documents\\MRI ALGO\\results\\20260703_155524\\vit\\seed_31\\best_vit_seed31.pth",
+      "sha256": "28c6ae7da2c00c957538026bedc614f18972c3a0c0dcff5a383fb44564f08c2c"
+    }
+  ],
+  "expected_performance": {
+    "dataset": "BRISC2025_clean_subset",
+    "n": 2634,
+    "subset_definition": "BRISC images whose nearest internal TRAINING image is more than perceptual-hash Hamming distance 5 away. The other 56 percent of BRISC 2025 is near-duplicate of the training data and is excluded.",
+    "tumor_miss_rate": 0.0027100271002710027,
+    "tumor_miss_rate_ci": [
+      0.0006608841076067146,
+      0.005479639964672943
+    ],
+    "binary_sensitivity": 0.9911924119241192,
+    "binary_specificity": 0.9861830742659758,
+    "four_way_accuracy": 0.9620349278663629,
+    "defer_rate": 0.41192103264996205,
+    "miss_rate_after_defer": 0.0009033423667570009,
+    "_caveats": [
+      "These numbers are from the CLEAN subset of BRISC 2025 only. About 56 percent of BRISC is near-duplicate of the training data and was excluded. Full-BRISC numbers are training accuracy, not external.",
+      "Image-level duplication is excluded. PATIENT-level leakage cannot be ruled out: neither dataset ships patient identifiers, so other slices from the same patients may still be in training. The clean subset is therefore an upper bound on true external performance.",
+      "Class balance in the clean subset is not the same as full BRISC. PPV and NPV measured here do not transfer to a clinic. Use sensitivity and specificity and the prevalence projections in OPERATING_POINT.md.",
+      "BRISC is entirely T1 across three planes. Performance on other sequences is unmeasured.",
+      "tumor_miss_rate here is argmax-based: a real tumour displayed as notumor. binary_sensitivity uses the p_tumor threshold."
+    ]
+  },
+  "entropy_units": "nats",
+  "notes": [
+    "entropy_defer_threshold is in nats and is compared against the predictive entropy of the MC-Dropout mean over mc_T passes.",
+    "temperature is applied as softmax(log(mean_probs)/T); it does not change the predicted class, only the displayed confidence.",
+    "tumor_threshold is applied to p_tumor = p_glioma + p_meningioma + p_pituitary AFTER temperature scaling.",
+    "Every threshold here was fitted on the internal validation split and applied to BRISC unchanged."
+  ]
+}

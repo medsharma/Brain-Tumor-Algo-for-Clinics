@@ -1,0 +1,834 @@
+{
+  "split": "test",
+  "method": "PIL image mode fingerprint; see module docstring",
+  "fingerprint": {
+    "figshare_counts_here": {
+      "glioma": 1399,
+      "pituitary": 930,
+      "meningioma": 709
+    },
+    "figshare_counts_published": {
+      "glioma": 1426,
+      "meningioma": 708,
+      "pituitary": 930
+    },
+    "delta_vs_published": {
+      "glioma": -27,
+      "meningioma": 1,
+      "pituitary": 0
+    },
+    "max_abs_delta": 27,
+    "source_totals": {
+      "figshare": 3038,
+      "sartaj": 2362,
+      "br35h": 1771,
+      "unassigned": 29
+    },
+    "unassigned_note": "Grayscale no-tumour images. Figshare has no no-tumour class, so these fit no source cleanly. Reported separately, never folded into a source."
+  },
+  "caveat": "These sources are all inside the training pool. A source the model trained on is not an external cohort. Read the GAP between sources, not the absolute numbers.",
+  "by_model": {
+    "resnet50": {
+      "per_seed": {
+        "42": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.986159169550173,
+            "accuracy_ci": [
+              0.964958826932243,
+              0.99460475784803
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.383061046690317
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9717391304347827,
+            "accuracy_ci": [
+              0.9522534012994787,
+              0.9834111274853087
+            ],
+            "tumour_miss_rate": 0.0,
+            "tumour_miss_rate_ci": [
+              0.0,
+              0.008281835850225563
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.37548944895015024
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9390581717451524,
+            "accuracy_ci": [
+              0.9094566713124315,
+              0.9594138814561538
+            ],
+            "tumour_miss_rate": 0.030470914127423823,
+            "tumour_miss_rate_ci": [
+              0.017098084527221714,
+              0.05373119815873939
+            ],
+            "n_missed_tumours": 11,
+            "mean_entropy": 0.4018843454029654
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.4728318805583511
+          }
+        },
+        "123": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.9826989619377162,
+            "accuracy_ci": [
+              0.9601459872094321,
+              0.9925879635154652
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.45330080797362016
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9804347826086957,
+            "accuracy_ci": [
+              0.9632385955498419,
+              0.9896732056549414
+            ],
+            "tumour_miss_rate": 0.0,
+            "tumour_miss_rate_ci": [
+              0.0,
+              0.008281835850225563
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.4093237291393783
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9168975069252078,
+            "accuracy_ci": [
+              0.8838452523005437,
+              0.941170635344075
+            ],
+            "tumour_miss_rate": 0.019390581717451522,
+            "tumour_miss_rate_ci": [
+              0.00942385243890362,
+              0.03947809768507425
+            ],
+            "n_missed_tumours": 7,
+            "mean_entropy": 0.4569575334801722
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.6942911181061857
+          }
+        },
+        "7": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.986159169550173,
+            "accuracy_ci": [
+              0.964958826932243,
+              0.99460475784803
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.3738201404462874
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9804347826086957,
+            "accuracy_ci": [
+              0.9632385955498419,
+              0.9896732056549414
+            ],
+            "tumour_miss_rate": 0.0,
+            "tumour_miss_rate_ci": [
+              0.0,
+              0.008281835850225563
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.3992609622589237
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9335180055401662,
+            "accuracy_ci": [
+              0.902986255848965,
+              0.9549206306386285
+            ],
+            "tumour_miss_rate": 0.0221606648199446,
+            "tumour_miss_rate_ci": [
+              0.011271002736269234,
+              0.04311278052820445
+            ],
+            "n_missed_tumours": 8,
+            "mean_entropy": 0.47701351818568427
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.38933702162328837
+          }
+        },
+        "2024": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.9896193771626297,
+            "accuracy_ci": [
+              0.9699297276369392,
+              0.9964634911987094
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.48872470469404405
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9804347826086957,
+            "accuracy_ci": [
+              0.9632385955498419,
+              0.9896732056549414
+            ],
+            "tumour_miss_rate": 0.002173913043478261,
+            "tumour_miss_rate_ci": [
+              0.00038385216148087203,
+              0.012209801793743709
+            ],
+            "n_missed_tumours": 1,
+            "mean_entropy": 0.36603239551276
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9335180055401662,
+            "accuracy_ci": [
+              0.902986255848965,
+              0.9549206306386285
+            ],
+            "tumour_miss_rate": 0.030470914127423823,
+            "tumour_miss_rate_ci": [
+              0.017098084527221714,
+              0.05373119815873939
+            ],
+            "n_missed_tumours": 11,
+            "mean_entropy": 0.39503813011374544
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.6174206117603311
+          }
+        },
+        "31": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.9896193771626297,
+            "accuracy_ci": [
+              0.9699297276369392,
+              0.9964634911987094
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.46693253734445034
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9695652173913043,
+            "accuracy_ci": [
+              0.949567107808242,
+              0.9817856028715461
+            ],
+            "tumour_miss_rate": 0.0,
+            "tumour_miss_rate_ci": [
+              0.0,
+              0.008281835850225563
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.408760935465767
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9418282548476454,
+            "accuracy_ci": [
+              0.9127117528973826,
+              0.9616406330116983
+            ],
+            "tumour_miss_rate": 0.013850415512465374,
+            "tumour_miss_rate_ci": [
+              0.005930193408554158,
+              0.03200809043443211
+            ],
+            "n_missed_tumours": 5,
+            "mean_entropy": 0.4476942287953356
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.52328918806879
+          }
+        }
+      },
+      "pooled_over_seeds": {
+        "br35h": {
+          "n": 1445,
+          "n_tumour": 0,
+          "accuracy": 0.9868512110726644,
+          "accuracy_ci": [
+            0.9795544961797531,
+            0.9915662509746648
+          ],
+          "tumour_miss_rate": NaN,
+          "tumour_miss_rate_ci": [
+            NaN,
+            NaN
+          ],
+          "n_missed_tumours": 0,
+          "mean_entropy": 0.4331678474297438
+        },
+        "figshare": {
+          "n": 2300,
+          "n_tumour": 2300,
+          "accuracy": 0.9765217391304348,
+          "accuracy_ci": [
+            0.9694933854904773,
+            0.9819609741859654
+          ],
+          "tumour_miss_rate": 0.0004347826086956522,
+          "tumour_miss_rate_ci": [
+            7.675392983209621e-05,
+            0.002458775934919393
+          ],
+          "n_missed_tumours": 1,
+          "mean_entropy": 0.39177349426539587
+        },
+        "sartaj": {
+          "n": 1805,
+          "n_tumour": 1805,
+          "accuracy": 0.9329639889196676,
+          "accuracy_ci": [
+            0.9204830504682731,
+            0.9436059454890994
+          ],
+          "tumour_miss_rate": 0.02326869806094183,
+          "tumour_miss_rate_ci": [
+            0.01726036839426537,
+            0.03130190797000998
+          ],
+          "n_missed_tumours": 42,
+          "mean_entropy": 0.43571755119558053
+        },
+        "unassigned": {
+          "n": 10,
+          "n_tumour": 0,
+          "accuracy": 0.5,
+          "accuracy_ci": [
+            0.23659309046790553,
+            0.7634069095320944
+          ],
+          "tumour_miss_rate": NaN,
+          "tumour_miss_rate_ci": [
+            NaN,
+            NaN
+          ],
+          "n_missed_tumours": 0,
+          "mean_entropy": 0.5394339640233894
+        }
+      },
+      "pooled_note": "Pooled over 5 seeds on the same images, so the seeds are not independent samples. The interval is narrower than the true uncertainty. Session E measured the same effect: 18 images cause every miss, so effective sample size is far below n."
+    },
+    "vit": {
+      "per_seed": {
+        "42": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.9896193771626297,
+            "accuracy_ci": [
+              0.9699297276369392,
+              0.9964634911987094
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.39107006347650486
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9695652173913043,
+            "accuracy_ci": [
+              0.949567107808242,
+              0.9817856028715461
+            ],
+            "tumour_miss_rate": 0.002173913043478261,
+            "tumour_miss_rate_ci": [
+              0.00038385216148087203,
+              0.012209801793743709
+            ],
+            "n_missed_tumours": 1,
+            "mean_entropy": 0.4496742943330633
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9279778393351801,
+            "accuracy_ci": [
+              0.8965640017590354,
+              0.9503792184475666
+            ],
+            "tumour_miss_rate": 0.024930747922437674,
+            "tumour_miss_rate_ci": [
+              0.013170496127976888,
+              0.0466951202769926
+            ],
+            "n_missed_tumours": 9,
+            "mean_entropy": 0.4621084346643164
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 1.0,
+            "accuracy_ci": [
+              0.34238022740097807,
+              1.0
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.7663994824727323
+          }
+        },
+        "123": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.9826989619377162,
+            "accuracy_ci": [
+              0.9601459872094321,
+              0.9925879635154652
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.4243689769896981
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9782608695652174,
+            "accuracy_ci": [
+              0.9604502784352655,
+              0.9881497046645188
+            ],
+            "tumour_miss_rate": 0.002173913043478261,
+            "tumour_miss_rate_ci": [
+              0.00038385216148087203,
+              0.012209801793743709
+            ],
+            "n_missed_tumours": 1,
+            "mean_entropy": 0.3970576758579822
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9335180055401662,
+            "accuracy_ci": [
+              0.902986255848965,
+              0.9549206306386285
+            ],
+            "tumour_miss_rate": 0.024930747922437674,
+            "tumour_miss_rate_ci": [
+              0.013170496127976888,
+              0.0466951202769926
+            ],
+            "n_missed_tumours": 9,
+            "mean_entropy": 0.3951614669361033
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.508819403381541
+          }
+        },
+        "7": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.986159169550173,
+            "accuracy_ci": [
+              0.964958826932243,
+              0.99460475784803
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.3496002709236024
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.967391304347826,
+            "accuracy_ci": [
+              0.9469000640153162,
+              0.9801408285594729
+            ],
+            "tumour_miss_rate": 0.0,
+            "tumour_miss_rate_ci": [
+              0.0,
+              0.008281835850225563
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.404255837151317
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9335180055401662,
+            "accuracy_ci": [
+              0.902986255848965,
+              0.9549206306386285
+            ],
+            "tumour_miss_rate": 0.024930747922437674,
+            "tumour_miss_rate_ci": [
+              0.013170496127976888,
+              0.0466951202769926
+            ],
+            "n_missed_tumours": 9,
+            "mean_entropy": 0.4073003436540039
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.6930781785598866
+          }
+        },
+        "2024": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.9757785467128027,
+            "accuracy_ci": [
+              0.9508560470050582,
+              0.988218635609088
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.38535935858153436
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9804347826086957,
+            "accuracy_ci": [
+              0.9632385955498419,
+              0.9896732056549414
+            ],
+            "tumour_miss_rate": 0.0,
+            "tumour_miss_rate_ci": [
+              0.0,
+              0.008281835850225563
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.37418966028417977
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9307479224376731,
+            "accuracy_ci": [
+              0.8997694359496021,
+              0.9526556173974956
+            ],
+            "tumour_miss_rate": 0.024930747922437674,
+            "tumour_miss_rate_ci": [
+              0.013170496127976888,
+              0.0466951202769926
+            ],
+            "n_missed_tumours": 9,
+            "mean_entropy": 0.383643878411665
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.6631884496367956
+          }
+        },
+        "31": {
+          "br35h": {
+            "n": 289,
+            "n_tumour": 0,
+            "accuracy": 0.9792387543252595,
+            "accuracy_ci": [
+              0.9554532838774947,
+              0.990451032792027
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.32821904006055697
+          },
+          "figshare": {
+            "n": 460,
+            "n_tumour": 460,
+            "accuracy": 0.9760869565217392,
+            "accuracy_ci": [
+              0.9576922893931269,
+              0.9865958756016584
+            ],
+            "tumour_miss_rate": 0.0,
+            "tumour_miss_rate_ci": [
+              0.0,
+              0.008281835850225563
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.4138673381911206
+          },
+          "sartaj": {
+            "n": 361,
+            "n_tumour": 361,
+            "accuracy": 0.9141274238227147,
+            "accuracy_ci": [
+              0.8806889806407409,
+              0.9388450738633821
+            ],
+            "tumour_miss_rate": 0.024930747922437674,
+            "tumour_miss_rate_ci": [
+              0.013170496127976888,
+              0.0466951202769926
+            ],
+            "n_missed_tumours": 9,
+            "mean_entropy": 0.46732039061779534
+          },
+          "unassigned": {
+            "n": 2,
+            "n_tumour": 0,
+            "accuracy": 0.5,
+            "accuracy_ci": [
+              0.0945312057016527,
+              0.9054687942983473
+            ],
+            "tumour_miss_rate": NaN,
+            "tumour_miss_rate_ci": [
+              NaN,
+              NaN
+            ],
+            "n_missed_tumours": 0,
+            "mean_entropy": 0.34857625867005537
+          }
+        }
+      },
+      "pooled_over_seeds": {
+        "br35h": {
+          "n": 1445,
+          "n_tumour": 0,
+          "accuracy": 0.9826989619377162,
+          "accuracy_ci": [
+            0.9745842008981097,
+            0.988254066536441
+          ],
+          "tumour_miss_rate": NaN,
+          "tumour_miss_rate_ci": [
+            NaN,
+            NaN
+          ],
+          "n_missed_tumours": 0,
+          "mean_entropy": 0.3757235420063793
+        },
+        "figshare": {
+          "n": 2300,
+          "n_tumour": 2300,
+          "accuracy": 0.9743478260869565,
+          "accuracy_ci": [
+            0.9670529566126821,
+            0.9800608266053824
+          ],
+          "tumour_miss_rate": 0.0008695652173913044,
+          "tumour_miss_rate_ci": [
+            0.00023849854526978266,
+            0.003165146611157293
+          ],
+          "n_missed_tumours": 2,
+          "mean_entropy": 0.40780896116353255
+        },
+        "sartaj": {
+          "n": 1805,
+          "n_tumour": 1805,
+          "accuracy": 0.9279778393351801,
+          "accuracy_ci": [
+            0.915120534003954,
+            0.9390173410786693
+          ],
+          "tumour_miss_rate": 0.024930747922437674,
+          "tumour_miss_rate_ci": [
+            0.018684063315491,
+            0.03319525334036736
+          ],
+          "n_missed_tumours": 45,
+          "mean_entropy": 0.42310690285677677
+        },
+        "unassigned": {
+          "n": 10,
+          "n_tumour": 0,
+          "accuracy": 0.6,
+          "accuracy_ci": [
+            0.312673769679736,
+            0.8318196703288646
+          ],
+          "tumour_miss_rate": NaN,
+          "tumour_miss_rate_ci": [
+            NaN,
+            NaN
+          ],
+          "n_missed_tumours": 0,
+          "mean_entropy": 0.5960123545442022
+        }
+      },
+      "pooled_note": "Pooled over 5 seeds on the same images, so the seeds are not independent samples. The interval is narrower than the true uncertainty. Session E measured the same effect: 18 images cause every miss, so effective sample size is far below n."
+    }
+  }
+}

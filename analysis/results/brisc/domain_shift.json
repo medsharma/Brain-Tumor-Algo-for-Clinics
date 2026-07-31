@@ -1,0 +1,116 @@
+{
+  "generated_utc": "2026-07-31T02:46:43.526101+00:00",
+  "brisc": {
+    "n": 6000,
+    "sequence": {
+      "T1": 6000
+    },
+    "plane": {
+      "sagittal": 2026,
+      "axial": 1993,
+      "coronal": 1981
+    },
+    "plane_by_class": {
+      "axial": {
+        "glioma": 479,
+        "meningioma": 560,
+        "notumor": 404,
+        "pituitary": 550
+      },
+      "coronal": {
+        "glioma": 511,
+        "meningioma": 512,
+        "notumor": 358,
+        "pituitary": 600
+      },
+      "sagittal": {
+        "glioma": 411,
+        "meningioma": 563,
+        "notumor": 445,
+        "pituitary": 607
+      }
+    },
+    "source": "shipped manifest.csv metadata, not inferred"
+  },
+  "internal": {
+    "n": 7200,
+    "by_split_class": {
+      "glioma": {
+        "test": 277,
+        "train": 1254,
+        "val": 269
+      },
+      "meningioma": {
+        "test": 266,
+        "train": 1268,
+        "val": 266
+      },
+      "notumor": {
+        "test": 291,
+        "train": 1211,
+        "val": 298
+      },
+      "pituitary": {
+        "test": 278,
+        "train": 1246,
+        "val": 276
+      }
+    },
+    "sequence": "UNKNOWN. The Kaggle Nickparvar merge (Br35H + SARTAJ + Figshare) ships no sequence metadata. Visual inspection shows a mix consistent with T1, T1-contrast and T2. We do not claim a number."
+  },
+  "symmetry_heuristic": {
+    "method": "left-right mirror correlation over the brain region, on a 160x160 grayscale resize. No model, no fitting. Axial and coronal slices are near mirror-symmetric about the midline; sagittal slices are not.",
+    "brisc_by_plane": {
+      "axial": {
+        "count": 400.0,
+        "mean": 0.2877421278974645,
+        "std": 0.2261971742526905,
+        "min": -0.23030255725109827,
+        "25%": 0.10017752778115127,
+        "50%": 0.3048454281370978,
+        "75%": 0.4638339163735991,
+        "max": 0.8072810745051175
+      },
+      "coronal": {
+        "count": 400.0,
+        "mean": 0.3470261504011213,
+        "std": 0.19207208429353342,
+        "min": -0.14204795995551858,
+        "25%": 0.20666176850728285,
+        "50%": 0.3318097252922426,
+        "75%": 0.48673832585891114,
+        "max": 0.8157489657294573
+      },
+      "sagittal": {
+        "count": 400.0,
+        "mean": 0.04478424966208433,
+        "std": 0.10804344183816197,
+        "min": -0.2106924234164162,
+        "25%": -0.02652686816209472,
+        "50%": 0.034769271007555835,
+        "75%": 0.10459281671306306,
+        "max": 0.408198975199484
+      }
+    },
+    "internal_train": {
+      "count": 1200.0,
+      "mean": 0.25528580747262725,
+      "std": 0.22930478256972137,
+      "min": -0.21996884767203678,
+      "25%": 0.0612352362949038,
+      "50%": 0.24223954210215198,
+      "75%": 0.42355675276208915,
+      "max": 0.9157177382384191
+    },
+    "n_brisc": 1200,
+    "n_internal": 1200
+  },
+  "internal_plane_estimate": {
+    "method": "threshold on the symmetry score, calibrated on BRISC PLANE metadata only (never BRISC tumour labels), then applied to internal training images",
+    "threshold": 0.09,
+    "separator_accuracy_on_brisc": 0.8016666666666666,
+    "separator_auroc_on_brisc": 0.8642031250000001,
+    "estimated_sagittal_share_internal_train": 0.29583333333333334,
+    "uncertainty": "The separator only distinguishes sagittal from axial-or-coronal. It cannot tell axial from coronal, because both are mirror-symmetric. The axial/coronal split of the internal data is reported as UNKNOWN."
+  }
+}

@@ -1,0 +1,2 @@
+image_path,true_label_name,brisc_split,plane,p_glioma,p_meningioma,p_pituitary,p_notumor,p_tumor,entropy,entropy_bits
+classification_task/train/meningioma/brisc2025_train_01380_me_ax_t1.jpg,meningioma,train,axial,0.025885658338665962,0.028363050147891044,0.02593727968633175,0.9198140025138855,0.08018598817288876,0.36724245500651986,0.5298188686417945

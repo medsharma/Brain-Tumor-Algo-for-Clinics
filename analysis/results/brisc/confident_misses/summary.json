@@ -1,0 +1,53 @@
+{
+  "generated_utc": "2026-07-31T02:47:31.331724+00:00",
+  "model": "vit",
+  "seeds": [
+    42,
+    123,
+    7,
+    2024,
+    31
+  ],
+  "defer_budget_used_to_define_confident": 0.2,
+  "entropy_cutoff_nats_fitted_on_internal_val": 0.41268446003025794,
+  "n_tumors_in_brisc": 4793,
+  "n_missed_tumors": 4,
+  "n_confidently_missed": 1,
+  "confident_share_of_misses": 0.25,
+  "missed_by_class": {
+    "meningioma": 4
+  },
+  "confident_missed_by_class": {
+    "meningioma": 1
+  },
+  "missed_by_plane": {
+    "axial": 4
+  },
+  "confident_missed_by_plane": {
+    "axial": 1
+  },
+  "confident_missed_by_brisc_split": {
+    "train": 1
+  },
+  "p_tumor_summary_confident": {
+    "count": 1.0,
+    "mean": 0.08018598817288876,
+    "std": NaN,
+    "min": 0.08018598817288876,
+    "25%": 0.08018598817288876,
+    "50%": 0.08018598817288876,
+    "75%": 0.08018598817288876,
+    "max": 0.08018598817288876
+  },
+  "entropy_summary_confident": {
+    "count": 1.0,
+    "mean": 0.36724245500651986,
+    "std": NaN,
+    "min": 0.36724245500651986,
+    "25%": 0.36724245500651986,
+    "50%": 0.36724245500651986,
+    "75%": 0.36724245500651986,
+    "max": 0.36724245500651986
+  },
+  "n_contact_sheets": 1
+}

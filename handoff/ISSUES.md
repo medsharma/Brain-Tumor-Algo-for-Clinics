@@ -1324,3 +1324,168 @@ useful to a clinician than "1 in 100".
 
 Source: `docs/results/confident_misses.json`. The images themselves are in
 `docs/results/confident_miss_examples/`.
+
+---
+
+## [INTEGRATION] 2026-07-30T21:45Z - The GPU is live. All caches regenerated on it. The miss rate did not move.
+
+Answers B's 2026-07-30T19:55Z entry and A's "There is no GPU" entry. Both were
+correct at the time. They are no longer.
+
+### What changed
+
+`torch 2.12.1+cpu` replaced with `torch 2.12.1+cu130`. Same torch version, only
+the compute backend differs, so nothing else in the environment moved.
+
+The RTX 5060 is Blackwell, `sm_120`. It needs CUDA 12.8 or newer. The cu130
+index has an exact `2.12.1+cu130` build, so no version bump was needed.
+
+Note for anyone repeating this: `pip install torch==2.12.1 --index-url .../cu130`
+silently does nothing, because pip treats the installed `2.12.1+cpu` as already
+satisfying `==2.12.1`. You must pin the local version explicitly:
+`pip install "torch==2.12.1+cu130" "torchvision==0.27.1+cu130"`.
+
+Rollback, if it is ever needed:
+`pip install torch==2.12.1 torchvision==0.27.1 --index-url https://download.pytorch.org/whl/cpu`
+
+Also: `--workers 4` on the DataLoader deadlocks on Windows here. GPU sat at 0%
+until it was killed. Use `--workers 0`. The GPU is not the bottleneck anyway.
+
+### Speed
+
+| path | throughput |
+|---|---|
+| ResNet-50, T=20, GPU, batch 64 | ~258 img/s |
+| ViT-B/16, T=20, GPU, batch 64 | ~130 img/s |
+
+All 30 caches (10 checkpoints x BRISC 6000 + val 1109 + test 1112) rebuilt in
+about 13 minutes. A estimated hours to days on CPU. That estimate was right.
+
+### The result everyone actually needs: GPU does not change the safety number
+
+MC-Dropout draws random masks, and CUDA draws them from a different RNG stream
+than CPU. So GPU results are **not** bit-identical to CPU, and cannot be. This
+was measured rather than assumed, against A's committed CPU parquet files:
+
+| file | max abs prob diff | label flips | tumour miss rate CPU -> GPU |
+|---|---|---|---|
+| BRISC vit_seed42 | 0.080 | 10 / 6000 (0.17%) | 0.0038 -> 0.0038 |
+| BRISC vit_seed123 | 0.087 | 9 / 6000 (0.15%) | 0.0017 -> 0.0017 |
+| internal test vit_seed42 | 0.062 | 2 / 1112 (0.18%) | 0.0122 -> 0.0122 |
+
+Four-way accuracy moved by at most 0.002. **The tumour miss rate did not move at
+all, on any of the three.**
+
+Mean entropy differs by 0.026. Session C measured run-to-run MC noise at T=20 as
+0.029 bits on the same kind of comparison. Those agree. So this is Monte Carlo
+sampling noise, not a GPU numerical fault.
+
+**The consequence is not "GPU is fine, ignore it".** It is that a single MC run
+carries this much noise regardless of device. Two honest runs of this pipeline on
+the same machine disagree on ~0.17% of labels. That is the same instability C
+found at the deferral threshold, showing up in a second place. Any threshold
+placed where 0.17% of images sit near the boundary is not reproducible.
+
+### For session C specifically
+
+**The app stays on CPU.** Do not move it to GPU.
+
+C's bit-identity result (app vs research pipeline, max abs diff 0.0) was proven
+on CPU and it still holds on CPU. It would not survive a device change, and it is
+the strongest claim in the project. Clinic laptops have no GPU anyway. GPU is for
+batch analysis here, nothing else.
+
+---
+
+## [INTEGRATION] 2026-07-30T22:05Z - The deployment config shipped the WORST of its four candidates on the tumour miss rate. Fixed.
+
+A patient-safety bug in `analysis/operating_point.py`, in the code that picks
+which backbone and how many seeds the clinic actually runs. It is fixed. This
+entry records what it was, because the failure mode is subtle and worth knowing.
+
+### The bug
+
+The stated rule was "lowest internal-val tumour miss rate; the 5-seed ensemble is
+only taken if it beats the single seed by more than 0.5 percentage points". The
+code implemented it in two stages:
+
+```python
+best = min(choice_rows, key=lambda r: (r["val_miss_rate"], -r["val_accuracy"]))
+same_model = [r for r in choice_rows if r["model"] == best["model"]]
+...
+if ens["val_miss_rate"] - single["val_miss_rate"] > -0.005:
+    chosen_cfg = "single_seed42"
+```
+
+Stage 1 picked the **backbone** using the best miss rate of any of its configs.
+That was `vit/ensemble5` at 0.0037, so the backbone became ViT. Stage 2 then
+tested ensemble against single *within ViT* and discarded the ensemble, because
+0.0037 - 0.0086 = -0.0049, which fails the -0.005 bar by one ten-thousandth.
+
+What shipped was `vit/single_seed42`, internal-val miss rate **0.0086**.
+
+The four candidates, internal validation:
+
+| candidate | val miss rate |
+|---|---|
+| vit / ensemble5 | 0.0037 |
+| resnet50 / ensemble5 | 0.0049 |
+| resnet50 / single_seed42 | 0.0049 |
+| **vit / single_seed42 (shipped)** | **0.0086** |
+
+The config that shipped was the worst of the four on the exact metric the rule
+claimed to optimise, and it was worse than the single-seed ResNet that the rule
+would have picked if stage 1 had never seen the ensemble. **The backbone was
+chosen on the strength of a configuration that was then thrown away.**
+
+On the clean BRISC subset it was the worst of the four there too: 0.68% miss
+against 0.20% for `resnet50/ensemble5`.
+
+### Why the cost penalty does not survive either
+
+The -0.005 bar existed because the ensemble "costs 5x the inference time on a
+laptop". Session C measured it: 805 ms against a 30 s budget, 2.7 percent of it,
+and said so in C-6 above. A cost that small cannot buy a worse miss rate.
+
+### The fix
+
+One criterion, all four candidates at once, no cost penalty:
+
+```python
+best = min(choice_rows, key=lambda r: (r["val_miss_rate"], -r["val_accuracy"]))
+chosen_model, chosen_cfg = best["model"], best["config"]
+```
+
+Chosen: **vit / ensemble5**. Still decided on internal val only. BRISC is still
+never fitted on.
+
+Effect on the number that matters, clean BRISC subset, n=2634:
+
+| | before | after |
+|---|---|---|
+| tumour miss rate | 0.68% (0.32-1.16) | **0.27% (0.07-0.55)** |
+| binary sensitivity | 98.98% | 99.12% |
+| four-way accuracy | 96.81% | 96.20% |
+
+### The honest cost, and it is not small
+
+Deferral got worse, not better, and session C needs to plan for it.
+
+| | before (single) | after (ensemble) |
+|---|---|---|
+| defer rate at the chosen cutoff | 25.9% | **41.2%** |
+| miss rate among kept cases | 0.09% | 0.09% |
+
+The ensemble already catches the easy misses, so the ones left are the confident
+ones, and entropy does not flag them. Reaching the same post-deferral miss rate
+now needs **41% of scans sent to a human**. In a clinic with no radiologist, that
+is the whole point of the tool being handed back four times out of ten.
+
+Four missed tumours remain in the clean subset. Four. Every deferral conclusion
+above rests on n=4 and should be read as a direction, not a measurement.
+
+**This is a real trade and a human should make it, not a min() call.** Lowest
+miss rate at 41% deferral, or a worse miss rate that a clinic can actually run.
+Both configs are measured and both are in
+`analysis/results/safety/ensemble_vs_single.csv`. Session E: this belongs in
+`docs/OPEN_QUESTIONS.md`.

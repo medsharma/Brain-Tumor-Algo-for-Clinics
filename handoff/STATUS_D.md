@@ -98,3 +98,72 @@ my predictions agree.
 Note: `pyarrow` and `fastparquet` are both missing in this environment, so
 nobody can read A's `.parquet` cache without installing one. Logged in
 `handoff/ISSUES.md`.
+
+---
+
+# Parts 2 and 3 are done. Updated 2026-07-30T22:20Z.
+
+## The answer to the question this session existed to ask
+
+**The heatmaps mostly do not point at the tumour.**
+
+Measured against BRISC's 4,793 radiologist-reviewed masks, clean subset n=1476:
+
+| path | hottest pixel lands in the tumour | chance | mass inside mask |
+|---|---|---|---|
+| ResNet-50 Grad-CAM | **8.4%** (7.1-9.9) | 1.7% | 3.0% |
+| ViT-B/16 attention rollout | **41.0%** (38.5-43.5) | 1.7% | 5.7% |
+
+Both beat chance. Only one is arguably worth showing.
+
+## For session C, this is the actionable part
+
+**Show the heatmap on the ViT path. Do not show it on ResNet-50.** The shipped
+config is ViT, so the path that matters is the better one.
+
+**Do not write any UI text saying a sensible-looking heatmap means the call is
+more likely right.** Measured, and it is false:
+
+| path | pointing when RIGHT | when WRONG |
+|---|---|---|
+| ResNet-50 | 8.2% | 14.0% |
+| ViT | 40.8% | 46.9% |
+
+The overlay carries no usable signal about whether to trust the call. It is
+slightly better when the model is wrong, though those samples are small (43 and
+49). `HEATMAP_CAVEAT` stays exactly as it is.
+
+Worst cases, consider extra caveating: smallest-quartile tumours (ViT 23%),
+glioma and pituitary (ViT 25% each, against meningioma 72%), sagittal (34%).
+
+## Both paths pass the model-randomisation sanity check
+
+| path | corr with map from a randomised model |
+|---|---|
+| ResNet-50 Grad-CAM | 0.046 |
+| ViT rollout | 0.338 |
+
+**I got this wrong the first time and am recording it.** The first run
+randomised the classification head for both paths and reported 1.000 for ViT.
+Attention rollout never reads the classification head, so that number was
+guaranteed by construction and measured nothing. Randomising the encoder blocks,
+which rollout actually reads, gives 0.338. Both paths pass.
+
+## Deletion and insertion: reported, not trusted
+
+They disagree for ResNet-50 and the test is confounded. A real heatmap is
+spatially concentrated and a random one is scattered, so deleting each damages
+the image in different ways. It measures concentration as much as importance.
+The pointing game against real masks is what the verdict rests on.
+
+## Full detail
+
+`analysis/results/explainability_clinical/EXPLAINABILITY_RESULTS.md`
+`analysis/results/explainability_clinical/localization_metrics.json`
+`analysis/results/explainability_clinical/localization_per_image.csv`
+
+## What is still not done, and it needs a human
+
+No clinician has looked at a single overlay. Whether a 41% hit rate helps a real
+reader under time pressure, or misleads one, is not a question this session can
+answer.

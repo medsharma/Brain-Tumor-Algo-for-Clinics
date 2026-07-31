@@ -4,319 +4,465 @@
   "localisation": {
     "resnet50": {
       "all_brisc_CONTAMINATED": {
-        "n": 20,
-        "pointing_accuracy": 0.0,
+        "n": 4793,
+        "pointing_accuracy": 0.08032547465053202,
         "pointing_ci": [
-          0.0,
-          0.16112515811625733
+          0.0729626688801985,
+          0.08836045706952914
         ],
-        "mean_mask_area_frac": 0.02588787440326996,
-        "pointing_chance_baseline": 0.02588787440326996,
-        "mean_mass_in_mask": 0.0166890046683875,
-        "mean_mass_lift_over_chance": 0.7088004289708649,
-        "mean_best_iou": 0.023827157689884478
+        "mean_mask_area_frac": 0.016950977255572833,
+        "pointing_chance_baseline": 0.016950977255572833,
+        "mean_mass_in_mask": 0.02797558744030292,
+        "mean_mass_lift_over_chance": 1.7153513758045518,
+        "mean_best_iou": 0.060428652022119125
       },
       "clean_vs_train": {
-        "n": 6,
-        "pointing_accuracy": 0.0,
+        "n": 1476,
+        "pointing_accuracy": 0.08401084010840108,
         "pointing_ci": [
-          0.0,
-          0.390334288013856
+          0.07091588001625039,
+          0.09926549807737739
         ],
-        "mean_mask_area_frac": 0.034322517341934144,
-        "pointing_chance_baseline": 0.034322517341934144,
-        "mean_mass_in_mask": 0.019971046594643365,
-        "mean_mass_lift_over_chance": 0.5372405202388605,
-        "mean_best_iou": 0.021556405417064387
+        "mean_mask_area_frac": 0.016766496851244934,
+        "pointing_chance_baseline": 0.016766496851244934,
+        "mean_mass_in_mask": 0.030078258790797258,
+        "mean_mass_lift_over_chance": 1.8734559736526084,
+        "mean_best_iou": 0.06360619291627968
       },
       "by_class": {
         "glioma": {
-          "n": 6,
-          "pointing_accuracy": 0.0,
+          "n": 436,
+          "pointing_accuracy": 0.07568807339449542,
           "pointing_ci": [
-            0.0,
-            0.390334288013856
+            0.054399103185856584,
+            0.1043886996044265
           ],
-          "mean_mask_area_frac": 0.034322517341934144,
-          "pointing_chance_baseline": 0.034322517341934144,
-          "mean_mass_in_mask": 0.019971046594643365,
-          "mean_mass_lift_over_chance": 0.5372405202388605,
-          "mean_best_iou": 0.021556405417064387
+          "mean_mask_area_frac": 0.01856611519472545,
+          "pointing_chance_baseline": 0.01856611519472545,
+          "mean_mass_in_mask": 0.028324645156469316,
+          "mean_mass_lift_over_chance": 1.5389605242845197,
+          "mean_best_iou": 0.05681161866214095
+        },
+        "meningioma": {
+          "n": 501,
+          "pointing_accuracy": 0.09780439121756487,
+          "pointing_ci": [
+            0.07477273950249157,
+            0.12695684716821148
+          ],
+          "mean_mask_area_frac": 0.022495029081092348,
+          "pointing_chance_baseline": 0.022495029081092348,
+          "mean_mass_in_mask": 0.03780211149647617,
+          "mean_mass_lift_over_chance": 1.510381982602515,
+          "mean_best_iou": 0.06275700608145085
+        },
+        "pituitary": {
+          "n": 539,
+          "pointing_accuracy": 0.07792207792207792,
+          "pointing_ci": [
+            0.05816306640135793,
+            0.10365482240366836
+          ],
+          "mean_mask_area_frac": 0.00998611049705002,
+          "pointing_chance_baseline": 0.00998611049705002,
+          "mean_mass_in_mask": 0.024317452369687506,
+          "mean_mass_lift_over_chance": 2.481508080221409,
+          "mean_best_iou": 0.06989167896276159
         }
       },
       "by_plane": {
         "axial": {
-          "n": 6,
-          "pointing_accuracy": 0.0,
+          "n": 487,
+          "pointing_accuracy": 0.07186858316221766,
           "pointing_ci": [
-            0.0,
-            0.390334288013856
+            0.052126688658346354,
+            0.09831182360514269
           ],
-          "mean_mask_area_frac": 0.034322517341934144,
-          "pointing_chance_baseline": 0.034322517341934144,
-          "mean_mass_in_mask": 0.019971046594643365,
-          "mean_mass_lift_over_chance": 0.5372405202388605,
-          "mean_best_iou": 0.021556405417064387
+          "mean_mask_area_frac": 0.01786491836244771,
+          "pointing_chance_baseline": 0.01786491836244771,
+          "mean_mass_in_mask": 0.02915756902962108,
+          "mean_mass_lift_over_chance": 1.622908261767783,
+          "mean_best_iou": 0.051289001865169756
+        },
+        "coronal": {
+          "n": 500,
+          "pointing_accuracy": 0.126,
+          "pointing_ci": [
+            0.09973528893985951,
+            0.15796771772803783
+          ],
+          "mean_mask_area_frac": 0.017184829408302855,
+          "pointing_chance_baseline": 0.017184829408302855,
+          "mean_mass_in_mask": 0.03851342128629854,
+          "mean_mass_lift_over_chance": 2.3760517290481094,
+          "mean_best_iou": 0.0899699942998958
+        },
+        "sagittal": {
+          "n": 489,
+          "pointing_accuracy": 0.053169734151329244,
+          "pointing_ci": [
+            0.03653970247712448,
+            0.07676541384956238
+          ],
+          "mean_mask_area_frac": 0.01524482496068315,
+          "pointing_chance_baseline": 0.01524482496068315,
+          "mean_mass_in_mask": 0.0223702724225808,
+          "mean_mass_lift_over_chance": 1.6090773601355526,
+          "mean_best_iou": 0.04891615477738906
         }
       },
       "by_correctness": {
-        "True": {
-          "n": 6,
-          "pointing_accuracy": 0.0,
+        "False": {
+          "n": 43,
+          "pointing_accuracy": 0.13953488372093023,
           "pointing_ci": [
-            0.0,
-            0.390334288013856
+            0.06555723426826222,
+            0.2726358797106884
           ],
-          "mean_mask_area_frac": 0.034322517341934144,
-          "pointing_chance_baseline": 0.034322517341934144,
-          "mean_mass_in_mask": 0.019971046594643365,
-          "mean_mass_lift_over_chance": 0.5372405202388605,
-          "mean_best_iou": 0.021556405417064387
+          "mean_mask_area_frac": 0.013562029054345037,
+          "pointing_chance_baseline": 0.013562029054345037,
+          "mean_mass_in_mask": 0.03557973148959121,
+          "mean_mass_lift_over_chance": 3.277120443351345,
+          "mean_best_iou": 0.0919942998768955
+        },
+        "True": {
+          "n": 1433,
+          "pointing_accuracy": 0.08234473133286811,
+          "pointing_ci": [
+            0.0692040469288365,
+            0.09771865518963459
+          ],
+          "mean_mask_area_frac": 0.016862653247104457,
+          "pointing_chance_baseline": 0.016862653247104457,
+          "mean_mass_in_mask": 0.029913176218537566,
+          "mean_mass_lift_over_chance": 1.8313362442757448,
+          "mean_best_iou": 0.06275435160483064
         }
+      },
+      "does_localisation_predict_correctness": {
+        "pointing_acc_when_right": 0.08234473133286811,
+        "pointing_acc_when_wrong": 0.13953488372093023,
+        "difference": -0.05719015238806212,
+        "n_right": 1433,
+        "n_wrong": 43,
+        "reading": "If these two are close, a clinician glancing at the overlay learns nothing about whether to trust the call, and the heatmap is decoration."
       },
       "by_tumour_size": {
         "smallest": {
-          "n": 2,
-          "pointing_accuracy": 0.0,
+          "n": 369,
+          "pointing_accuracy": 0.024390243902439025,
           "pointing_ci": [
-            0.0,
-            0.6576197725990219
+            0.012883801646176371,
+            0.04569728773019418
           ],
-          "mean_mask_area_frac": 0.01092155568767339,
-          "pointing_chance_baseline": 0.01092155568767339,
-          "mean_mass_in_mask": 0.0098746465455406,
-          "mean_mass_lift_over_chance": 0.5139423497429475,
-          "mean_best_iou": 0.013251919795221842
+          "mean_mask_area_frac": 0.004679193188563894,
+          "pointing_chance_baseline": 0.004679193188563894,
+          "mean_mass_in_mask": 0.009494032810329043,
+          "mean_mass_lift_over_chance": 2.0946951658111557,
+          "mean_best_iou": 0.033065264547969084
         },
         "small": {
-          "n": 1,
-          "pointing_accuracy": 0.0,
+          "n": 369,
+          "pointing_accuracy": 0.05420054200542006,
           "pointing_ci": [
-            0.0,
-            0.7934506856996815
+            0.03535722853318583,
+            0.08223017432956604
           ],
-          "mean_mask_area_frac": 0.020328443497419357,
-          "pointing_chance_baseline": 0.020328443497419357,
-          "mean_mass_in_mask": 0.003633713349699974,
-          "mean_mass_lift_over_chance": 0.1787502004352308,
-          "mean_best_iou": 0.0032297379646556977
+          "mean_mask_area_frac": 0.009652473185170986,
+          "pointing_chance_baseline": 0.009652473185170986,
+          "mean_mass_in_mask": 0.01831035104031902,
+          "mean_mass_lift_over_chance": 1.905989472764998,
+          "mean_best_iou": 0.05339179744741889
         },
         "large": {
-          "n": 1,
-          "pointing_accuracy": 0.0,
+          "n": 371,
+          "pointing_accuracy": 0.09703504043126684,
           "pointing_ci": [
-            0.0,
-            0.7934506856996815
+            0.07091581882773097,
+            0.13141361148859682
           ],
-          "mean_mask_area_frac": 0.0316685251891613,
-          "pointing_chance_baseline": 0.0316685251891613,
-          "mean_mass_in_mask": 0.03348555415868759,
-          "mean_mass_lift_over_chance": 1.05737649475853,
-          "mean_best_iou": 0.042450002724647155
+          "mean_mask_area_frac": 0.0163596109223534,
+          "pointing_chance_baseline": 0.0163596109223534,
+          "mean_mass_in_mask": 0.029806547136934744,
+          "mean_mass_lift_over_chance": 1.8382533840011661,
+          "mean_best_iou": 0.07703966494219289
         },
         "largest": {
-          "n": 2,
-          "pointing_accuracy": 0.0,
+          "n": 367,
+          "pointing_accuracy": 0.16076294277929154,
           "pointing_ci": [
-            0.0,
-            0.6576197725990219
+            0.12672792320493317,
+            0.20182611497992997
           ],
-          "mean_mask_area_frac": 0.06604751199483871,
-          "pointing_chance_baseline": 0.06604751199483871,
-          "mean_mass_in_mask": 0.03147885948419571,
-          "mean_mass_lift_over_chance": 0.47971586337675365,
-          "mean_best_iou": 0.0285774261113199
+          "mean_mask_area_frac": 0.03648378421889984,
+          "pointing_chance_baseline": 0.03648378421889984,
+          "mean_mass_in_mask": 0.06288137151641641,
+          "mean_mass_lift_over_chance": 1.653886594038738,
+          "mean_best_iou": 0.09100373072091852
         }
       }
     },
     "vit": {
       "all_brisc_CONTAMINATED": {
-        "n": 20,
-        "pointing_accuracy": 0.5,
+        "n": 4793,
+        "pointing_accuracy": 0.4133110786563739,
         "pointing_ci": [
-          0.29929800815870233,
-          0.7007019918412977
+          0.3994451394988536,
+          0.42731586414624306
         ],
-        "mean_mask_area_frac": 0.02588787440326996,
-        "pointing_chance_baseline": 0.02588787440326996,
-        "mean_mass_in_mask": 0.07141452800715342,
-        "mean_mass_lift_over_chance": 3.3445284496007113,
-        "mean_best_iou": 0.25891921121915773
+        "mean_mask_area_frac": 0.016950977255572833,
+        "pointing_chance_baseline": 0.016950977255572833,
+        "mean_mass_in_mask": 0.05771026949641538,
+        "mean_mass_lift_over_chance": 3.5807319984242256,
+        "mean_best_iou": 0.27259160377322417
       },
       "clean_vs_train": {
-        "n": 6,
-        "pointing_accuracy": 0.3333333333333333,
+        "n": 1476,
+        "pointing_accuracy": 0.40989159891598914,
         "pointing_ci": [
-          0.09677141107923537,
-          0.7000066849253832
+          0.3850667332673497,
+          0.4351842818571658
         ],
-        "mean_mask_area_frac": 0.034322517341934144,
-        "pointing_chance_baseline": 0.034322517341934144,
-        "mean_mass_in_mask": 0.07638801758488019,
-        "mean_mass_lift_over_chance": 2.670213754220768,
-        "mean_best_iou": 0.1857030011006009
+        "mean_mask_area_frac": 0.016766496851244934,
+        "pointing_chance_baseline": 0.016766496851244934,
+        "mean_mass_in_mask": 0.05665627605384142,
+        "mean_mass_lift_over_chance": 3.548818396821028,
+        "mean_best_iou": 0.266784360157666
       },
       "by_class": {
         "glioma": {
-          "n": 6,
-          "pointing_accuracy": 0.3333333333333333,
+          "n": 436,
+          "pointing_accuracy": 0.25229357798165136,
           "pointing_ci": [
-            0.09677141107923537,
-            0.7000066849253832
+            0.21380940392244274,
+            0.29510455662539814
           ],
-          "mean_mask_area_frac": 0.034322517341934144,
-          "pointing_chance_baseline": 0.034322517341934144,
-          "mean_mass_in_mask": 0.07638801758488019,
-          "mean_mass_lift_over_chance": 2.670213754220768,
-          "mean_best_iou": 0.1857030011006009
+          "mean_mask_area_frac": 0.01856611519472545,
+          "pointing_chance_baseline": 0.01856611519472545,
+          "mean_mass_in_mask": 0.04580510778853519,
+          "mean_mass_lift_over_chance": 2.763573076298195,
+          "mean_best_iou": 0.1862429430646975
+        },
+        "meningioma": {
+          "n": 501,
+          "pointing_accuracy": 0.716566866267465,
+          "pointing_ci": [
+            0.6755725134186753,
+            0.754265401450946
+          ],
+          "mean_mask_area_frac": 0.022495029081092348,
+          "pointing_chance_baseline": 0.022495029081092348,
+          "mean_mass_in_mask": 0.08904272883604399,
+          "mean_mass_lift_over_chance": 4.323391009320375,
+          "mean_best_iou": 0.40813826489131433
+        },
+        "pituitary": {
+          "n": 539,
+          "pointing_accuracy": 0.2523191094619666,
+          "pointing_ci": [
+            0.21749182455878985,
+            0.2906518596410827
+          ],
+          "mean_mask_area_frac": 0.00998611049705002,
+          "pointing_chance_baseline": 0.00998611049705002,
+          "mean_mass_in_mask": 0.03533066662859102,
+          "mean_mass_lift_over_chance": 3.4640430366833317,
+          "mean_best_iou": 0.2005464224600341
         }
       },
       "by_plane": {
         "axial": {
-          "n": 6,
-          "pointing_accuracy": 0.3333333333333333,
+          "n": 487,
+          "pointing_accuracy": 0.42505133470225875,
           "pointing_ci": [
-            0.09677141107923537,
-            0.7000066849253832
+            0.3819006245796528,
+            0.46937518212354806
           ],
-          "mean_mask_area_frac": 0.034322517341934144,
-          "pointing_chance_baseline": 0.034322517341934144,
-          "mean_mass_in_mask": 0.07638801758488019,
-          "mean_mass_lift_over_chance": 2.670213754220768,
-          "mean_best_iou": 0.1857030011006009
+          "mean_mask_area_frac": 0.01786491836244771,
+          "pointing_chance_baseline": 0.01786491836244771,
+          "mean_mass_in_mask": 0.0646881954724139,
+          "mean_mass_lift_over_chance": 3.709154269964432,
+          "mean_best_iou": 0.2865888859840559
+        },
+        "coronal": {
+          "n": 500,
+          "pointing_accuracy": 0.468,
+          "pointing_ci": [
+            0.42467406591194606,
+            0.5118138918778207
+          ],
+          "mean_mask_area_frac": 0.017184829408302855,
+          "pointing_chance_baseline": 0.017184829408302855,
+          "mean_mass_in_mask": 0.05970645930478345,
+          "mean_mass_lift_over_chance": 3.870435787092355,
+          "mean_best_iou": 0.29600917236520663
+        },
+        "sagittal": {
+          "n": 489,
+          "pointing_accuracy": 0.33537832310838445,
+          "pointing_ci": [
+            0.29495965891007425,
+            0.37836327868396824
+          ],
+          "mean_mask_area_frac": 0.01524482496068315,
+          "pointing_chance_baseline": 0.01524482496068315,
+          "mean_mass_in_mask": 0.045538410241334655,
+          "mean_mass_lift_over_chance": 3.0602861568281816,
+          "mean_best_iou": 0.21717861336580052
         }
       },
       "by_correctness": {
-        "True": {
-          "n": 6,
-          "pointing_accuracy": 0.3333333333333333,
+        "False": {
+          "n": 49,
+          "pointing_accuracy": 0.46938775510204084,
           "pointing_ci": [
-            0.09677141107923537,
-            0.7000066849253832
+            0.3370350369034265,
+            0.6061913601936432
           ],
-          "mean_mask_area_frac": 0.034322517341934144,
-          "pointing_chance_baseline": 0.034322517341934144,
-          "mean_mass_in_mask": 0.07638801758488019,
-          "mean_mass_lift_over_chance": 2.670213754220768,
-          "mean_best_iou": 0.1857030011006009
+          "mean_mask_area_frac": 0.018851194849085696,
+          "pointing_chance_baseline": 0.018851194849085696,
+          "mean_mass_in_mask": 0.06819583985916505,
+          "mean_mass_lift_over_chance": 3.7952149517276763,
+          "mean_best_iou": 0.2966021258337499
+        },
+        "True": {
+          "n": 1427,
+          "pointing_accuracy": 0.4078486334968465,
+          "pointing_ci": [
+            0.3826313290789343,
+            0.43356074560666064
+          ],
+          "mean_mask_area_frac": 0.016694912967647038,
+          "pointing_chance_baseline": 0.016694912967647038,
+          "mean_mass_in_mask": 0.05626003314812253,
+          "mean_mass_lift_over_chance": 3.5403576882082555,
+          "mean_best_iou": 0.2657604845317878
         }
+      },
+      "does_localisation_predict_correctness": {
+        "pointing_acc_when_right": 0.4078486334968465,
+        "pointing_acc_when_wrong": 0.46938775510204084,
+        "difference": -0.061539121605194314,
+        "n_right": 1427,
+        "n_wrong": 49,
+        "reading": "If these two are close, a clinician glancing at the overlay learns nothing about whether to trust the call, and the heatmap is decoration."
       },
       "by_tumour_size": {
         "smallest": {
-          "n": 2,
-          "pointing_accuracy": 0.0,
+          "n": 369,
+          "pointing_accuracy": 0.22764227642276422,
           "pointing_ci": [
-            0.0,
-            0.6576197725990219
+            0.18779405772024277,
+            0.2731028054269096
           ],
-          "mean_mask_area_frac": 0.01092155568767339,
-          "pointing_chance_baseline": 0.01092155568767339,
-          "mean_mass_in_mask": 0.028735680505633354,
-          "mean_mass_lift_over_chance": 3.1361051031798506,
-          "mean_best_iou": 0.0775334140398048
+          "mean_mask_area_frac": 0.004679193188563894,
+          "pointing_chance_baseline": 0.004679193188563894,
+          "mean_mass_in_mask": 0.01694918979860984,
+          "mean_mass_lift_over_chance": 3.484763939992372,
+          "mean_best_iou": 0.15897583866994294
         },
         "small": {
-          "n": 1,
-          "pointing_accuracy": 1.0,
+          "n": 369,
+          "pointing_accuracy": 0.3875338753387534,
           "pointing_ci": [
-            0.20654931430031861,
-            1.0
+            0.33922728901576427,
+            0.43815798283106977
           ],
-          "mean_mask_area_frac": 0.020328443497419357,
-          "pointing_chance_baseline": 0.020328443497419357,
-          "mean_mass_in_mask": 0.05594535544514656,
-          "mean_mass_lift_over_chance": 2.752072752262055,
-          "mean_best_iou": 0.18359150889271372
+          "mean_mask_area_frac": 0.009652473185170986,
+          "pointing_chance_baseline": 0.009652473185170986,
+          "mean_mass_in_mask": 0.03623641524615322,
+          "mean_mass_lift_over_chance": 3.7250070314142616,
+          "mean_best_iou": 0.26285841815332756
         },
         "large": {
-          "n": 1,
-          "pointing_accuracy": 1.0,
+          "n": 371,
+          "pointing_accuracy": 0.49326145552560646,
           "pointing_ci": [
-            0.20654931430031861,
-            1.0
+            0.4427183101314597,
+            0.5439427171313551
           ],
-          "mean_mask_area_frac": 0.0316685251891613,
-          "pointing_chance_baseline": 0.0316685251891613,
-          "mean_mass_in_mask": 0.11007539182901382,
-          "mean_mass_lift_over_chance": 3.475861006204597,
-          "mean_best_iou": 0.47776417788657694
+          "mean_mask_area_frac": 0.0163596109223534,
+          "pointing_chance_baseline": 0.0163596109223534,
+          "mean_mass_in_mask": 0.06117931117599881,
+          "mean_mass_lift_over_chance": 3.7628104256142345,
+          "mean_best_iou": 0.31550025130252857
         },
         "largest": {
-          "n": 2,
-          "pointing_accuracy": 0.0,
+          "n": 367,
+          "pointing_accuracy": 0.5313351498637602,
           "pointing_ci": [
-            0.0,
-            0.6576197725990219
+            0.4802205480507251,
+            0.5818005648880223
           ],
-          "mean_mask_area_frac": 0.06604751199483871,
-          "pointing_chance_baseline": 0.06604751199483871,
-          "mean_mass_in_mask": 0.11741799861192703,
-          "mean_mass_lift_over_chance": 1.760569280249127,
-          "mean_best_iou": 0.14889774587235266
+          "mean_mask_area_frac": 0.03648378421889984,
+          "pointing_chance_baseline": 0.03648378421889984,
+          "mean_mass_in_mask": 0.11253855789552264,
+          "mean_mass_lift_over_chance": 3.2197487666373523,
+          "mean_best_iou": 0.3298808762716351
         }
       }
     }
   },
   "faithfulness": {
     "resnet50": {
-      "n_sampled": 5,
+      "n_sampled": 300,
       "subset": "clean_vs_train",
       "steps": 20,
       "deletion_auc_real": {
-        "mean": 0.8389452254772187,
-        "std": 0.053542876183794844,
-        "n": 5
+        "mean": 0.8226896059463422,
+        "std": 0.10149024446924478,
+        "n": 300
       },
       "deletion_auc_random": {
-        "mean": 0.3741922467201948,
-        "std": 0.15927980845515294,
-        "n": 5
+        "mean": 0.40258812642842534,
+        "std": 0.11530249977866736,
+        "n": 300
       },
       "insertion_auc_real": {
-        "mean": 0.7732046495378018,
-        "std": 0.043471945280177365,
-        "n": 5
+        "mean": 0.7937129040919243,
+        "std": 0.0913615752977922,
+        "n": 300
       },
       "insertion_auc_random": {
-        "mean": 0.35917350970208645,
-        "std": 0.1430512066457542,
-        "n": 5
+        "mean": 0.40511878131019574,
+        "std": 0.11874206360331038,
+        "n": 300
       },
       "model_randomisation_corr": {
-        "mean": -0.1329659320466093,
-        "std": 0.08958910366382819,
-        "n": 5
+        "mean": 0.045882553354019244,
+        "std": 0.24966679393730004,
+        "n": 300
       },
       "reading": "Deletion AUC lower is better: a faithful map kills the tumour probability fast when its own top pixels are removed. Insertion AUC higher is better. Compare each against the random baseline; the gap is the evidence. Model-randomisation correlation near 1 means the map ignores the trained weights and is tracking image structure."
     },
     "vit": {
-      "n_sampled": 5,
+      "n_sampled": 300,
       "subset": "clean_vs_train",
       "steps": 20,
       "deletion_auc_real": {
-        "mean": 0.429108276590705,
-        "std": 0.06103125643781807,
-        "n": 5
+        "mean": 0.4315570980031043,
+        "std": 0.10218304933702882,
+        "n": 300
       },
       "deletion_auc_random": {
-        "mean": 0.5047459708154202,
-        "std": 0.15562050167558084,
-        "n": 5
+        "mean": 0.47625117011678725,
+        "std": 0.13527231010340277,
+        "n": 300
       },
       "insertion_auc_real": {
-        "mean": 0.6067782636731864,
-        "std": 0.18154584627472464,
-        "n": 5
+        "mean": 0.5836136721639584,
+        "std": 0.1889188699358781,
+        "n": 300
       },
       "insertion_auc_random": {
-        "mean": 0.5128228003531695,
-        "std": 0.17827169074590252,
-        "n": 5
+        "mean": 0.47507949659973386,
+        "std": 0.13562865605235472,
+        "n": 300
       },
       "model_randomisation_corr": {
-        "mean": 1.0,
-        "std": 1.1102230246251565e-16,
-        "n": 5
+        "mean": 0.3376153777650442,
+        "std": 0.20326167274620208,
+        "n": 300
       },
       "reading": "Deletion AUC lower is better: a faithful map kills the tumour probability fast when its own top pixels are removed. Insertion AUC higher is better. Compare each against the random baseline; the gap is the evidence. Model-randomisation correlation near 1 means the map ignores the trained weights and is tracking image structure."
     }

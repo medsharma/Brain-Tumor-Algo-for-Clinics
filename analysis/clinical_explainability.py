@@ -20,10 +20,17 @@ Part 2, localisation:
   own prediction was right.
 
 Part 3, faithfulness:
-  * deletion / insertion curves, with a random-heatmap baseline
-  * model-randomisation sanity check (Adebayo et al. 2018): scramble the head
-    and confirm the heatmap changes. A saliency map that survives a randomised
-    model is tracking image edges, not model reasoning.
+  * deletion / insertion curves, with a random-heatmap baseline.
+    **Read the caveat on these.** A random heatmap is spatially scattered and a
+    real one is spatially concentrated, so deleting each removes a very
+    different kind of structure from the image. The comparison is confounded by
+    concentration, not purely by importance, and the two curves can disagree
+    with each other. They are reported, and they are not the headline.
+  * model-randomisation sanity check (Adebayo et al. 2018): re-initialise the
+    weights the explanation actually reads and confirm the heatmap changes. A
+    saliency map that survives a randomised model is tracking image structure,
+    not model reasoning. The two paths read different weights, so they are
+    randomised differently. See `randomise_for_explanation`.
   * does localisation quality predict correctness? If not, the overlay is
     decoration and the UI must say so.
 
@@ -269,19 +276,52 @@ def _auc(curve: Sequence[float]) -> float:
     return float(trap(curve, dx=1.0 / (len(curve) - 1)))
 
 
-def randomise_head(model: torch.nn.Module, model_name: str, seed: int = 0) -> torch.nn.Module:
-    """Copy of the model with the classification head re-initialised."""
+def randomise_for_explanation(
+    model: torch.nn.Module, model_name: str, seed: int = 0
+) -> torch.nn.Module:
+    """Copy of the model with the weights the EXPLANATION uses re-initialised.
+
+    Adebayo et al. 2018: a saliency map that survives randomising the model is
+    tracking image structure, not model reasoning. The test only means something
+    if you randomise the weights that particular explanation actually reads.
+
+    The two paths read different weights, so they need different randomisation:
+
+      resnet50 / Grad-CAM      gradients flow from the logit back through the
+                               classification head to the layer4 feature map, so
+                               randomising the head is a valid test.
+
+      vit / attention rollout  reads encoder attention weights ONLY. It never
+                               touches the head. Randomising the head leaves the
+                               map bit-identical and returns correlation 1.000,
+                               which looks like a catastrophic failure and is in
+                               fact a vacuous test. The encoder blocks must be
+                               randomised instead.
+
+    An earlier version of this file randomised the head for both and reported
+    corr 1.000 for ViT as if it were a result. It was not.
+    """
     import copy
     m = copy.deepcopy(model)
     g = torch.Generator(device="cpu").manual_seed(seed)
-    head = m.backbone.heads if model_name == "vit" else m.backbone.fc
-    for mod in head.modules():
-        if isinstance(mod, torch.nn.Linear):
-            w = torch.empty_like(mod.weight, device="cpu")
-            torch.nn.init.kaiming_uniform_(w, a=5 ** 0.5, generator=g)
-            mod.weight.data.copy_(w.to(mod.weight.device))
-            if mod.bias is not None:
-                mod.bias.data.zero_()
+
+    def reinit(module: torch.nn.Module) -> None:
+        for mod in module.modules():
+            if isinstance(mod, (torch.nn.Linear, torch.nn.Conv2d)):
+                w = torch.empty_like(mod.weight, device="cpu")
+                if w.dim() >= 2:
+                    torch.nn.init.kaiming_uniform_(w, a=5 ** 0.5, generator=g)
+                else:
+                    w.normal_(0.0, 0.02, generator=g)
+                mod.weight.data.copy_(w.to(mod.weight.device))
+                if getattr(mod, "bias", None) is not None:
+                    mod.bias.data.zero_()
+
+    if model_name == "vit":
+        # rollout reads encoder self-attention; randomise the encoder blocks
+        reinit(m.backbone.encoder.layers)
+    else:
+        reinit(m.backbone.fc)
     return m
 
 
@@ -305,7 +345,7 @@ def run_faithfulness(
     real_del, real_ins, rand_del, rand_ins = [], [], [], []
     rand_corr: List[float] = []
 
-    rmodel = randomise_head(model, model_name, seed=rng_seed)
+    rmodel = randomise_for_explanation(model, model_name, seed=rng_seed)
 
     import time
     t0 = time.time()
@@ -436,6 +476,8 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=None, help="cap images, for a dry run")
     ap.add_argument("--faithful-n", type=int, default=300)
     ap.add_argument("--skip-faithfulness", action="store_true")
+    ap.add_argument("--skip-localisation", action="store_true",
+                    help="reuse localization_per_image.csv from a previous run")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -448,18 +490,26 @@ def main() -> None:
 
     all_loc, faith = [], {}
     for model_name in args.models:
-        print(f"\n[{model_name} seed {args.seed}] localisation")
         df = attach_predictions(pairs, model_name, args.seed)
-        loc = run_localisation(df, model_name, args.seed, limit=args.limit)
-        all_loc.append(loc)
+
+        if not args.skip_localisation:
+            print(f"\n[{model_name} seed {args.seed}] localisation")
+            all_loc.append(run_localisation(df, model_name, args.seed, limit=args.limit))
 
         if not args.skip_faithfulness:
             print(f"[{model_name} seed {args.seed}] faithfulness")
             faith[model_name] = run_faithfulness(df, model_name, args.seed,
                                                  n_sample=args.faithful_n)
 
-    loc = pd.concat(all_loc, ignore_index=True)
-    loc.to_csv(OUT_DIR / "localization_per_image.csv", index=False)
+    loc_csv = OUT_DIR / "localization_per_image.csv"
+    if args.skip_localisation:
+        if not loc_csv.exists():
+            raise SystemExit(f"--skip-localisation needs {loc_csv}, which does not exist")
+        loc = pd.read_csv(loc_csv)
+        print(f"\nreused localisation from {loc_csv.name} ({len(loc)} rows)")
+    else:
+        loc = pd.concat(all_loc, ignore_index=True)
+        loc.to_csv(loc_csv, index=False)
 
     report = {
         "seed": args.seed,

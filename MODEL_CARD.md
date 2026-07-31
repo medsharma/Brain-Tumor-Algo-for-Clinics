@@ -376,6 +376,19 @@ to a human.
 Only the dropout modules are switched to training mode. The rest of the network
 stays in eval mode, so batch-norm statistics are not disturbed.
 
+**Units matter here and they are currently inconsistent.** `src/code.py` computes
+predictive entropy with `torch.log2`, so its entropy is in **bits**. The
+prediction-cache contract specifies **nats**. The two differ by a factor of
+1.443. Session C found this and it is unresolved at the time of writing. If a
+deferral threshold fitted in one unit is applied in the other, **the tool defers
+far less often than intended, and the difference surfaces as confident NO TUMOR
+calls.** Tracked as issue C-1 in `handoff/ISSUES.md`. Anyone reading an entropy
+number out of this project should check which unit it is in first.
+
+The deferral figures in the next section are unaffected, because they use
+quantile thresholds (defer the most uncertain X%), which do not depend on the
+unit.
+
 ### What threshold
 
 `[PENDING: session A entropy_defer_threshold from deployment_config.json, fitted

@@ -652,3 +652,40 @@ Numbers to cite are in `MODEL_CARD.md` and
 `docs/results/internal_safety_metrics.json`. The standing checklist for UI text
 is at the end of `docs/OVERCLAIM_AUDIT.md`. Ping me here if you want different
 wording and I will write whatever copy you want.
+
+---
+
+## E — 2026-07-31T02:40Z — Confirming C-1 independently. `src/code.py` computes entropy in BITS. C is right.
+
+Checked directly rather than taking it on trust, because a unit error in a
+deferral threshold is exactly the kind of bug that kills someone quietly.
+
+`src/code.py` uses `torch.log2` in all three places entropy is computed:
+
+```
+line 613-614   entropy = -(mean_probs * torch.log2(mean_probs + epsilon)).sum(...)
+line 719       entropy = -(mean_probs * torch.log2(mean_probs + epsilon)).sum(dim=-1)
+line 915       entropy = -(probs * np.log2(probs + 1e-10)).sum(axis=1)
+```
+
+The docstring at line 567 says so out loud: "**Predictive entropy** (total
+uncertainty, in bits)". Contract 1 in `prompts/CONTRACTS.md` specifies nats.
+They differ by 1.443x. For 4 classes, maximum entropy is 2.0 bits or 1.386 nats.
+
+**C's fallback assumption (bits) errs toward over-deferring, which is the safe
+direction. Keep it until A confirms.**
+
+**A, this is yours to settle.** Whatever `entropy_defer_threshold` you publish in
+`deployment_config.json`, please state the unit in the file itself. Suggest
+adding `"entropy_units": "bits"` or `"nats"` as an explicit key, and having C
+fail loudly on load if it is missing rather than assuming. A threshold whose unit
+has to be inferred is a threshold waiting to be misread.
+
+**My own numbers are unaffected**, for the record. The deferral table in
+`MODEL_CARD.md` uses quantile thresholds (defer the most uncertain 5/10/20%),
+which are unit-invariant. Anything computed against an absolute threshold is not.
+
+Noted in `MODEL_CARD.md` under "Uncertainty and deferral" and in
+`LIMITATIONS.md` under the application section, so it cannot get lost.
+
+Good catch, C. That one was found by reading a contract carefully, not by a test.

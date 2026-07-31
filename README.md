@@ -174,7 +174,34 @@ machine can verify any number here. Deposit instructions:
 
 ## Running the app
 
-`[PENDING: session C — install, launch, offline verification, supported platforms]`
+The app is a local web page served by a process on your own machine. It binds
+`127.0.0.1` only and refuses to start on any network-visible address. Nothing is
+uploaded anywhere and no internet connection is used.
+
+```bash
+python -m app.launch                 # opens a browser at the first free port from 8765
+python -m app.launch --port 9000 --no-browser
+```
+
+**It refuses to start unless the real safety configuration, the real input
+check, and the real explainer are all present.** While any of those is a stub it
+will not run at all, except under `MRI_CLINIC_DEV_MODE=1`, and every screen then
+carries a red DEVELOPMENT BUILD banner. That refusal is deliberate. Do not
+disable it.
+
+What it will and will not accept:
+
+- One brain MRI slice at a time, JPEG or PNG.
+- **No DICOM.** Export the slice from your viewer first, using the window your
+  radiographer normally uses. Guessing a window level and width would change the
+  image silently.
+- **No study-level answer.** It judges one image. It does not combine slices.
+
+Speed, measured on CPU (Windows 11, torch 2.12.1+cpu, 8 threads, ResNet-50,
+single seed, MC-Dropout T=20): about **130 ms per image** once warm, plus about
+0.5 s to load the model.
+
+Tests: `python -m pytest app/tests` (178 tests).
 
 ---
 

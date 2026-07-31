@@ -173,9 +173,24 @@ errors. Nothing more has been demonstrated.
 
 ## Application and deployment
 
-`[PENDING: session C — anything unresolved in the app: offline verification,
-preprocessing parity, audit logging, packaging.]`
-
+- **Not packaged.** No PyInstaller build, no installer, no desktop shortcut.
+  Running it currently means having Python and the full dependency set
+  installed, which is not a realistic ask for a rural clinic.
+- **The app cannot run in its real configuration yet**, because the safety
+  config, the input check and the explainer are still being finalised. It
+  refuses to start rather than run on stubs, which is correct, but it means the
+  end-to-end system has never run in the configuration it would ship in.
+- **The deployed configuration has not been re-validated against the safety
+  analysis.** `app/DEPLOYED_CONFIG_VALIDATION.md` does not exist yet.
+- **An entropy unit mismatch was found and is unresolved at time of writing.**
+  `src/code.py` computes predictive entropy in bits (log base 2); the prediction
+  cache contract specifies nats. They differ by a factor of 1.443. If the
+  deferral threshold and the app disagree about units, **the app defers far less
+  often than intended, and the difference surfaces as confident NO TUMOR
+  calls.** The app currently assumes bits, which errs toward over-deferring, and
+  says so loudly at startup. Tracked as issue C-1 in `handoff/ISSUES.md`. This
+  is exactly the class of bug that kills people quietly, and it was caught by
+  reading a contract carefully rather than by any test.
 - **No deployment has happened.** No pilot site, no clinic, no user.
 - **No user testing.** Nobody outside this project has used the interface.
 - **No training material for clinicians.** A tool this easy to over-trust needs

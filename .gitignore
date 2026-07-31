@@ -4,3 +4,12 @@ __pycache__/
 
 # Model checkpoints (>100MB, exceed GitHub's file size limit)
 *.pth
+
+# Session B: out-of-scope image set. Regenerate with
+#   python analysis/out_of_scope_rejection.py build
+# Acquisition instructions: reproducibility/out_of_scope_data.md
+data/out_of_scope/_raw/
+data/out_of_scope/cat1_corruption/
+data/out_of_scope/cat2_nonbrain_medical/
+data/out_of_scope/cat3_nonmedical/
+data/out_of_scope/cat4_out_of_scope_brain/

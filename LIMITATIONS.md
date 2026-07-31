@@ -188,8 +188,9 @@ preprocessing parity, audit logging, packaging.]`
 - **Checkpoints are not in the repository.** Each exceeds GitHub's 100 MB limit.
   Until the archive deposit is made, nobody outside this machine can reproduce or
   verify any number in this project.
-  `[PENDING: Zenodo DOI]`. See
-  [reproducibility/CHECKPOINT_DEPOSIT.md](reproducibility/CHECKPOINT_DEPOSIT.md).
+  **No DOI exists yet.** See
+  [reproducibility/CHECKPOINT_DEPOSIT.md](reproducibility/CHECKPOINT_DEPOSIT.md)
+  for how to make the deposit.
 - **Training ran entirely on CPU** and took a long time. Reproducing the full
   5-seed, 2-backbone run is expensive for anyone who wants to check the work.
 - **The exact CPU model was not recorded** during the original run.

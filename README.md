@@ -168,7 +168,7 @@ Full command list and environment notes:
 limit. Until they are deposited in an archive, nobody outside the original
 machine can verify any number here. Deposit instructions:
 [reproducibility/CHECKPOINT_DEPOSIT.md](reproducibility/CHECKPOINT_DEPOSIT.md).
-DOI: `[PENDING: Zenodo DOI]`.
+**No DOI exists**, because the deposit has not been made.
 
 ---
 
@@ -207,7 +207,12 @@ verify against the hashes in [docs/DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md).
 
 Both trace back to the same three source collections. That is the whole problem.
 
-**Code:** `[PENDING: license not yet chosen — see docs/OPEN_QUESTIONS.md]`
+**Code: no license.** This repository is public and carries no license file,
+which means all rights reserved by default. Nobody may legally reuse this code
+until a license is chosen. That is a decision nobody has made yet, not an
+oversight waiting to be typed in. See
+[docs/OPEN_QUESTIONS.md](docs/OPEN_QUESTIONS.md) item 1, which recommends
+Apache-2.0 and explains why.
 
 ---
 

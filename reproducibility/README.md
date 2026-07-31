@@ -137,7 +137,7 @@ record of the training host.
   each over GitHub's 100 MB limit, currently existing only on the original
   machine. **Nobody outside that machine can verify any number in this project.**
   Deposit instructions and a DOI slot: `reproducibility/CHECKPOINT_DEPOSIT.md`.
-  DOI: `[PENDING: Zenodo DOI]`. sha256 for all ten:
+  **No DOI exists yet.** sha256 for all ten:
   `MODEL_CARD.md`, "Checkpoint hashes".
 - **Training data:** 4-class brain tumor MRI dataset (glioma / meningioma /
   pituitary / no-tumor), 1,800 images per class (7,200 total) under

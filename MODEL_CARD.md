@@ -578,7 +578,9 @@ Windows 11. **All training and evaluation ran on CPU.** No GPU was used.
 Checkpoints exceed GitHub's 100 MB limit and are not in the repository. Archive
 deposit instructions are in
 [reproducibility/CHECKPOINT_DEPOSIT.md](reproducibility/CHECKPOINT_DEPOSIT.md).
-DOI: `[PENDING: Zenodo DOI once the deposit is made]`.
+**No DOI exists.** The deposit has not been made, so the hashes below are
+currently the only way to identify these files, and the files themselves exist
+in one place.
 
 sha256, relative to `results/20260703_155524/`:
 

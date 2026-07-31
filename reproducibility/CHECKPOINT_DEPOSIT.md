@@ -135,8 +135,8 @@ wrong conclusion:
 Publishing is irreversible on Zenodo. Files cannot be changed afterwards, only
 superseded by a new version.
 
-Once it is published, replace every `[PENDING: Zenodo DOI]` marker with the real
-DOI:
+Once it is published, replace every "No DOI exists" statement with the real DOI.
+They are in:
 
 - `MODEL_CARD.md`, "Version and provenance"
 - `README.md`, "Reproducing this"
@@ -145,7 +145,7 @@ DOI:
 - this file
 
 ```bash
-grep -rn "PENDING: Zenodo DOI" .
+grep -rn "No DOI exists" .
 ```
 
 ### 6. Verifying a download

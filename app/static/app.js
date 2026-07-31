@@ -119,6 +119,9 @@ async function loadDownloads() {
   table.innerHTML = rows.join("");
 
   el("download-warning").textContent = data.not_validated || "";
+
+  const sizeSpan = el("setup-size");
+  if (sizeSpan) sizeSpan.textContent = data.total_size_human;
 }
 
 async function analyze(file) {

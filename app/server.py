@@ -53,12 +53,19 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
-from .core import decision, downloads, explain_adapter, paths, version as version_module
+from .core import (
+    decision,
+    downloads,
+    explain_adapter,
+    installer,
+    paths,
+    version as version_module,
+)
 from .core.engine import TriageEngine, TriageResult
 from .core.readiness import NotReadyError
 
@@ -331,6 +338,35 @@ def create_app() -> FastAPI:
         items = catalogue()
         return downloads.manifest(get_engine().config, items)
 
+    @app.get("/api/source.zip")
+    async def source_zip() -> Response:
+        """The application code, without weights, tests or the built package."""
+        return Response(
+            content=installer.build_source_zip(),
+            media_type="application/zip",
+            headers={"Content-Disposition": 'attachment; filename="brain-mri-triage-source.zip"'},
+        )
+
+    @app.get("/api/setup")
+    async def setup_script(request: Request) -> Response:
+        """The one-file installer, with this server's address written into it.
+
+        Generated per request rather than stored, because the right address
+        depends on how the caller reached us. Someone on the LAN needs the LAN
+        address baked in, not 127.0.0.1, or the script they download will try to
+        fetch 1.7 GB from their own machine.
+        """
+        base = str(request.base_url).rstrip("/")
+        script = installer.build_installer(base, catalogue())
+        return Response(
+            content=script,
+            media_type="text/x-python; charset=utf-8",
+            headers={
+                "Content-Disposition":
+                    'attachment; filename="setup_brain_mri_triage.py"',
+            },
+        )
+
     @app.get("/api/downloads/{key}")
     async def fetch_download(key: str) -> Response:
         """Stream one file.
@@ -340,7 +376,22 @@ def create_app() -> FastAPI:
         `../../secrets` simply does not match anything.
         """
         item = downloads.find(catalogue(), key)
-        if item is None or not item.path.is_file():
+        if item is None:
+            raise HTTPException(status_code=404, detail="No such file.")
+
+        # Generated files (the settings file) are held in memory, because they
+        # describe the download rather than any file on this disk.
+        if item.content is not None:
+            return Response(
+                content=item.content,
+                media_type="application/octet-stream",
+                headers={
+                    "X-Content-SHA256": item.sha256,
+                    "Content-Disposition": f'attachment; filename="{item.filename}"',
+                },
+            )
+
+        if not item.path.is_file():
             raise HTTPException(status_code=404, detail="No such file.")
 
         return FileResponse(

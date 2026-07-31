@@ -16,5 +16,22 @@ fastapi>=0.110
 uvicorn>=0.27
 python-multipart>=0.0.9
 
+# Session B's input check (src/input_validation.py) uses these to find the
+# brain-shaped region and decide whether an image is a scan at all. They are
+# imported inside a function, so nothing that scans imports statically will
+# notice they are missing.
+#
+# Leaving them out does not produce an obvious failure. The app starts, looks
+# healthy, and rejects every real brain MRI with "the file could not be read as
+# an image", because the validator fails closed on any exception. That exact
+# bug shipped once in the PyInstaller build. Do not remove these.
+scipy>=1.10
+scikit-image>=0.21
+
+# Session D's heatmap (src/explain_runtime.py) uses cv2 to resize the attention
+# map on the ViT path, imported inside a function for the same reason. The
+# shipped backbone is ViT, so this is the path that needs it.
+opencv-python>=4.8
+
 # Used by the benchmarking and validation tools in app/tools/, not by the app.
 pandas>=2.0

@@ -38,7 +38,12 @@ _hash_cache: Dict[tuple, str] = {}
 
 @dataclass(frozen=True)
 class Downloadable:
-    """One file the app will hand out."""
+    """One file the app will hand out.
+
+    ``content`` is set for files that are generated rather than read from disk.
+    The settings file is the only one: it has to describe the checkpoints being
+    served, and those are not always the ones on this machine.
+    """
 
     key: str                 # url-safe identifier
     filename: str            # what the browser should save it as
@@ -47,6 +52,7 @@ class Downloadable:
     bytes: int
     sha256: str
     description: str
+    content: Optional[bytes] = None
 
     def to_dict(self) -> dict:
         return {
@@ -173,20 +179,43 @@ def build_catalogue(cfg: DeploymentConfig) -> List[Downloadable]:
     # threshold, no deferral cutoff, no temperature. The app refuses to start
     # rather than invent them, which is the correct behaviour and also means a
     # model-only download is useless on its own.
+    #
+    # Generated rather than copied, because it has to describe the checkpoints
+    # actually being served. The config on this machine records the SHA-256 of
+    # the 459 MB training checkpoints; what gets handed out is the 344 MB
+    # stripped copies. Serving the file verbatim ships a config whose hashes
+    # match nothing in the download, and the receiving app then refuses to start
+    # with "Model file does not match the deployment config".
+    #
+    # That refusal is correct and it is not a bug to work around. The config is
+    # what makes it a safety check, so the config is what has to be right.
     cfg_path = Path(cfg.source_path)
     if cfg_path.is_file():
+        raw = json.loads(cfg_path.read_text(encoding="utf-8"))
+        by_name = {i.filename: i for i in items if i.kind == "model"}
+        for checkpoint in raw.get("checkpoints", []):
+            name = Path(str(checkpoint.get("path", "")).replace("\\", "/")).name
+            served = by_name.get(name)
+            if served is not None:
+                # relative, so the folder survives being copied or moved
+                checkpoint["path"] = f"models/{name}"
+                checkpoint["sha256"] = served.sha256
+        raw["checkpoint_paths_are"] = "relative to the folder containing this file"
+        blob = json.dumps(raw, indent=2).encode("utf-8")
+
         items.append(Downloadable(
             key="deployment_config.json",
             filename="deployment_config.json",
             path=cfg_path,
             kind="config",
-            bytes=cfg_path.stat().st_size,
-            sha256=file_sha256(cfg_path),
+            bytes=len(blob),
+            sha256=hashlib.sha256(blob).hexdigest(),
             description=(
                 "The safety settings: which model, the referral threshold, the "
                 "deferral cutoff and the temperature. Required. The app will "
                 "not start without it and will not guess these numbers."
             ),
+            content=blob,
         ))
 
     rejector = paths.repo_root() / "analysis" / "results" / "ood" / "rejector_config.json"

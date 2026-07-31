@@ -424,3 +424,47 @@ footer p { margin: 0.35rem 0; white-space: pre-wrap; }
   border-radius: 4px;
   max-width: 70ch;
 }
+
+/* The setup path is the point of the section. The file table is reference
+   material behind a disclosure, so these two steps carry the weight. */
+.setup-steps {
+  margin: 1.2rem 0;
+  padding: 1rem 1.2rem;
+  background: #f4f8f4;
+  border-left: 4px solid #2e7d32;
+  border-radius: 4px;
+}
+
+.setup-step {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0.6rem 0;
+  flex-wrap: wrap;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: #2e7d32;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex: 0 0 auto;
+}
+
+.setup-download { text-decoration: none; }
+
+.setup-command {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #22292f;
+  color: #f5f5f5;
+  padding: 0.4rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  user-select: all;
+}

@@ -139,37 +139,49 @@
 
   <!-- ---------------------------------------------------------------- -->
   <section id="download-panel" class="panel">
-    <h2>Run this yourself, offline</h2>
+    <h2>Run this on your own laptop</h2>
     <p class="download-intro">
-      These are the exact files this server is running on. Downloaded and put
-      next to a copy of the app, they give the same answers this page gives.
-      Not a similar model. The same weights and the same safety settings.
+      This page, running on your machine, offline. Same model, same settings,
+      same answers. You need Python 3.10 or newer and nothing else.
     </p>
 
-    <p class="download-intro">
-      Once installed it needs no internet at all. That is the point: a clinic
-      with no radiologist and no reliable connection can run it on a laptop.
-    </p>
+    <div class="setup-steps">
+      <p class="setup-step">
+        <span class="step-number">1</span>
+        <a class="primary-button setup-download" href="/api/setup" download>
+          Download the setup file
+        </a>
+      </p>
+      <p class="setup-step">
+        <span class="step-number">2</span>
+        Run it:
+        <code class="setup-command">python setup_brain_mri_triage.py</code>
+      </p>
+    </div>
 
-    <div id="download-summary" class="download-summary"></div>
-    <table id="download-table" class="download-table"></table>
+    <p class="download-intro">
+      It fetches everything, checks each file against its checksum, installs
+      what it needs and opens this page on your machine. One download of about
+      <span id="setup-size">1.7 GB</span>.
+      <strong>After that it never touches the internet again.</strong>
+    </p>
 
     <details class="download-howto">
-      <summary>How to use these files</summary>
-      <ol>
-        <li>Download every file in the table. All of them are needed.</li>
-        <li>Check each SHA-256 against the value shown. A part-downloaded model
-            file can still load and then give wrong answers.</li>
-        <li>Put the <code>.pth</code> model files in a <code>models</code>
-            folder next to the app.</li>
-        <li>Put the two <code>.json</code> settings files where the app expects
-            them, as described in the app's README.</li>
-        <li>Start the app. It refuses to start if anything is missing or does
-            not match, which is deliberate.</li>
-      </ol>
+      <summary>What it downloads, and doing it by hand instead</summary>
+      <div id="download-summary" class="download-summary"></div>
+      <table id="download-table" class="download-table"></table>
       <p>
-        On Windows you can check a file with:
-        <code>certutil -hashfile best_vit_seed42.pth SHA256</code>
+        The setup file above does all of this for you. To do it manually: put
+        the <code>.pth</code> files in a <code>models</code> folder next to the
+        app, put <code>deployment_config.json</code> in
+        <code>analysis/results/safety/</code> and
+        <code>rejector_config.json</code> in
+        <code>analysis/results/ood/</code>, then run <code>python -m app</code>.
+      </p>
+      <p>
+        Check a file on Windows with
+        <code>certutil -hashfile best_vit_seed42.pth SHA256</code>. A
+        part-downloaded model can still load and then give wrong answers.
       </p>
     </details>
 

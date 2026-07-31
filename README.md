@@ -66,14 +66,18 @@ It is not a real-world estimate. Nothing in this repository is.
 
 Backbone: ResNet-50, 5 random seeds, MC-Dropout with 20 stochastic passes.
 
-| what | number | on what |
-|---|---|---|
-| **Tumor called "no tumor"** | **1.00%** (95% CI 0.74 to 1.35) | 821 tumor images x 5 seeds |
-| ...for gliomas specifically | 1.88% | 1,385 evaluations |
-| ...for meningiomas | 1.13% | 1,330 evaluations |
-| ...for pituitary tumors | 0.00% | 1,390 evaluations |
-| No-tumor scan flagged as tumor | 1.72% | 291 no-tumor images x 5 seeds |
-| Four-way accuracy | 0.964 | 1,112 images |
+| what | number | 95% CI | on what |
+|---|---|---|---|
+| **Tumor called "no tumor"** | **1.00%** | 0.74 to 1.35 | 821 tumor images x 5 seeds |
+| ...for gliomas specifically | 1.88% | 1.28 to 2.74 | 1,385 evaluations |
+| ...for meningiomas | 1.13% | 0.68 to 1.85 | 1,330 evaluations |
+| ...for pituitary tumors | 0.00% | 0.00 to 0.28 | 1,390 evaluations |
+| No-tumor scan flagged as tumor | 1.72% | 1.17 to 2.52 | 291 no-tumor images x 5 seeds |
+| Four-way accuracy | 0.964 | ≈0.948 to 0.977 | 1,112 images |
+
+Intervals are Wilson score intervals except the accuracy row, which is the
+bootstrap interval from the original run. **Read them as a floor on the
+uncertainty, not a description of it** — see the systematic-misses point below.
 
 Two things to sit with:
 

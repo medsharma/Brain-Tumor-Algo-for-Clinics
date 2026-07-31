@@ -156,3 +156,104 @@ Required by CONTRACTS.md. Run as a test, not a one-off grep, in
 - **No study-level call.** Per-slice only, until A fits a study threshold.
 - **No percentages** until A reports a calibration error. Words only.
 - **No external validation claim** anywhere in the interface.
+
+---
+
+# Integration update, 2026-07-30T23:10Z. Both stubs replaced. 244 tests pass.
+
+## The app is running on real configs for the first time
+
+| dependency | before | now |
+|---|---|---|
+| A, `deployment_config.json` | not published, stub | **real**, vit ensemble5, 5 seeds |
+| B, `rejector_config.json` | not published, stub | **real**, `precheck_only` |
+| D, `src/explain_runtime.py` | pulled in, uncommitted | **merged**, committed |
+
+Tests: **244 passing**, up from 219. The extra ones are D's explainer tests,
+which used to skip, plus a new guard described below.
+
+**Parity still holds, on the real config.** Research path against deployed path,
+200 BRISC images, ResNet-50:
+
+| measurement | result |
+|---|---|
+| max abs probability difference | **0.0** |
+| max abs entropy difference | **0.0** |
+| predicted label mismatches | **0** |
+
+## The app stays on CPU. This is now load-bearing.
+
+The environment has a working GPU. `src/code.py` picks CUDA automatically, and
+the research pipeline now runs there.
+
+**The app does not, and must not.** `app/core/model.py` loads with
+`map_location="cpu"` and never moves a tensor to a device. Nothing under `app/`
+references CUDA except a benchmark that only reports whether it exists.
+
+That is deliberate. MC Dropout draws random masks, and CUDA draws them from a
+different RNG stream than CPU, so GPU results are not bit-identical to CPU and
+cannot be. Measured during integration: 0.17% of labels flip between devices.
+The parity result above is the strongest claim this project has. Moving the app
+to a GPU would destroy it, to speed up a path that already runs in 133 ms
+against a 30 s budget, on laptops that have no GPU anyway.
+
+## C-1 is resolved: the entropy unit question
+
+`src/code.py` uses `torch.log2`, so its `entropy` is in **bits**. Session A's
+prediction cache column is in **nats**. Both were right and they were different
+numbers.
+
+The published config now states it outright: `entropy_units: "nats"`, and
+`entropy_defer_threshold: 0.0378` is in nats. The app reads the declared unit
+instead of assuming. The `entropy_units_assumed` readiness warning does not
+fire.
+
+## A bug I introduced by finishing the other sessions
+
+**Completing A, B and D silently removed "DEVELOPMENT BUILD - NOT FOR CLINICAL
+USE" from the screen.**
+
+`app/static/app.js` hides that banner on `status.state !== "clinical"`, and
+`Readiness.state` returned `"clinical"` as soon as there were no blockers and no
+warnings. Every readiness check asked a *wiring* question: is the config real,
+is the validator installed, is the explainer installed, do the checkpoints
+exist. All of them started passing the moment A, B and D published.
+
+Nothing was asking the separate and more important question: **has this been
+shown to work on data it did not train on, and has a clinician ever looked at
+it.** The answer to both is still no.
+
+Fixed with a `no_external_validation` finding in `readiness.check`. It is a
+**warning, not a blocker**, so the app still starts for development. State is
+`development`, the banner stays up, and the message says why:
+
+> This tool has never been tested on data it did not train on. BRISC 2025 was
+> the intended external test set and roughly 80% of it turned out to be the
+> training data republished. [...] No clinician has reviewed a single output.
+> Not for clinical use.
+
+The check is **fail-safe**. It clears only on an exact attestation
+(`external_validation.status == "independent_cohort"`) that nothing in this repo
+writes. Absent, malformed, wrong-typed and near-miss values all keep the banner.
+You cannot clear it by forgetting to fill in a field.
+
+`app/tests/test_no_external_validation_guard.py`, 13 tests, pins this in both
+directions so it cannot regress the next time a wiring check starts passing.
+
+## What C should still not do
+
+- **No study-level call.** A published a per-slice threshold only. C-2 stands.
+- **No percentages shown to a user.** Words only.
+- **No DICOM.**
+- **Heatmap: ViT only.** Session D measured Grad-CAM on ResNet-50 landing on the
+  tumour 8.4% of the time against a 1.7% chance baseline. The shipped backbone
+  is ViT at 41%, which is the one worth drawing. Do not add any text implying a
+  sensible-looking heatmap means the call is more likely right: D measured that
+  it is very slightly the reverse.
+
+## The number a clinic operator will feel
+
+The shipped config defers **41.2%** of scans to a human. That is the cost of the
+lowest miss rate, and in a clinic with no radiologist it means four scans in ten
+come straight back. A human should decide whether that trade is right. Both
+configurations are measured in `analysis/results/safety/ensemble_vs_single.csv`.

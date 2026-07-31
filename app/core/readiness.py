@@ -16,6 +16,7 @@ Blockers stop startup. Warnings do not, but they are shown.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -145,6 +146,43 @@ def check(
                 f"must be fitted on the internal validation split, never on BRISC. "
                 f"A threshold picked on BRISC and reported on BRISC is circular.",
             ))
+
+    # ------------------------------------------------------------------
+    # Having real config files is not the same as being fit for patients.
+    #
+    # Every other check here asks "is this installation wired up correctly".
+    # They all pass the moment sessions A, B and D publish real files. Nothing
+    # was asking the separate and more important question: has this tool been
+    # shown to work on data it did not train on, and has a clinician ever
+    # looked at it.
+    #
+    # That gap had a direct consequence. `state` returns "clinical" when there
+    # are no blockers and no warnings, and app.js hides the
+    # "DEVELOPMENT BUILD - NOT FOR CLINICAL USE" banner on exactly that
+    # condition. So finishing A, B and D's work silently removed the warning
+    # from the screen, without one line being written about validation.
+    #
+    # This check is deliberately fail-safe. The banner stays up until someone
+    # records positive evidence that it should come down. Absent, unreadable or
+    # unrecognised evidence all keep the warning. You cannot clear this by
+    # forgetting to fill in a field.
+    # ------------------------------------------------------------------
+    attest = cfg.raw.get("external_validation") if isinstance(cfg.raw, Mapping) else None
+    status = str((attest or {}).get("status", "")).strip().lower() if isinstance(attest, Mapping) else ""
+    if status != "independent_cohort":
+        detail = str((attest or {}).get("detail", "")).strip() if isinstance(attest, Mapping) else ""
+        warnings.append(Finding(
+            "no_external_validation",
+            detail or (
+                "This tool has never been tested on data it did not train on. "
+                "BRISC 2025 was the intended external test set and roughly 80% "
+                "of it turned out to be the training data republished. The "
+                "figures shown come from what survived removing that overlap, "
+                "which shares sources, scanners and preprocessing with the "
+                "training data. No clinician has reviewed a single output. Not "
+                "for clinical use."
+            ),
+        ))
 
     return Readiness(
         blockers=tuple(blockers),

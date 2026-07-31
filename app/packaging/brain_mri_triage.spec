@@ -45,6 +45,30 @@ hidden_imports = (
         "app.core.explain_adapter",
         "multipart",
         "python_multipart",
+        # Session B's input check and session D's heatmap. The app reaches
+        # these with importlib.import_module("src.input_validation") and
+        # ("src.explain_runtime"), so PyInstaller's static analysis cannot see
+        # them and will not collect them unless they are named here.
+        #
+        # Leaving them out does not produce a broken build. It produces a build
+        # that compiles, launches, and then REFUSES TO START, because
+        # readiness.check finds both adapters in their stub state and blocks.
+        # That is the safety machinery doing its job, and it is also a very
+        # confusing way to discover a packaging mistake. `src/` has no
+        # __init__.py and is a PEP 420 namespace package, which is exactly the
+        # shape PyInstaller is least likely to pick up on its own.
+        "src",
+        "src.input_validation",
+        "src.explain_runtime",
+        # explain_runtime imports cv2 inside a function, deliberately, to keep
+        # it off the ResNet path's cost. A lazy import is invisible to static
+        # analysis, and the shipped backbone is ViT, whose attention-rollout
+        # path is exactly the one that needs it.
+        "cv2",
+        # input_validation imports these inside functions too.
+        "scipy.ndimage",
+        "skimage.filters",
+        "skimage.morphology",
     ]
 )
 
@@ -53,6 +77,24 @@ datas = [
     (str(APP_DIR / "static"), "app/static"),
     (str(REPO_ROOT / "analysis" / "results" / "safety"), "analysis/results/safety"),
 ]
+
+# Session B's fitted rejector config has to travel with the app, and it has to
+# land where `src/input_validation.py` looks for it.
+#
+# That module resolves its own location: `Path(__file__).parent.parent /
+# "analysis/results/ood/rejector_config.json"`. Frozen, `__file__` is inside
+# `_internal`, so the file must be at `_internal/analysis/results/ood/`. Copying
+# it next to the .exe does not work, and fails silently: `load_config` falls
+# back to the UNFITTED hand-set thresholds, which reject about 8% of real brain
+# MRI including the `fg_solidity` rule that fitting removes entirely. The app
+# looks fine and quietly refuses one real scan in twelve.
+#
+# Only the two small files. `analysis/results/ood/` also holds cached scores and
+# feature matrices worth hundreds of megabytes that the app never reads.
+_ood = REPO_ROOT / "analysis" / "results" / "ood"
+for _name in ("rejector_config.json", "rejector_stats.npz"):
+    if (_ood / _name).is_file():
+        datas.append((str(_ood / _name), "analysis/results/ood"))
 
 # Excluding the research stack roughly halves the bundle, which matters when a
 # clinic installs from a USB stick. Nothing here is imported by the app.
@@ -66,9 +108,20 @@ datas = [
 # Likewise leave torch's own submodules alone. torch.utils.data pulls in
 # torch.distributed, which pulls in more than is obvious from the import
 # graph, and pruning it saves little for real breakage risk.
+#
+# scipy and scikit-image were on this list when session B's input check was not
+# yet wired in, under the comment "nothing here is imported by the app". That
+# stopped being true. `src/input_validation.py` uses `scipy.ndimage` and
+# `skimage.filters.threshold_otsu` to find the brain-shaped region, and imports
+# them inside the function, so nothing static catches it.
+#
+# The failure mode was nasty. The app started, looked healthy, and rejected
+# **100% of real brain MRI** with "the file could not be read as an image
+# (No module named 'scipy')". The validator catches any exception and fails
+# closed, which is the right instinct and made a missing dependency look like a
+# data problem. Do not re-add these without checking what imports them.
 excludes = [
     "matplotlib",
-    "scipy",
     "sklearn",
     "pandas",          # only app/tools/ needs it, and tools are not shipped
     "IPython",

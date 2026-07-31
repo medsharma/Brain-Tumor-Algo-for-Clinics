@@ -148,12 +148,29 @@ def main() -> None:
     (args.dist / "deployment_config.json").write_text(json.dumps(cfg, indent=2),
                                                       encoding="utf-8")
 
+    # Session B's fitted rejector config. The spec bundles this, but check it
+    # actually arrived and put it right if not.
+    #
+    # It has to sit where `src/input_validation.py` looks: that module resolves
+    # `Path(__file__).parent.parent / "analysis/results/ood"`, which inside a
+    # frozen build is under `_internal/`, NOT next to the .exe. Getting this
+    # wrong fails silently, falling back to unfitted hand-set thresholds that
+    # reject roughly one real brain MRI in twelve.
     rejector = REPO_ROOT / "analysis" / "results" / "ood" / "rejector_config.json"
     if rejector.is_file():
-        target = args.dist / "analysis" / "results" / "ood"
-        target.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(rejector, target / "rejector_config.json")
-        print(f"\n  copied {rejector.name}")
+        internal = args.dist / "_internal"
+        roots = [internal] if internal.is_dir() else [args.dist]
+        for root in roots:
+            target = root / "analysis" / "results" / "ood"
+            target.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(rejector, target / "rejector_config.json")
+            print(f"\n  rejector config -> {target}")
+        landed = json.loads((roots[0] / "analysis/results/ood/rejector_config.json").read_text())
+        print(f"    method: {landed.get('method')}, "
+              f"{len(landed.get('precheck_rules', {}))} fitted precheck rules")
+    else:
+        print("\n  WARNING: no rejector_config.json. The app will fall back to "
+              "unfitted thresholds and wrongly reject real scans.")
 
     (args.dist / "install_report.json").write_text(
         json.dumps({"checkpoints": report,

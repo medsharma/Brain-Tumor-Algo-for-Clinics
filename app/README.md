@@ -81,8 +81,25 @@ app\packaging\build_windows.bat
 That produces `dist\BrainMRITriage\`. Copy that folder to the clinic laptop.
 It runs by double-clicking `BrainMRITriage.exe`.
 
-The folder is about **700 MB**, most of which is PyTorch. Add roughly 220 MB
-for the model file. A 2 GB USB stick is enough; a 1 GB one is not.
+Then run this second step, which finishes the job:
+
+```
+python app\tools\prepare_clinic_install.py
+```
+
+It copies the model files in, strips the training leftovers out of them, checks
+the stripped copies still give bit-identical answers, and rewrites the settings
+file to use relative paths so the folder works from any drive letter.
+
+**Size: about 5 GB.** Roughly 3 GB is PyTorch and 1.7 GB is the five model
+files. **Use an 8 GB or larger USB stick.** A 4 GB stick will not fit it.
+
+If 5 GB genuinely blocks how you distribute this, a single-seed configuration
+needs 344 MB of model files instead of 1.7 GB. On the unseen test data it missed
+4 tumours out of 1,476 where the shipped five-seed version missed 3, a
+difference within the spread between individual seeds. It is a reasonable trade
+if size is the blocker. It is not the default because when the safety evidence
+is a tie there is no reason to bet on having picked a lucky seed.
 
 ---
 
@@ -91,12 +108,19 @@ for the model file. A 2 GB USB stick is enough; a 1 GB one is not.
 The app will **refuse to start** without both of these. That refusal is on
 purpose, and it is explained further down.
 
-**1. The model file.** This is the trained model, about 220 MB. It is not
-included in this folder because it is too large for the code repository. Copy
-it from:
+**1. The model files.** The shipped setting averages the answers of **five**
+trained models, about 344 MB each. They are not in this folder because they are
+too large for the code repository.
+
+`python app\tools\prepare_clinic_install.py` does this for you and is the easy
+route. To do it by hand, copy all five:
 
 ```
-results\20260703_155524\resnet50\seed_42\best_resnet50_seed42.pth
+results\20260703_155524\vit\seed_42\best_vit_seed42.pth
+results\20260703_155524\vit\seed_123\best_vit_seed123.pth
+results\20260703_155524\vit\seed_7\best_vit_seed7.pth
+results\20260703_155524\vit\seed_2024\best_vit_seed2024.pth
+results\20260703_155524\vit\seed_31\best_vit_seed31.pth
 ```
 
 **2. The settings file**, named `deployment_config.json`. This holds the

@@ -148,8 +148,11 @@ is about an hour of a radiologist's time.
   same image run twice can give different confidences. The size of that variation
   has not been characterised, and a clinician seeing two different numbers for
   one scan is a trust problem.
-- **No latency or resource measurement on target hardware yet.**
-  `[PENDING: session C latency benchmark on the target laptop class]`.
+- **Latency measured, but not on target hardware.** About 130 ms per image on
+  CPU (Windows 11, 8 threads, ResNet-50, single seed, MC-Dropout T=20), plus
+  0.5 s model load. That was measured on a 24-core development laptop, **not on
+  the low-spec hardware a rural clinic would actually have.** Memory footprint,
+  thermal behaviour and battery cost on target hardware are all unmeasured.
 
 ## Model scope
 

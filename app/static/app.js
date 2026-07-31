@@ -22,7 +22,11 @@ async function loadStatus() {
   el("app-version").textContent = status.app_name + " " + status.app_version;
   el("disclaimer-text").textContent = status.disclaimer;
   el("footer-disclaimer").textContent = status.disclaimer;
-  el("footer-scope").textContent = "Validated on: " + status.validated_scope;
+  // Two separate statements on purpose. What the tool reads is not the same
+  // claim as what has been measured about it, and merging them reads as a
+  // validation claim the project cannot currently support.
+  el("footer-scope").textContent = "Built to read: " + status.intended_scope;
+  el("footer-validation").textContent = status.validation_statement;
 
   if (status.state !== "clinical") {
     const banner = el("mode-banner");

@@ -353,3 +353,13 @@ footer {
 
 footer p { margin: 0.35rem 0; white-space: pre-wrap; }
 .footer-scope { font-style: italic; }
+
+.footer-validation {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--warn-bg);
+  border-left: 4px solid var(--warn);
+  border-radius: 0.25rem;
+  color: var(--warn);
+  font-weight: 600;
+}

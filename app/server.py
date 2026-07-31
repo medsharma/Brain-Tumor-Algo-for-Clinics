@@ -188,7 +188,10 @@ def create_app() -> FastAPI:
         return {
             "app_name": version_module.APP_NAME,
             "app_version": version_module.APP_VERSION,
-            "validated_scope": version_module.VALIDATED_SCOPE,
+            "intended_scope": version_module.INTENDED_SCOPE,
+            "validation_statement": version_module.validation_statement(
+                dict(engine.config.expected_performance), engine.config.is_stub
+            ),
             "state": readiness.state,
             "dev_mode": readiness.dev_mode,
             "warnings": [

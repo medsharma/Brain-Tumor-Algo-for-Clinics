@@ -43,7 +43,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
-from .core import decision, version as version_module
+from .core import decision, explain_adapter, version as version_module
 from .core.engine import TriageEngine, TriageResult
 from .core.readiness import NotReadyError
 
@@ -274,6 +274,12 @@ def _build_report(payload: dict[str, Any]) -> str:
                 f"<figcaption>{_escape(label)}</figcaption></figure>"
             )
 
+    # Session D's wording, shown verbatim. Falls back to D's own published
+    # text if the exported payload predates the field.
+    caveat = payload.get("heatmap_caveat") or explain_adapter.FALLBACK_CAVEAT
+    if images:
+        images += f"<p class='caveat'>{_escape(caveat)}</p>"
+
     notes = "".join(f"<li>{_escape(note)}</li>" for note in payload.get("notes") or [])
     notes_block = f"<ul class='notes'>{notes}</ul>" if notes else ""
 
@@ -309,6 +315,7 @@ def _build_report(payload: dict[str, Any]) -> str:
  .meta {{ margin-top: 1.5rem; font-size: .8rem; color: #555; }}
  .meta td {{ padding: .15rem .75rem .15rem 0; vertical-align: top; }}
  .notes li {{ color: #7a4600; }}
+ .caveat {{ font-size: .9rem; color: #444; max-width: 42rem; }}
 </style></head><body>
 <h1>Brain MRI triage result</h1>
 <div class="call {_escape(payload.get('call_key'))}">{_escape(payload.get('call'))}</div>

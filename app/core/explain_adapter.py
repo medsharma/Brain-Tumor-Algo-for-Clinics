@@ -20,6 +20,19 @@ import numpy as np
 
 STUB_LABEL = "STUB — NOT A REAL HEATMAP"
 
+#: Shown under the overlay when session D's module is not available. D
+#: publishes its own wording as ``HEATMAP_CAVEAT`` and asks that it be used
+#: verbatim, so the real one always wins over this fallback.
+FALLBACK_CAVEAT = (
+    "Shows where the model looked, not where the tumour is. "
+    "Use it to catch obviously wrong calls, not to confirm right ones."
+)
+
+STUB_CAVEAT = (
+    "This is a test pattern, not where the model looked. The real heatmap is "
+    "not installed in this build."
+)
+
 
 class Explainer:
     """Wraps session D's explainer, or stands in for it.
@@ -27,6 +40,9 @@ class Explainer:
     Attributes:
         is_stub: True when D's module was not importable.
         detail: Why, in words.
+        caveat: The one honest line shown under the overlay. Taken verbatim
+            from session D's ``HEATMAP_CAVEAT`` when available, because D owns
+            the wording and measured what backs it.
     """
 
     def __init__(self, force_stub: bool = False) -> None:
@@ -34,6 +50,7 @@ class Explainer:
         self._overlay: Callable[..., Any] | None = None
         self.is_stub = True
         self.detail = ""
+        self.caveat = STUB_CAVEAT
 
         if force_stub:
             self.detail = "stub forced by caller"
@@ -58,6 +75,9 @@ class Explainer:
         self._overlay = overlay
         self.is_stub = False
         self.detail = "session D's explainer is loaded"
+
+        published = getattr(module, "HEATMAP_CAVEAT", None)
+        self.caveat = published if isinstance(published, str) and published else FALLBACK_CAVEAT
 
     # -- Contract 4 surface -------------------------------------------------
 

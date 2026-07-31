@@ -77,6 +77,7 @@ class TriageResult:
     latency_ms: float
 
     disclaimer: str
+    heatmap_caveat: str
     dev_mode: bool
     config_is_stub: bool
     explainer_is_stub: bool
@@ -109,6 +110,7 @@ class SeriesResult:
     study_level_call: str | None
     study_level_note: str
     disclaimer: str
+    heatmap_caveat: str
 
 
 class TriageEngine:
@@ -426,6 +428,7 @@ class TriageEngine:
             study_level_call=study_call,
             study_level_note=note,
             disclaimer=decision.DISCLAIMER_FULL,
+            heatmap_caveat=self.explainer.caveat,
         )
 
     # -- result assembly ----------------------------------------------------
@@ -504,6 +507,7 @@ class TriageEngine:
             mc_passes=mc.n_passes if mc is not None else 0,
             latency_ms=latency_ms,
             disclaimer=decision.DISCLAIMER_FULL,
+            heatmap_caveat=self.explainer.caveat,
             dev_mode=self.readiness.dev_mode,
             config_is_stub=self.config.is_stub,
             explainer_is_stub=self.explainer.is_stub,
@@ -562,6 +566,7 @@ class TriageEngine:
             mc_passes=0,
             latency_ms=(time.perf_counter() - started) * 1000.0,
             disclaimer=decision.DISCLAIMER_FULL,
+            heatmap_caveat=self.explainer.caveat,
             dev_mode=self.readiness.dev_mode,
             config_is_stub=self.config.is_stub,
             explainer_is_stub=self.explainer.is_stub,

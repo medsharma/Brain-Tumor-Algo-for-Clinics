@@ -118,6 +118,9 @@ function renderImages(result) {
   }
   block.classList.remove("hidden");
 
+  // Session D publishes this wording and asks that it be shown verbatim.
+  el("heatmap-caveat").textContent = result.heatmap_caveat || "";
+
   el("img-original").src = result.original_png;
   el("img-overlay-base").src = result.original_png;
 

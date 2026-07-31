@@ -142,32 +142,69 @@
     <h2>Run this on your own laptop</h2>
     <p class="download-intro">
       This page, running on your machine, offline. Same model, same settings,
-      same answers. You need Python 3.10 or newer and nothing else.
+      same answers.
     </p>
 
-    <div class="setup-steps">
-      <p class="setup-step">
-        <span class="step-number">1</span>
-        <a class="primary-button setup-download" href="/api/setup" download>
-          Download the setup file
-        </a>
-      </p>
-      <p class="setup-step">
-        <span class="step-number">2</span>
-        Run it:
-        <code class="setup-command">python setup_brain_mri_triage.py</code>
+    <!-- The no-Python route. This is the one almost everybody wants. -->
+    <div id="package-block" class="package-block hidden">
+      <h3 class="package-heading">Windows, nothing to install</h3>
+      <div class="setup-steps">
+        <p class="setup-step">
+          <span class="step-number">1</span>
+          <a class="primary-button setup-download" id="package-link" href="#" download>
+            Download the app
+          </a>
+          <span class="package-size" id="package-size"></span>
+        </p>
+        <p class="setup-step">
+          <span class="step-number">2</span>
+          Right-click the file and choose <strong>Extract All</strong>
+        </p>
+        <p class="setup-step">
+          <span class="step-number">3</span>
+          Open the folder and double-click
+          <code class="setup-command">BrainMRITriage.exe</code>
+        </p>
+      </div>
+      <p class="download-intro">
+        No Python, no setup, no internet after the download. The page opens by
+        itself and you drag a scan onto it. The first start takes about
+        20 seconds while it loads the models.
       </p>
     </div>
 
-    <p class="download-intro">
-      It fetches everything, checks each file against its checksum, installs
-      what it needs and opens this page on your machine. One download of about
-      <span id="setup-size">1.7 GB</span>.
-      <strong>After that it never touches the internet again.</strong>
-    </p>
+    <details class="download-howto">
+      <summary>Other ways: Mac, Linux, or if you already have Python</summary>
+
+      <p>
+        This route needs <strong>Python 3.10 or newer</strong>. It downloads
+        one small file that fetches everything else and starts the app.
+      </p>
+
+      <div class="setup-steps">
+        <p class="setup-step">
+          <span class="step-number">1</span>
+          <a class="secondary-button setup-download" href="/api/setup" download>
+            Download the setup file
+          </a>
+        </p>
+        <p class="setup-step">
+          <span class="step-number">2</span>
+          Run it:
+          <code class="setup-command">python setup_brain_mri_triage.py</code>
+        </p>
+      </div>
+
+      <p>
+        It checks every file against its checksum, installs what it needs and
+        opens this page on your machine. About
+        <span id="setup-size">1.7 GB</span>. After that it never touches the
+        internet again.
+      </p>
+    </details>
 
     <details class="download-howto">
-      <summary>What it downloads, and doing it by hand instead</summary>
+      <summary>The individual files, and doing it by hand</summary>
       <div id="download-summary" class="download-summary"></div>
       <table id="download-table" class="download-table"></table>
       <p>

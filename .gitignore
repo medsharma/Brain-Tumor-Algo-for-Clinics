@@ -19,3 +19,8 @@ app/benchmarks/brisc_deployed_*.csv
 dist/
 build/
 *.spec.bak
+
+# Built release artifacts. The zip is 2.4 GB and is rebuilt by
+# app/packaging/build_windows.bat; it has no business in git history.
+release/
+.buildenv-cpu/

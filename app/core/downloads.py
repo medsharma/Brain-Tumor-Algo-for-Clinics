@@ -143,6 +143,49 @@ def preferred_copy(original: Path) -> Path:
     return original
 
 
+def find_windows_package() -> Optional[Path]:
+    """The built Windows app, zipped, if somebody has produced one.
+
+    This is the download for a person who does not have Python and should not
+    have to care what Python is. Unzip, double-click, upload a scan.
+
+    Built by ``app/packaging/build_windows.bat``. Absent on a machine that has
+    never run it, in which case the page falls back to offering the setup
+    script, which needs Python.
+    """
+    import os
+
+    override = os.environ.get("MRI_TRIAGE_PACKAGE_ZIP", "").strip()
+    if override:
+        candidate = Path(override).expanduser()
+        return candidate if candidate.is_file() else None
+
+    for name in ("BrainMRITriage-windows.zip", "BrainMRITriage.zip"):
+        candidate = paths.repo_root() / "release" / name
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def windows_package(cfg: DeploymentConfig) -> Optional[Downloadable]:
+    path = find_windows_package()
+    if path is None:
+        return None
+    return Downloadable(
+        key="BrainMRITriage-windows.zip",
+        filename=path.name,
+        path=path,
+        kind="package",
+        bytes=path.stat().st_size,
+        sha256=file_sha256(path),
+        description=(
+            "The whole application for Windows, including the models. No "
+            "Python and no installer. Unzip it and double-click "
+            "BrainMRITriage.exe."
+        ),
+    )
+
+
 def build_catalogue(cfg: DeploymentConfig) -> List[Downloadable]:
     """Every file needed to reproduce this server, and nothing else.
 

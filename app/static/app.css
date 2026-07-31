@@ -468,3 +468,20 @@ footer p { margin: 0.35rem 0; white-space: pre-wrap; }
   font-size: 0.9rem;
   user-select: all;
 }
+
+/* The no-Python route, shown above everything else. Someone who does not know
+   what Python is should never have to find out. */
+.package-block {
+  border: 2px solid #2e7d32;
+  border-radius: 6px;
+  padding: 0.2rem 1.1rem 1rem;
+  margin: 1.2rem 0;
+  background: #fbfdfb;
+}
+
+.package-heading { margin-bottom: 0.2rem; }
+
+.package-size {
+  color: #555;
+  font-size: 0.9rem;
+}

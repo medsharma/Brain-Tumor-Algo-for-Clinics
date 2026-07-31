@@ -333,10 +333,23 @@ def create_app() -> FastAPI:
             _catalogue = downloads.build_catalogue(get_engine().config)
         return _catalogue
 
+    _package: list[downloads.Downloadable] = []
+
+    def package() -> downloads.Downloadable | None:
+        """The ready-built Windows app, if one exists. Hashed once."""
+        nonlocal _package
+        if not _package:
+            found = downloads.windows_package(get_engine().config)
+            _package = [found] if found is not None else []
+        return _package[0] if _package else None
+
     @app.get("/api/downloads")
     async def list_downloads() -> dict[str, Any]:
         items = catalogue()
-        return downloads.manifest(get_engine().config, items)
+        body = downloads.manifest(get_engine().config, items)
+        ready = package()
+        body["windows_package"] = ready.to_dict() if ready is not None else None
+        return body
 
     @app.get("/api/source.zip")
     async def source_zip() -> Response:
@@ -375,7 +388,8 @@ def create_app() -> FastAPI:
         directory, so there is no path to traverse out of. A request for
         `../../secrets` simply does not match anything.
         """
-        item = downloads.find(catalogue(), key)
+        ready = package()
+        item = ready if (ready is not None and ready.key == key) else downloads.find(catalogue(), key)
         if item is None:
             raise HTTPException(status_code=404, detail="No such file.")
 

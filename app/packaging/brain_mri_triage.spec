@@ -120,10 +120,25 @@ for _name in ("rejector_config.json", "rejector_stats.npz"):
 # (No module named 'scipy')". The validator catches any exception and fails
 # closed, which is the right instinct and made a missing dependency look like a
 # data problem. Do not re-add these without checking what imports them.
+#
+# Build this in a CPU-only environment. The app never touches a GPU: it loads
+# with map_location="cpu" and no tensor is ever moved to a device. Building it
+# where CUDA torch is installed bundles the CUDA libraries anyway, and they are
+# enormous: cublasLt64 alone is 456 MB, torch_cuda.dll 401 MB, cufft 272 MB.
+# That was 2.3 GB of a 4.8 GB folder, downloaded by clinics, for code that
+# cannot execute. See app/packaging/build_windows.bat, which builds in a
+# dedicated CPU virtualenv.
 excludes = [
     "matplotlib",
     "sklearn",
     "pandas",          # only app/tools/ needs it, and tools are not shipped
+    # pandas is excluded but pyarrow was still arriving through it and costing
+    # 80 MB. imageio and its bundled ffmpeg come in through scikit-image; the
+    # app only uses threshold_otsu and convex_hull_image and never decodes a
+    # video. Together these were another ~165 MB of a clinic's download.
+    "pyarrow",
+    "imageio",
+    "imageio_ffmpeg",
     "IPython",
     "notebook",
     "jupyter",

@@ -122,6 +122,15 @@ async function loadDownloads() {
 
   const sizeSpan = el("setup-size");
   if (sizeSpan) sizeSpan.textContent = data.total_size_human;
+
+  // The ready-built Windows app, when the server has one to give. Shown first
+  // because it is the only route that asks nothing of the person running it.
+  const pkg = data.windows_package;
+  if (pkg) {
+    el("package-link").href = "/api/downloads/" + encodeURIComponent(pkg.key);
+    el("package-size").textContent = pkg.size_human;
+    el("package-block").classList.remove("hidden");
+  }
 }
 
 async function analyze(file) {

@@ -9,10 +9,24 @@ setlocal
 cd /d "%~dp0..\.."
 
 echo.
-echo === Installing build dependencies ===
-python -m pip install --upgrade pip || goto :failed
-python -m pip install -r app\requirements.txt || goto :failed
-python -m pip install pyinstaller || goto :failed
+echo === Build environment ===
+REM Built in a dedicated CPU-only virtualenv, and that is not optional.
+REM
+REM The app never touches a GPU: it loads with map_location="cpu" and never
+REM moves a tensor to a device. But PyInstaller bundles whatever torch it finds,
+REM so building on a machine with CUDA torch installed ships the CUDA libraries
+REM anyway. cublasLt64 is 456 MB, torch_cuda.dll is 401 MB, cufft is 272 MB.
+REM That was 2.3 GB of a 4.8 GB download, for code that cannot execute.
+REM
+REM Building here instead takes the folder from 4.8 GB to 2.4 GB.
+if not exist .buildenv-cpu (
+    echo Creating .buildenv-cpu
+    python -m venv .buildenv-cpu || goto :failed
+)
+set PY=.buildenv-cpu\Scripts\python.exe
+%PY% -m pip install --upgrade pip || goto :failed
+%PY% -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu || goto :failed
+%PY% -m pip install numpy pillow fastapi uvicorn python-multipart scipy scikit-image opencv-python-headless pyinstaller || goto :failed
 
 echo.
 echo === Running the test suite ===
@@ -38,10 +52,17 @@ echo that refused to start, and a build that rejected every brain MRI it saw.
 python app\tools\smoke_test_package.py || goto :smoke_failed
 
 echo.
+echo === Packing it into one downloadable file ===
+python app\tools\pack_release.py || goto :failed
+
+echo.
 echo === Done ===
 echo The app is in:  dist\BrainMRITriage\
-echo Copy that whole folder to the clinic laptop and run BrainMRITriage.exe
-echo It needs about 5 GB. Use an 8 GB or larger USB stick.
+echo The zip is in:  release\BrainMRITriage-windows.zip
+echo.
+echo Copy either one to the clinic laptop. From the zip: extract it and
+echo double-click BrainMRITriage.exe. No Python needed on that machine.
+echo About 2.4 GB. A 4 GB USB stick is enough.
 goto :eof
 
 :smoke_failed

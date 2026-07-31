@@ -267,6 +267,12 @@ correlated reads of one test set, not 4,105 independent images, so the pooled CI
 is optimistic. **The per-seed range is the honest spread.** For ResNet-50 that is
 5 to 11 missed tumors out of 821, depending only on the random seed.
 
+**Both intervals above are narrower still than the evidence justifies**, for a
+reason that only became clear when the misses were examined individually: 9
+images out of 821 account for 81% of all missed-tumor events across all 10
+checkpoints. See [Known failure modes](#1-a-handful-of-specific-images-defeat-every-model-this-project-has-trained).
+Treat every confidence interval on this page as a floor on the uncertainty.
+
 **Plain reading: roughly 1 tumor in 100 is missed, on the easiest data this model
 will ever see.**
 
@@ -294,11 +300,11 @@ approximation does not.
 means it missed none of 1,390 evaluations, which bounds the true rate at roughly
 0.28% or below. Zero observed is not zero.
 
-Gliomas are missed roughly twice as often as meningiomas and are the only class
-driving most of the total. Pituitary tumors are never missed, which is
-unsurprising: they sit in a fixed anatomical location that is easy to key on. The
-flip side is that a model keying on location will do badly on a tumor that turns
-up somewhere unusual, and nothing here tests that.
+Gliomas are missed roughly twice as often as meningiomas and drive most of the
+total. No pituitary tumor was missed in 1,390 evaluations, which is unsurprising:
+they sit in a fixed anatomical location that is easy to key on. The flip side is
+that a model keying on location will do badly on a tumor that turns up somewhere
+unusual, and nothing here tests that.
 
 **Gliomas are also the most aggressive of the three families.** The class this
 tool misses most is the class where delay costs the most.

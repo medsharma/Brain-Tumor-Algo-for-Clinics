@@ -363,3 +363,12 @@ footer p { margin: 0.35rem 0; white-space: pre-wrap; }
   color: var(--warn);
   font-weight: 600;
 }
+
+/* Shown instead of the "nothing leaves this laptop" line when the app is
+   served over a network. It must read as a warning, not as reassurance. */
+.privacy-warning {
+  background: #fff4e5;
+  border-left: 4px solid #b26a00;
+  padding: 0.6rem 0.8rem;
+  border-radius: 4px;
+}

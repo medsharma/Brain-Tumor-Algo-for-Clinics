@@ -59,6 +59,15 @@ def main(argv: list[str] | None = None) -> int:
         "--verbose", action="store_true",
         help="Print more detail while running.",
     )
+    parser.add_argument(
+        "--host", default=LOOPBACK_HOST,
+        help=(
+            "Address to listen on. Defaults to 127.0.0.1, which is this "
+            "machine only. Anything else serves patient scans over the network "
+            "and is refused unless MRI_TRIAGE_ALLOW_PUBLIC_BIND=1 is set. Use "
+            "0.0.0.0 to accept connections from anywhere."
+        ),
+    )
     args = parser.parse_args(argv)
 
     logging.basicConfig(
@@ -70,7 +79,7 @@ def main(argv: list[str] | None = None) -> int:
     _safe_print("  Starting up. Loading the model takes a few seconds.\n")
 
     try:
-        run(host=LOOPBACK_HOST, port=args.port, open_browser=not args.no_browser)
+        run(host=args.host, port=args.port, open_browser=not args.no_browser)
     except KeyboardInterrupt:
         _safe_print("\n  Stopped.")
         return 0

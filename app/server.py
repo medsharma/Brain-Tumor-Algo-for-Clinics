@@ -33,6 +33,7 @@ import base64
 import io
 import ipaddress
 import logging
+import os
 import socket
 from pathlib import Path
 from typing import Any
@@ -43,7 +44,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
-from .core import decision, explain_adapter, version as version_module
+from .core import decision, explain_adapter, paths, version as version_module
 from .core.engine import TriageEngine, TriageResult
 from .core.readiness import NotReadyError
 
@@ -66,25 +67,64 @@ class BindingRefused(RuntimeError):
     """Someone asked the app to listen on a network-visible address."""
 
 
+#: Environment variable that unlocks binding to a network-visible address.
+#:
+#: The clinic build binds loopback only, and that is the right default: a scan
+#: on the laptop stays on the laptop and there is no question to answer about
+#: where patient images went.
+#:
+#: Serving this over a network is a legitimate thing to want. It is also a
+#: different product with different obligations: the images become data in
+#: transit, they land on a machine somebody owns, and whoever runs it is the
+#: custodian. That is a legal question in most countries, not a technical one.
+#:
+#: So it is possible, and it is not the default, and it cannot happen by
+#: accident or by a typo in a port number. You have to say so out loud.
+PUBLIC_BIND_ENV = "MRI_TRIAGE_ALLOW_PUBLIC_BIND"
+
+
+def public_bind_allowed() -> bool:
+    return os.environ.get(PUBLIC_BIND_ENV, "").strip().lower() in {"1", "true", "yes"}
+
+
 def assert_loopback(host: str) -> None:
-    """Refuse any bind address that is not loopback.
+    """Refuse a network-visible bind address unless it was explicitly unlocked.
 
     ``0.0.0.0`` means every interface, which on a clinic network means every
     other machine in the building can fetch patient scans from this laptop.
-    """
-    try:
-        address = ipaddress.ip_address(host)
-    except ValueError as exc:
-        raise BindingRefused(
-            f"Refusing to listen on {host!r}. The app binds loopback only."
-        ) from exc
+    That is the default answer and it is no.
 
-    if not address.is_loopback:
-        raise BindingRefused(
-            f"Refusing to listen on {host}. That address is reachable from the "
-            f"network, which would serve patient scans to every other machine "
-            f"on it. The app binds {LOOPBACK_HOST} only."
+    Setting ``MRI_TRIAGE_ALLOW_PUBLIC_BIND=1`` overrides it. Read the note on
+    ``PUBLIC_BIND_ENV`` before you do.
+    """
+    wildcard = host in {"0.0.0.0", "::"}
+    if wildcard:
+        address = None
+    else:
+        try:
+            address = ipaddress.ip_address(host)
+        except ValueError as exc:
+            raise BindingRefused(
+                f"Refusing to listen on {host!r}. That is not an IP address."
+            ) from exc
+
+    if not wildcard and address is not None and address.is_loopback:
+        return
+
+    if public_bind_allowed():
+        log.warning(
+            "Binding %s, which is reachable from the network. Every scan sent to "
+            "this address leaves the machine it was taken on. %s is set, so this "
+            "was deliberate.", host, PUBLIC_BIND_ENV,
         )
+        return
+
+    raise BindingRefused(
+        f"Refusing to listen on {host}. That address is reachable from the "
+        f"network, which would serve patient scans to every other machine on "
+        f"it. The app binds {LOOPBACK_HOST} unless {PUBLIC_BIND_ENV}=1 is set, "
+        f"which makes whoever runs it the custodian of every image uploaded."
+    )
 
 
 def get_engine() -> TriageEngine:
@@ -149,9 +189,15 @@ def create_app() -> FastAPI:
 
         If the app is ever run behind something that forwards traffic, this
         still refuses requests that did not originate on this machine.
+
+        It honours the same unlock as the bind guard, and it is checked per
+        request rather than once at startup so that turning the server public
+        is a single decision in a single place. Without this, unlocking the bind
+        produced a server that listened on the network and then answered 403 to
+        everyone on it, which looks like a firewall problem and is not one.
         """
         client = request.client
-        if client is not None:
+        if client is not None and not public_bind_allowed():
             try:
                 if not ipaddress.ip_address(client.host).is_loopback:
                     return JSONResponse(
@@ -194,6 +240,10 @@ def create_app() -> FastAPI:
             ),
             "state": readiness.state,
             "dev_mode": readiness.dev_mode,
+            # The UI promises "nothing leaves this laptop". On a hosted
+            # deployment that is false, and a privacy promise that is false is
+            # worse than no promise. The page reads this and rewrites the line.
+            "served_publicly": public_bind_allowed(),
             "warnings": [
                 {"code": finding.code, "message": finding.message}
                 for finding in readiness.warnings
@@ -386,9 +436,11 @@ def run(
         log.warning("Fast Monte Carlo path disagreed with the reference path: %s", note)
 
     port = port or find_free_port()
-    url = f"http://{host}:{port}/"
+    is_public = host not in {LOOPBACK_HOST, "::1", "localhost"}
+    display_host = LOOPBACK_HOST if host in {"0.0.0.0", "::"} else host
+    url = f"http://{display_host}:{port}/"
 
-    if open_browser:
+    if open_browser and not is_public:
         import threading
         import webbrowser
 
@@ -396,7 +448,17 @@ def run(
 
     print(f"\n  {version_module.APP_NAME} is running.")
     print(f"  Open this address in your browser: {url}")
-    print("  This address works on this laptop only. Nothing is sent over the internet.")
+    if is_public:
+        # Do not print the loopback reassurance when it is not true.
+        print(f"  Listening on {host}:{port}, which is reachable from the network.")
+        print("  Every scan sent here leaves the machine it was taken on, and lands")
+        print("  on this one. Whoever runs this server is the custodian of those")
+        print("  images.")
+        print("  Image pixels are held in memory and are not written to disk. One")
+        print("  audit line per scan IS written, holding the result, timings and a")
+        print(f"  SHA-256 of the image. Location: {paths.audit_dir()}")
+    else:
+        print("  This address works on this laptop only. Nothing is sent over the internet.")
     print("  To stop the app, close this window.\n")
 
     uvicorn.run(create_app(), host=host, port=port, log_level="warning", access_log=False)

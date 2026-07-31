@@ -28,6 +28,21 @@ async function loadStatus() {
   el("footer-scope").textContent = "Built to read: " + status.intended_scope;
   el("footer-validation").textContent = status.validation_statement;
 
+  // "Nothing leaves this laptop" is true of the clinic build and false of a
+  // hosted one. A privacy promise that is false is worse than none at all, so
+  // the line is rewritten rather than left to reassure someone wrongly.
+  if (status.served_publicly) {
+    const privacy = el("privacy-line");
+    if (privacy) {
+      privacy.innerHTML =
+        "<strong>This scan is sent over the network.</strong> This copy is " +
+        "served from a server, not from this device. The image travels to " +
+        "that server to be read. Do not upload a real patient's scan unless " +
+        "you know who runs it and what they keep.";
+      privacy.classList.add("privacy-warning");
+    }
+  }
+
   if (status.state !== "clinical") {
     const banner = el("mode-banner");
     const messages = (status.warnings || []).map((w) => w.message).join(" ");

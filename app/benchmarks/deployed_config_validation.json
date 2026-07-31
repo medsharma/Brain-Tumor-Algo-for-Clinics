@@ -1,0 +1,19 @@
+{
+  "generated_utc": "2026-07-31T01:38:05Z",
+  "backbone": "resnet50",
+  "seeds": [
+    42
+  ],
+  "mc_T": 20,
+  "pipeline_parity": {
+    "backbone": "resnet50",
+    "seed": 42,
+    "mc_T": 20,
+    "n_images": 200,
+    "max_abs_probability_delta": 0.0,
+    "max_abs_entropy_delta": 0.0,
+    "max_abs_p_tumor_delta": 5.21540641784668e-08,
+    "predicted_label_mismatches": 0,
+    "identical": true
+  }
+}

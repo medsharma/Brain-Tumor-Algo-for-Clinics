@@ -13,3 +13,9 @@ data/out_of_scope/cat1_corruption/
 data/out_of_scope/cat2_nonbrain_medical/
 data/out_of_scope/cat3_nonmedical/
 data/out_of_scope/cat4_out_of_scope_brain/
+# Session C: local app state and large benchmark caches
+.venv/
+app/benchmarks/brisc_deployed_*.csv
+dist/
+build/
+*.spec.bak

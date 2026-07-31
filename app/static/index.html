@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Brain MRI Triage</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+
+<div id="mode-banner" class="mode-banner hidden" role="alert"></div>
+
+<header class="topbar">
+  <div>
+    <h1>Brain MRI Triage</h1>
+    <p class="subtitle">Offline second opinion. Not a diagnosis.</p>
+  </div>
+  <div class="version">
+    <span id="app-version"></span>
+    <span id="config-badge" class="badge"></span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ---------------------------------------------------------------- -->
+  <section id="upload-panel" class="panel">
+    <h2>Load a scan</h2>
+    <div id="dropzone" class="dropzone" tabindex="0" role="button"
+         aria-label="Choose an MRI image file">
+      <p class="dropzone-main">Click here, or drag an image in</p>
+      <p class="dropzone-sub">One brain MRI slice at a time. JPEG or PNG.</p>
+      <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.bmp,.tif,.tiff" hidden>
+    </div>
+
+    <ul class="limits">
+      <li><strong>DICOM files are not supported.</strong> Export the slice from
+          your viewer as JPEG or PNG first, using the window your radiographer
+          normally uses.</li>
+      <li><strong>One slice, not a whole study.</strong> This tool judges a
+          single image. It does not combine slices into one answer.</li>
+      <li><strong>Nothing leaves this laptop.</strong> No internet is used and
+          no image is uploaded anywhere.</li>
+    </ul>
+  </section>
+
+  <!-- ---------------------------------------------------------------- -->
+  <section id="working" class="panel hidden">
+    <p class="working-text">Reading the scan. This takes a few seconds.</p>
+    <div class="spinner" aria-hidden="true"></div>
+  </section>
+
+  <!-- ---------------------------------------------------------------- -->
+  <section id="result-panel" class="panel hidden">
+
+    <div id="call-box" class="call-box">
+      <p id="call-text" class="call-text"></p>
+      <p id="confidence-text" class="confidence-text"></p>
+      <p id="probability-text" class="probability-text"></p>
+    </div>
+
+    <div class="next-step">
+      <h3>What to do next</h3>
+      <p id="next-step-text"></p>
+    </div>
+
+    <p id="reason-text" class="reason"></p>
+
+    <ul id="notes-list" class="notes hidden"></ul>
+
+    <!-- Heatmap -->
+    <div id="images-block" class="images-block">
+      <h3>Where the model looked</h3>
+      <p id="heatmap-caveat" class="images-caveat"></p>
+      <p class="images-help">
+        The colours show which parts of the image pushed the model towards its
+        answer. Use it as a sanity check: if the colour sits away from anything
+        that looks abnormal, treat the answer with suspicion. It is not proof
+        on its own.
+      </p>
+      <div class="image-pair">
+        <figure>
+          <img id="img-original" alt="The scan as the model sees it">
+          <figcaption>Original</figcaption>
+        </figure>
+        <figure>
+          <div class="overlay-stack">
+            <img id="img-overlay-base" alt="">
+            <img id="img-overlay" alt="Heatmap over the scan">
+          </div>
+          <figcaption>Heatmap</figcaption>
+        </figure>
+      </div>
+      <div class="slider-row">
+        <label for="overlay-slider">Heatmap strength</label>
+        <input type="range" id="overlay-slider" min="0" max="100" value="100">
+        <button type="button" id="overlay-toggle" class="small-button">Hide heatmap</button>
+      </div>
+      <p id="heatmap-warning" class="heatmap-warning hidden"></p>
+    </div>
+
+    <!-- Secondary -->
+    <div id="type-block" class="secondary-block hidden">
+      <h3>Most likely tumour type</h3>
+      <p class="secondary-label">Secondary information. A clinic refers either way.</p>
+      <p id="tumor-type-text" class="tumor-type"></p>
+    </div>
+
+    <!-- Disclaimer, on every result -->
+    <div class="disclaimer" role="note">
+      <h3>Read this before acting on the result above</h3>
+      <p id="disclaimer-text"></p>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="save-report" class="primary-button">Save this result</button>
+      <button type="button" id="new-scan" class="secondary-button">Read another scan</button>
+    </div>
+
+    <details class="technical">
+      <summary>Technical detail</summary>
+      <table id="technical-table"></table>
+      <label class="checkbox-row">
+        <input type="checkbox" id="include-filename">
+        Include the original file name in the saved result.
+        Leave this off unless the result is going into this patient's own file.
+      </label>
+    </details>
+
+  </section>
+
+  <!-- ---------------------------------------------------------------- -->
+  <section id="error-panel" class="panel hidden">
+    <h2>Something went wrong</h2>
+    <p id="error-text"></p>
+    <button type="button" id="error-retry" class="secondary-button">Try again</button>
+  </section>
+
+</main>
+
+<footer>
+  <p id="footer-disclaimer"></p>
+  <p class="footer-scope" id="footer-scope"></p>
+  <p class="footer-validation" id="footer-validation"></p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

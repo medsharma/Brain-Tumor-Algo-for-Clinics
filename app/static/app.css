@@ -1,0 +1,365 @@
+/* Brain MRI Triage — all styling is local. No web fonts, no CDN.
+   The font stack is whatever the operating system already has. A clinic
+   laptop that has never been online must render this identically. */
+
+:root {
+  --ink: #14181d;
+  --ink-soft: #4b555f;
+  --line: #d5dade;
+  --page: #f6f7f9;
+  --card: #ffffff;
+
+  --tumor: #b3261e;
+  --tumor-bg: #fdecea;
+  --no-tumor: #1b6b2b;
+  --no-tumor-bg: #e9f6ec;
+  --uncertain: #a45c00;
+  --uncertain-bg: #fff4e2;
+  --cannot-read: #455a64;
+  --cannot-read-bg: #eceff1;
+
+  --warn: #8a4b00;
+  --warn-bg: #fff3d6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 0 3rem;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.hidden { display: none !important; }
+
+/* ---------------------------------------------------------------- banner */
+
+.mode-banner {
+  background: var(--tumor);
+  color: #fff;
+  padding: 0.85rem 1.25rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.mode-banner .banner-detail {
+  display: block;
+  font-weight: 400;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  opacity: 0.95;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.topbar h1 { margin: 0; font-size: 1.5rem; }
+
+.subtitle { margin: 0.15rem 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+
+.version { color: var(--ink-soft); font-size: 0.85rem; text-align: right; }
+
+.badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.75rem;
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+/* ---------------------------------------------------------------- layout */
+
+main {
+  max-width: 56rem;
+  margin: 1.5rem auto 0;
+  padding: 0 1.25rem;
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.panel h2 { margin-top: 0; font-size: 1.2rem; }
+
+h3 { font-size: 1rem; margin: 1.5rem 0 0.4rem; }
+
+/* ---------------------------------------------------------------- upload */
+
+.dropzone {
+  border: 3px dashed var(--line);
+  border-radius: 0.6rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone:hover,
+.dropzone:focus,
+.dropzone.dragging {
+  border-color: #4a6fa5;
+  background: #f2f6fc;
+  outline: none;
+}
+
+.dropzone-main { margin: 0; font-size: 1.3rem; font-weight: 600; }
+.dropzone-sub { margin: 0.4rem 0 0; color: var(--ink-soft); }
+
+.limits {
+  margin: 1.25rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.limits li { margin-bottom: 0.4rem; }
+
+/* --------------------------------------------------------------- working */
+
+.working-text { font-size: 1.15rem; margin: 0 0 1rem; }
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 4px solid var(--line);
+  border-top-color: #4a6fa5;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------------------------------------------------------------- result */
+
+.call-box {
+  border-radius: 0.5rem;
+  border-left: 0.65rem solid var(--cannot-read);
+  background: var(--cannot-read-bg);
+  padding: 1.4rem 1.5rem;
+}
+
+.call-box.tumor { border-left-color: var(--tumor); background: var(--tumor-bg); }
+.call-box.no_tumor { border-left-color: var(--no-tumor); background: var(--no-tumor-bg); }
+.call-box.uncertain { border-left-color: var(--uncertain); background: var(--uncertain-bg); }
+.call-box.cannot_read { border-left-color: var(--cannot-read); background: var(--cannot-read-bg); }
+
+.call-text {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.call-box.tumor .call-text { color: var(--tumor); }
+.call-box.no_tumor .call-text { color: var(--no-tumor); }
+.call-box.uncertain .call-text { color: var(--uncertain); }
+.call-box.cannot_read .call-text { color: var(--cannot-read); }
+
+.confidence-text { margin: 0.6rem 0 0; font-size: 1.25rem; font-weight: 600; }
+
+.probability-text { margin: 0.25rem 0 0; color: var(--ink-soft); font-size: 0.98rem; }
+
+.next-step {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1.1rem;
+  background: #f0f4f8;
+  border-radius: 0.4rem;
+}
+
+.next-step h3 { margin: 0 0 0.3rem; }
+.next-step p { margin: 0; font-size: 1.08rem; }
+
+.reason { color: var(--ink-soft); margin-top: 1rem; }
+
+.notes {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem 0.8rem 2rem;
+  background: var(--warn-bg);
+  border-left: 4px solid var(--warn);
+  border-radius: 0.3rem;
+  color: var(--warn);
+  font-size: 0.93rem;
+}
+
+/* --------------------------------------------------------------- images */
+
+.images-caveat {
+  margin: 0 0 0.6rem;
+  padding: 0.55rem 0.8rem;
+  background: #f0f4f8;
+  border-left: 4px solid #4a6fa5;
+  border-radius: 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.images-help { color: var(--ink-soft); font-size: 0.92rem; margin: 0 0 0.9rem; }
+
+.image-pair { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+
+.image-pair figure { margin: 0; }
+
+.image-pair img,
+.overlay-stack {
+  width: 19rem;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: #000;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.overlay-stack { position: relative; overflow: hidden; }
+
+.overlay-stack img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+}
+
+figcaption {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin-top: 0.35rem;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.slider-row label { font-size: 0.92rem; color: var(--ink-soft); }
+.slider-row input[type="range"] { flex: 1 1 12rem; max-width: 20rem; }
+
+.heatmap-warning {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--warn-bg);
+  border-left: 4px solid var(--warn);
+  color: var(--warn);
+  font-size: 0.92rem;
+  border-radius: 0.3rem;
+}
+
+/* ------------------------------------------------------------- secondary */
+
+.secondary-block {
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.4rem;
+  background: #fafbfc;
+}
+
+.secondary-block h3 { margin-top: 0; font-size: 0.95rem; color: var(--ink-soft); }
+.secondary-label { margin: 0 0 0.4rem; font-size: 0.85rem; color: var(--ink-soft); }
+.tumor-type { margin: 0; font-size: 1.1rem; font-weight: 600; }
+
+/* ------------------------------------------------------------ disclaimer */
+
+.disclaimer {
+  margin-top: 1.75rem;
+  padding: 1rem 1.15rem;
+  border: 2px solid var(--tumor);
+  border-radius: 0.45rem;
+  background: #fffafa;
+}
+
+.disclaimer h3 { margin: 0 0 0.5rem; color: var(--tumor); }
+.disclaimer p { margin: 0; white-space: pre-wrap; font-size: 0.95rem; }
+
+/* --------------------------------------------------------------- actions */
+
+.actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+
+button {
+  font: inherit;
+  border-radius: 0.35rem;
+  padding: 0.65rem 1.25rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.primary-button { background: #1d4e89; color: #fff; font-weight: 600; }
+.primary-button:hover { background: #163d6b; }
+
+.secondary-button { background: #fff; color: var(--ink); border-color: var(--line); }
+.secondary-button:hover { background: #f0f2f5; }
+
+.small-button {
+  background: #fff;
+  border-color: var(--line);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------- technical */
+
+.technical { margin-top: 1.5rem; font-size: 0.9rem; color: var(--ink-soft); }
+.technical summary { cursor: pointer; }
+.technical table { margin-top: 0.75rem; border-collapse: collapse; }
+.technical td { padding: 0.2rem 1rem 0.2rem 0; vertical-align: top; }
+.technical td:first-child { color: var(--ink-soft); white-space: nowrap; }
+
+.checkbox-row {
+  display: block;
+  margin-top: 1rem;
+  max-width: 34rem;
+  line-height: 1.35;
+}
+
+/* ---------------------------------------------------------------- footer */
+
+footer {
+  max-width: 56rem;
+  margin: 2rem auto 0;
+  padding: 0 1.25rem;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+footer p { margin: 0.35rem 0; white-space: pre-wrap; }
+.footer-scope { font-style: italic; }
+
+.footer-validation {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--warn-bg);
+  border-left: 4px solid var(--warn);
+  border-radius: 0.25rem;
+  color: var(--warn);
+  font-weight: 600;
+}

@@ -1,0 +1,20 @@
+# Everything the offline app needs at runtime.
+#
+# Install with:  pip install -r app/requirements.txt
+#
+# torch is pinned to the CPU wheel. The app never requires a GPU. If a machine
+# has CUDA, torch will use it, but nothing here depends on that.
+#
+# Nothing in this list phones home at runtime. There is deliberately no
+# requests, httpx, sentry-sdk, or analytics client anywhere in the app.
+
+torch>=2.2,<3
+torchvision>=0.17,<1
+numpy>=1.24
+pillow>=10.0
+fastapi>=0.110
+uvicorn>=0.27
+python-multipart>=0.0.9
+
+# Used by the benchmarking and validation tools in app/tools/, not by the app.
+pandas>=2.0

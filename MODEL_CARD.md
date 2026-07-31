@@ -242,9 +242,15 @@ Code: `docs/check_brisc_overlap.py`. Per-image flags:
 Every number below carries the dataset it came from. A number without a dataset
 name is not a number, it is a rumour.
 
-Deployment configuration selected by session A:
-`[PENDING: session A deployment_config.json — chosen backbone, seed(s), ensemble
-or not, temperature, thresholds]`.
+**The deployment configuration has not been finalised.** Session A owns the
+choice of backbone, seed or ensemble, temperature and thresholds, and had not
+published `analysis/results/safety/deployment_config.json` when this card was
+written. Until it exists, no configuration of this tool is the deployed one, and
+the app refuses to start on a stub.
+
+On the evidence in this document, ResNet-50 is the better choice on safety
+grounds. See [Uncertainty and deferral](#what-it-catches-and-what-it-does-not).
+That is a recommendation, not the decision.
 
 Two backbones were trained, ViT-B/16 and ResNet-50, 5 seeds each
 (42, 123, 7, 2024, 31), MC-Dropout with T=20 stochastic passes at evaluation.
@@ -276,12 +282,20 @@ Treat every confidence interval on this page as a floor on the uncertainty.
 **Plain reading: roughly 1 tumor in 100 is missed, on the easiest data this model
 will ever see.**
 
-**Dataset: BRISC 2025.** `[PENDING: session A BRISC tumor miss rate, all 6,000]`
-— and see the overlap section above for why that number is not a
-generalisation estimate.
-**Dataset: BRISC 2025, unseen subset only, n = 1,198, of which 58 carry a tumor.**
-`[PENDING: session A]` — expect this to be reported as not estimable, or with a
-CI wide enough that it constrains nothing.
+**Dataset: BRISC 2025. No number is reported here, and that is deliberate.**
+
+Session A's BRISC evaluation had not published a miss rate when this card was
+written. But even when it does, **a BRISC miss rate is not a generalisation
+estimate and will not be presented as one in this document.** 98.8% of BRISC's
+tumor images are images the model trained on. The clean subset contains 58
+tumors, which cannot support a rate.
+
+When session A publishes, the numbers will be in
+`analysis/results/safety/` and `analysis/results/brisc/`, stratified by overlap.
+Read them with the overlap section above in hand.
+
+**The honest position stands regardless of what that number turns out to be:
+this model's tumor miss rate on data it has not seen is unmeasured.**
 
 ### Tumor miss rate by tumor type
 
@@ -327,8 +341,11 @@ denominator of 1,455 is not 1,455 independent images, so the interval above is
 narrower than the evidence really justifies. A false-alarm rate estimated on 291
 images is not a precise quantity.
 
-**Dataset: BRISC 2025:** `[PENDING: session A binary sensitivity and specificity,
-with overlap stratification]`.
+**Dataset: BRISC 2025:** **Not available.** Session A's BRISC evaluation had not published results when this card was written. When it lands it will be in
+`analysis/results/safety/`, stratified by overlap. Note that BRISC's own test
+split contains 140 no-tumor images, of which 139 are unseen by the model, so a
+specificity estimate from BRISC is one of the few things the clean subset can
+actually support.
 
 ### Four-way classification accuracy
 
@@ -346,14 +363,24 @@ between the two backbones in any of 5 seeds.
 not a real-world accuracy and it must never be quoted as one.** It is the least
 important number on this page and it is the one people will want to quote.
 
-**Dataset: BRISC 2025:** `[PENDING: session A four-way accuracy, stratified by
-overlap]`.
+**Dataset: BRISC 2025:** **Not available.** Session A's BRISC evaluation had not published results when this card was written. Session A reported a preliminary sanity
+figure of 0.9728 for ViT seed 42 on the full 6,000, against 0.9613 on the
+internal test split. **That gap is the contamination signature, not a result.**
+A model does not beat its own held-out test set on genuinely new data. It is
+recorded here only because it is the cheapest available warning sign, and it
+should never be quoted as performance.
 
 ### Plane subgroups
 
-**Dataset: BRISC 2025** (the only dataset with plane labels; the training data has
-none): `[PENDING: session A per-plane metrics, axial / coronal / sagittal, with
-overlap stratification]`.
+**Dataset: BRISC 2025** (the only dataset with plane labels; the training data
+has none): **Not available.** Session A's BRISC evaluation had not published results when this card was written.
+
+**Plane subgroup performance is effectively unmeasurable in this project**, and
+saying so is more useful than waiting for a number. BRISC's plane split is
+roughly even (1,993 axial / 1,981 coronal / 2,026 sagittal), but 80% of those
+images are training data, and the clean subset is 1,198 images that are 95%
+no-tumor. Split three ways, that is around 19 tumors per plane. Nothing
+meaningful can be estimated from that.
 
 Note in advance that plane subgroup results on BRISC inherit the overlap problem.
 The clean subset holds 1,198 images spread across 3 planes and is 95% no-tumor,
@@ -379,12 +406,21 @@ scanner.
 
 ### Out-of-scope input rejection
 
-`[PENDING: session B rejector_config.json — method, threshold, rejection rate by
-category, false rejection rate on internal test and on BRISC]`.
+**Not available.** Session B owns the input check and had not published
+`analysis/results/ood/rejector_config.json` when this card was written. Until it
+does, **the tool has no measured ability to reject an input it should not
+judge**, and the application refuses to start rather than run without one.
 
-Note for whoever fills this in: a false-rejection rate measured on BRISC is
-measured on data that is 80% training images, and a rejector will happily accept
-its own training data. That number will look better than it is.
+Two things are already true and will not change when the numbers arrive:
+
+- A false-rejection rate measured on BRISC is measured on data that is 80%
+  training images. A rejector will happily accept its own training data, so that
+  number will look better than it is. It should be reported on the unseen subset
+  too.
+- Rejecting non-brain and corrupted images is the easy half. The hard half is a
+  genuine brain MRI carrying pathology the model has no class for, which will
+  look entirely in-distribution to any score-based rejector. See failure mode 2
+  below.
 
 ---
 
@@ -416,11 +452,14 @@ unit.
 
 ### What threshold
 
-`[PENDING: session A entropy_defer_threshold from deployment_config.json, fitted
-on the internal validation split]`.
+**No threshold has been fixed yet.** Session A fits it on the internal
+validation split (1,109 images) and had not published it when this card was
+written.
 
-The numbers below use a simpler rule for illustration: defer the most uncertain
-X% of cases by entropy. A fitted absolute threshold will behave differently.
+The numbers below therefore use a rule that does not depend on one: defer the
+most uncertain X% of cases by entropy. That is deliberately unit-invariant, which
+matters given the bits-versus-nats problem above. A fitted absolute threshold will
+behave differently, and its unit must be stated in the file that carries it.
 
 ### What it catches, and what it does not
 
@@ -533,21 +572,38 @@ lymphoma, abscesses, strokes, bleeds and demyelinating disease all land somewher
 and "no tumor" is one of the places they can land. This is untested, because no
 labelled data for these conditions exists in this project.
 
-`[PENDING: session B category-4 result — brain MRI carrying pathology the model
-has no class for]`. If B could not source that data, this stays an open,
-untested, clinically serious hole and is recorded as such in
-[LIMITATIONS.md](LIMITATIONS.md).
+**Untested.** Session B had not published a result for this category when this
+card was written.
+
+This is the most clinically serious untested case in the project and it deserves
+naming plainly. A brain MRI showing a stroke, a haemorrhage, an abscess or a
+metastasis is **in distribution** as far as any uncertainty score is concerned.
+It is a brain, it is an MRI, it looks like the training data. The model will
+confidently place it in one of four classes, and "no tumor" is one of them. No
+entropy threshold catches this, because the model is not uncertain. It is
+wrong.
 
 ### 3. Inputs that are not brain MRI at all
 
-`[PENDING: session B out-of-scope rejection results by category — non-brain MRI,
-non-MRI medical images, natural images, corrupted or blank images]`.
+**Untested.** Session B had not published rejection rates by category when this
+card was written. Results will land in `analysis/results/ood/`.
+
+Until then, assume the tool will produce a confident four-class answer for any
+image you give it, including images that are not brain MRI at all.
 
 ### 4. Heatmaps that look plausible and are not
 
-`[PENDING: session D localisation failure cases — where the heatmap highlights
-skull, background, or an unrelated region while the classification happens to be
-correct, and cases where the model is right for the wrong reason]`.
+**Not systematically measured.** Session D had published the runtime heatmap
+generator and its consistency tests when this card was written, but not a
+clinical localisation analysis. That will land in
+`analysis/results/explainability_clinical/`.
+
+What is already known: the offline explainability run
+(`analysis/results/explainability/`) produced heatmaps for all 5 seeds and both
+backbones, including for misclassified cases. **Nobody has checked whether the
+highlighted region corresponds to the actual tumor**, because that check needs
+segmentation masks, and the internal dataset has none. BRISC ships masks for
+4,793 images, which makes this measurable in principle. It has not been measured.
 
 A heatmap is a trust signal and trust signals cut both ways. A confident wrong
 answer with a plausible-looking heatmap over roughly the right area is harder for

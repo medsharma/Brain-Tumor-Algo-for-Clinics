@@ -116,8 +116,10 @@ The complete list: [LIMITATIONS.md](LIMITATIONS.md).
 ## How it works
 
 1. A brain MRI slice goes in, resized to 224x224.
-2. An input check rejects images that are not brain MRI.
-   `[PENDING: session B rejector description]`
+2. An input check is meant to reject images that are not brain MRI. **It has no
+   published measurements yet**, so there is currently no evidence about what it
+   catches or misses. The app refuses to start without it rather than run
+   unguarded.
 3. A ResNet-50, fine-tuned from ImageNet weights, runs 20 times with dropout
    left on. The 20 outputs are averaged.
 4. Spread across those 20 passes is the uncertainty. High spread means the tool

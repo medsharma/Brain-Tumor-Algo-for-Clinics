@@ -178,21 +178,37 @@ is about an hour of a radiologist's time.
 
 ## Out-of-scope input handling
 
-`[PENDING: session B — what the rejector catches, what it misses, and
-specifically the category-4 case of a genuine brain MRI carrying pathology the
-model has no class for. If that category could not be sourced, it is an open,
-untested and clinically serious hole.]`
-
-`[PENDING: session B — false rejection rate. Note that any such rate measured on
-BRISC is measured on data that is 80% training images.]`
+- **The rejector has no published measurements.** Session B had not published
+  `analysis/results/ood/rejector_config.json` when this was written, so **there
+  is currently no measured evidence that the tool can refuse an input it should
+  not judge.** The application refuses to start without one, which is the correct
+  behaviour, but it means the end-to-end system has never been evaluated.
+- **The category-4 case is untested and is the most serious hole in the
+  project.** A genuine brain MRI carrying pathology the model has no class for, a
+  stroke, a bleed, an abscess, a metastasis, is fully in-distribution to any
+  uncertainty score. It is a brain, it is an MRI, and it looks like the training
+  data. The model will confidently assign one of four classes and "no tumor" is
+  one of them. **No entropy threshold catches this, because the model is not
+  uncertain, it is wrong.** No labelled data for this category exists in the
+  project.
+- **Any false-rejection rate measured on BRISC will be optimistic**, because 80%
+  of BRISC is training data and a rejector accepts its own training data
+  happily.
 
 ## Explainability
 
-`[PENDING: session D — localisation failure modes, cases where the model is
-right for the wrong reason, and any measured disagreement between the runtime
-heatmap and the validated offline implementation.]`
+- **Nobody has ever checked whether the heatmap points at the tumor.** Heatmaps
+  were generated for all 5 seeds and both backbones
+  (`analysis/results/explainability/`), including for misclassified cases. No
+  measurement of overlap between the highlighted region and the actual tumor
+  exists, because the internal dataset has no segmentation masks. BRISC ships
+  masks for 4,793 images, so this is measurable in principle and has not been
+  measured.
+- **No published localisation failure analysis.** Session D had published the
+  runtime generator and its consistency tests, but not the clinical analysis,
+  when this was written.
 
-The general limitation stands regardless of what D finds: **a plausible heatmap
+The general limitation stands regardless of what that analysis finds: **a plausible heatmap
 is not evidence of a correct answer.** It is a sanity check that can catch gross
 errors. Nothing more has been demonstrated.
 

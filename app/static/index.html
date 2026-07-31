@@ -145,20 +145,52 @@
       same answers.
     </p>
 
-    <!-- The no-Python route. This is the one almost everybody wants. -->
-    <div id="package-block" class="package-block hidden">
-      <h3 class="package-heading">Windows, nothing to install</h3>
+    <!-- One click. Everything else on this page is a fallback for this. -->
+    <div id="installer-block" class="package-block hidden">
+      <h3 class="package-heading">Windows</h3>
       <div class="setup-steps">
         <p class="setup-step">
           <span class="step-number">1</span>
-          <a class="primary-button setup-download" id="package-link" href="#" download>
-            Download the app
+          <a class="primary-button setup-download" id="installer-link" href="#" download>
+            Download and install
+          </a>
+          <span class="package-size" id="installer-size"></span>
+        </p>
+        <p class="setup-step">
+          <span class="step-number">2</span>
+          Double-click the downloaded file. That is everything.
+        </p>
+      </div>
+      <p class="download-intro">
+        It downloads the app, installs it, puts a shortcut on your desktop and
+        opens it. A few minutes, mostly waiting for the download. After that it
+        never needs the internet again.
+      </p>
+      <p class="download-note">
+        Windows may warn that the file is from an unknown publisher, because it
+        is not code-signed. Choose <strong>More info</strong> then
+        <strong>Run anyway</strong>, or ask whoever sent you the link.
+      </p>
+    </div>
+
+    <!-- Kept for anyone who would rather see what they are getting. -->
+    <details id="package-block" class="download-howto hidden">
+      <summary>Windows, without the installer</summary>
+      <p>
+        The same application as a plain zip, if you would rather unpack it
+        yourself or put it straight onto a USB stick.
+      </p>
+      <div class="setup-steps">
+        <p class="setup-step">
+          <span class="step-number">1</span>
+          <a class="secondary-button setup-download" id="package-link" href="#" download>
+            Download the zip
           </a>
           <span class="package-size" id="package-size"></span>
         </p>
         <p class="setup-step">
           <span class="step-number">2</span>
-          Right-click the file and choose <strong>Extract All</strong>
+          Right-click it and choose <strong>Extract All</strong>
         </p>
         <p class="setup-step">
           <span class="step-number">3</span>
@@ -166,12 +198,7 @@
           <code class="setup-command">BrainMRITriage.exe</code>
         </p>
       </div>
-      <p class="download-intro">
-        No Python, no setup, no internet after the download. The page opens by
-        itself and you drag a scan onto it. The first start takes about
-        20 seconds while it loads the models.
-      </p>
-    </div>
+    </details>
 
     <details class="download-howto">
       <summary>Other ways: Mac, Linux, or if you already have Python</summary>

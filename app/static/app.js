@@ -131,6 +131,15 @@ async function loadDownloads() {
     el("package-size").textContent = pkg.size_human;
     el("package-block").classList.remove("hidden");
   }
+
+  // The setup program. Shown above the zip because it is the only route that
+  // ends with a working app without the person doing anything but wait.
+  const setup = data.windows_installer;
+  if (setup) {
+    el("installer-link").href = "/api/downloads/" + encodeURIComponent(setup.key);
+    el("installer-size").textContent = setup.size_human;
+    el("installer-block").classList.remove("hidden");
+  }
 }
 
 async function analyze(file) {

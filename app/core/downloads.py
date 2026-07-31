@@ -186,6 +186,46 @@ def windows_package(cfg: DeploymentConfig) -> Optional[Downloadable]:
     )
 
 
+def find_windows_installer() -> Optional[Path]:
+    """The small setup program, if one has been built.
+
+    This is the download for someone who should not have to think at all: it
+    fetches the application, installs it, makes a desktop shortcut and starts
+    it. A few megabytes, so the browser download finishes in seconds and the
+    progress bar appears immediately rather than after 2.4 GB of silence.
+
+    Built by ``app/packaging/build_installer.py``, which bakes in the address to
+    download from. Absent until somebody runs it.
+    """
+    import os
+
+    override = os.environ.get("MRI_TRIAGE_INSTALLER_EXE", "").strip()
+    if override:
+        candidate = Path(override).expanduser()
+        return candidate if candidate.is_file() else None
+
+    candidate = paths.repo_root() / "release" / "BrainMRITriageSetup.exe"
+    return candidate if candidate.is_file() else None
+
+
+def windows_installer(cfg: DeploymentConfig) -> Optional[Downloadable]:
+    path = find_windows_installer()
+    if path is None:
+        return None
+    return Downloadable(
+        key="BrainMRITriageSetup.exe",
+        filename=path.name,
+        path=path,
+        kind="installer",
+        bytes=path.stat().st_size,
+        sha256=file_sha256(path),
+        description=(
+            "Setup program for Windows. Downloads and installs the app, makes a "
+            "desktop shortcut and opens it. Nothing else to do."
+        ),
+    )
+
+
 def build_catalogue(cfg: DeploymentConfig) -> List[Downloadable]:
     """Every file needed to reproduce this server, and nothing else.
 

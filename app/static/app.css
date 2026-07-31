@@ -1,487 +1,666 @@
 /* Brain MRI Triage — all styling is local. No web fonts, no CDN.
    The font stack is whatever the operating system already has. A clinic
-   laptop that has never been online must render this identically. */
+   laptop that has never been online must render this identically.
+
+   Design brief, in priority order:
+
+     1. The call must be readable across a room, instantly, by someone tired.
+     2. Nothing decorative may compete with it.
+     3. The safety wording must never look like small print. It is the most
+        important text on the page.
+
+   That third rule is why this is restrained rather than styled. A triage tool
+   that looks slicker than its evidence invites trust it has not earned, and
+   this model still sends about 2 tumours in 1,000 home confidently. Calm and
+   plain is the honest register. The polish goes into spacing, type scale and
+   hierarchy, not into colour and ornament.
+
+   Light and dark are both supported. A clinic room at night is a real place. */
+
+/* ------------------------------------------------------------------ tokens */
 
 :root {
-  --ink: #14181d;
-  --ink-soft: #4b555f;
-  --line: #d5dade;
-  --page: #f6f7f9;
-  --card: #ffffff;
+  color-scheme: light dark;
 
-  --tumor: #b3261e;
-  --tumor-bg: #fdecea;
-  --no-tumor: #1b6b2b;
-  --no-tumor-bg: #e9f6ec;
-  --uncertain: #a45c00;
-  --uncertain-bg: #fff4e2;
-  --cannot-read: #455a64;
-  --cannot-read-bg: #eceff1;
+  --bg: #fbfbfa;
+  --surface: #ffffff;
+  --surface-2: #f4f4f2;
+  --line: #e4e4e0;
+  --line-strong: #cfcfc9;
 
-  --warn: #8a4b00;
-  --warn-bg: #fff3d6;
+  --text: #16181d;
+  --text-2: #545861;
+  --text-3: #82868e;
+
+  --accent: #1f5f8b;
+  --accent-soft: #eaf1f7;
+
+  --danger: #a4241c;
+  --danger-soft: #fbeceb;
+  --warn: #8a5a00;
+  --warn-soft: #fdf4e3;
+  --ok: #1f6b3a;
+  --ok-soft: #ebf4ee;
+  --neutral: #455a64;
+  --neutral-soft: #eceff1;
+
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  --shadow: 0 1px 2px rgba(16, 18, 22, 0.05),
+            0 6px 20px -12px rgba(16, 18, 22, 0.20);
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+          Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101215;
+    --surface: #171a1e;
+    --surface-2: #1e2227;
+    --line: #282d33;
+    --line-strong: #383e46;
+
+    --text: #eceef1;
+    --text-2: #a9aeb6;
+    --text-3: #7d838c;
+
+    --accent: #74b6e2;
+    --accent-soft: #16242f;
+
+    --danger: #f28e84;
+    --danger-soft: #2a1917;
+    --warn: #e2b568;
+    --warn-soft: #262019;
+    --ok: #82cb9c;
+    --ok-soft: #16241b;
+    --neutral: #9fb0b8;
+    --neutral-soft: #1d2226;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+              0 8px 24px -14px rgba(0, 0, 0, 0.7);
+  }
 }
 
 * { box-sizing: border-box; }
 
+html { -webkit-text-size-adjust: 100%; }
+
 body {
   margin: 0;
-  padding: 0 0 3rem;
-  background: var(--page);
-  color: var(--ink);
-  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  font-size: 17px;
-  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { line-height: 1.25; letter-spacing: -0.011em; margin: 0; }
+p { margin: 0 0 0.9rem; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--accent); text-underline-offset: 2px; }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 0.12em 0.4em;
+  border-radius: 5px;
 }
 
 .hidden { display: none !important; }
 
-/* ---------------------------------------------------------------- banner */
+/* ------------------------------------------------------------------ banner */
 
 .mode-banner {
-  background: var(--tumor);
+  background: var(--danger);
   color: #fff;
-  padding: 0.85rem 1.25rem;
-  font-weight: 700;
-  font-size: 1.05rem;
+  padding: 0.7rem 1.4rem;
+  font-weight: 650;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-align: center;
-  letter-spacing: 0.01em;
 }
 
-.mode-banner .banner-detail {
+.banner-detail {
   display: block;
   font-weight: 400;
-  font-size: 0.9rem;
-  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
   opacity: 0.95;
+  margin: 0.3rem auto 0;
+  max-width: 78ch;
+  line-height: 1.5;
 }
 
-/* ---------------------------------------------------------------- header */
+/* ------------------------------------------------------------------ layout */
 
 .topbar {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: flex-start;
   gap: 1rem;
-  padding: 1.25rem 1.5rem;
-  background: var(--card);
-  border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 2.2rem 1.4rem 0;
 }
 
-.topbar h1 { margin: 0; font-size: 1.5rem; }
+.topbar h1 { font-size: 1.3rem; font-weight: 640; }
 
-.subtitle { margin: 0.15rem 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+.subtitle { color: var(--text-2); font-size: 0.9rem; margin: 0.15rem 0 0; }
 
-.version { color: var(--ink-soft); font-size: 0.85rem; text-align: right; }
-
-.badge {
-  display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 0.75rem;
-  background: var(--warn-bg);
-  color: var(--warn);
-  font-weight: 700;
+.version {
+  color: var(--text-3);
   font-size: 0.75rem;
+  font-family: var(--mono);
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-/* ---------------------------------------------------------------- layout */
+.badge:not(:empty) {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border: 1px solid currentColor;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  letter-spacing: 0.04em;
+}
 
 main {
-  max-width: 56rem;
-  margin: 1.5rem auto 0;
-  padding: 0 1.25rem;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 1.6rem 1.4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .panel {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 0.6rem;
-  padding: 1.5rem;
-  margin-bottom: 1.25rem;
+  border-radius: var(--radius-lg);
+  padding: 1.7rem;
+  box-shadow: var(--shadow);
 }
 
-.panel h2 { margin-top: 0; font-size: 1.2rem; }
+.panel h2 { font-size: 1rem; font-weight: 620; margin-bottom: 1rem; }
 
-h3 { font-size: 1rem; margin: 1.5rem 0 0.4rem; }
+.panel h3 {
+  font-size: 0.8rem;
+  font-weight: 640;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  margin-bottom: 0.5rem;
+}
 
-/* ---------------------------------------------------------------- upload */
+/* ---------------------------------------------------------------- dropzone */
 
 .dropzone {
-  border: 3px dashed var(--line);
-  border-radius: 0.6rem;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius);
   padding: 3rem 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  background: var(--surface-2);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
 }
 
 .dropzone:hover,
-.dropzone:focus,
-.dropzone.dragging {
-  border-color: #4a6fa5;
-  background: #f2f6fc;
+.dropzone:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
   outline: none;
 }
 
-.dropzone-main { margin: 0; font-size: 1.3rem; font-weight: 600; }
-.dropzone-sub { margin: 0.4rem 0 0; color: var(--ink-soft); }
-
-.limits {
-  margin: 1.25rem 0 0;
-  padding-left: 1.2rem;
-  color: var(--ink-soft);
-  font-size: 0.92rem;
+.dropzone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: scale(1.006);
 }
 
-.limits li { margin-bottom: 0.4rem; }
+.dropzone-main { font-size: 1rem; font-weight: 560; margin-bottom: 0.3rem; }
+.dropzone-sub { color: var(--text-3); font-size: 0.85rem; margin: 0; }
 
-/* --------------------------------------------------------------- working */
+.limits {
+  list-style: none;
+  padding: 0;
+  margin: 1.3rem 0 0;
+  display: grid;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
 
-.working-text { font-size: 1.15rem; margin: 0 0 1rem; }
+.limits li { padding-left: 1.1rem; position: relative; }
+
+.limits li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+/* Replaces the "nothing leaves this laptop" line when that stops being true.
+   It has to read as a warning, never as reassurance. */
+.privacy-warning {
+  background: var(--warn-soft);
+  border-left: 3px solid var(--warn);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem !important;
+  color: var(--text);
+}
+.privacy-warning::before { display: none; }
+
+/* ----------------------------------------------------------------- working */
+
+.working-text { text-align: center; color: var(--text-2); margin-bottom: 1.1rem; }
 
 .spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 4px solid var(--line);
-  border-top-color: #4a6fa5;
+  width: 26px;
+  height: 26px;
+  margin: 0 auto;
+  border: 2.5px solid var(--line);
+  border-top-color: var(--accent);
   border-radius: 50%;
-  animation: spin 0.9s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---------------------------------------------------------------- result */
-
-.call-box {
-  border-radius: 0.5rem;
-  border-left: 0.65rem solid var(--cannot-read);
-  background: var(--cannot-read-bg);
-  padding: 1.4rem 1.5rem;
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+  .dropzone { transition: none; }
 }
 
-.call-box.tumor { border-left-color: var(--tumor); background: var(--tumor-bg); }
-.call-box.no_tumor { border-left-color: var(--no-tumor); background: var(--no-tumor-bg); }
-.call-box.uncertain { border-left-color: var(--uncertain); background: var(--uncertain-bg); }
-.call-box.cannot_read { border-left-color: var(--cannot-read); background: var(--cannot-read-bg); }
+/* ------------------------------------------------------------------ result */
+
+/* The single most important element on the page. Everything else is sized
+   relative to it, deliberately smaller. */
+.call-box {
+  border-radius: var(--radius);
+  padding: 1.7rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.call-box.tumor { background: var(--danger-soft); border-color: var(--danger); }
+.call-box.no_tumor { background: var(--ok-soft); border-color: var(--ok); }
+.call-box.uncertain { background: var(--warn-soft); border-color: var(--warn); }
+.call-box.cannot_read { background: var(--neutral-soft); border-color: var(--line-strong); }
 
 .call-text {
+  font-size: 1.55rem;
+  font-weight: 660;
+  letter-spacing: -0.016em;
   margin: 0;
-  font-size: 2.1rem;
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
-.call-box.tumor .call-text { color: var(--tumor); }
-.call-box.no_tumor .call-text { color: var(--no-tumor); }
-.call-box.uncertain .call-text { color: var(--uncertain); }
-.call-box.cannot_read .call-text { color: var(--cannot-read); }
+.call-box.tumor .call-text { color: var(--danger); }
+.call-box.no_tumor .call-text { color: var(--ok); }
+.call-box.uncertain .call-text { color: var(--warn); }
+.call-box.cannot_read .call-text { color: var(--neutral); }
 
-.confidence-text { margin: 0.6rem 0 0; font-size: 1.25rem; font-weight: 600; }
+.confidence-text {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  margin: 0.45rem 0 0;
+  font-weight: 520;
+}
 
-.probability-text { margin: 0.25rem 0 0; color: var(--ink-soft); font-size: 0.98rem; }
+.probability-text { font-size: 0.82rem; color: var(--text-3); margin: 0.2rem 0 0; }
 
 .next-step {
-  margin-top: 1.25rem;
-  padding: 0.9rem 1.1rem;
-  background: #f0f4f8;
-  border-radius: 0.4rem;
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.1rem;
 }
 
-.next-step h3 { margin: 0 0 0.3rem; }
-.next-step p { margin: 0; font-size: 1.08rem; }
+.next-step p { font-size: 0.98rem; font-weight: 540; }
 
-.reason { color: var(--ink-soft); margin-top: 1rem; }
+.reason { color: var(--text-2); font-size: 0.89rem; margin-bottom: 1.1rem; }
 
 .notes {
-  margin-top: 1rem;
-  padding: 0.8rem 1rem 0.8rem 2rem;
-  background: var(--warn-bg);
-  border-left: 4px solid var(--warn);
-  border-radius: 0.3rem;
-  color: var(--warn);
-  font-size: 0.93rem;
+  list-style: none;
+  padding: 0.8rem 1rem;
+  margin: 0 0 1.2rem;
+  background: var(--warn-soft);
+  border-left: 3px solid var(--warn);
+  border-radius: 6px;
+  font-size: 0.86rem;
 }
 
-/* --------------------------------------------------------------- images */
+.notes li + li { margin-top: 0.4rem; }
+
+/* ------------------------------------------------------------------ images */
+
+.images-block { margin: 1.6rem 0; }
 
 .images-caveat {
-  margin: 0 0 0.6rem;
-  padding: 0.55rem 0.8rem;
-  background: #f0f4f8;
-  border-left: 4px solid #4a6fa5;
-  border-radius: 0.3rem;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.87rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border-left: 3px solid var(--line-strong);
+  padding: 0.6rem 0.85rem;
+  border-radius: 6px;
+  margin-bottom: 0.7rem;
 }
 
-.images-help { color: var(--ink-soft); font-size: 0.92rem; margin: 0 0 0.9rem; }
+.images-help { font-size: 0.82rem; color: var(--text-3); margin-bottom: 1rem; }
 
-.image-pair { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.image-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.1rem;
+}
 
 .image-pair figure { margin: 0; }
 
-.image-pair img,
-.overlay-stack {
-  width: 19rem;
-  max-width: 100%;
-  aspect-ratio: 1 / 1;
-  border: 1px solid var(--line);
-  border-radius: 0.35rem;
-  background: #000;
+.image-pair img {
+  width: 100%;
   display: block;
-  image-rendering: pixelated;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #000;
 }
 
-.overlay-stack { position: relative; overflow: hidden; }
+.image-pair figcaption {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  margin-top: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
 
-.overlay-stack img {
+.overlay-stack { position: relative; }
+.overlay-stack img { position: relative; }
+.overlay-stack #img-overlay {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 0;
-}
-
-figcaption {
-  text-align: center;
-  font-size: 0.88rem;
-  color: var(--ink-soft);
-  margin-top: 0.35rem;
+  transition: opacity 0.12s ease;
 }
 
 .slider-row {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  margin-top: 1rem;
+  margin-top: 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
   flex-wrap: wrap;
 }
 
-.slider-row label { font-size: 0.92rem; color: var(--ink-soft); }
-.slider-row input[type="range"] { flex: 1 1 12rem; max-width: 20rem; }
+.slider-row input[type="range"] { flex: 1; min-width: 130px; accent-color: var(--accent); }
 
 .heatmap-warning {
-  margin-top: 0.75rem;
-  padding: 0.6rem 0.85rem;
-  background: var(--warn-bg);
-  border-left: 4px solid var(--warn);
+  font-size: 0.85rem;
   color: var(--warn);
-  font-size: 0.92rem;
-  border-radius: 0.3rem;
+  background: var(--warn-soft);
+  padding: 0.55rem 0.8rem;
+  border-radius: 6px;
+  margin-top: 0.8rem;
 }
 
-/* ------------------------------------------------------------- secondary */
+/* --------------------------------------------------------------- secondary */
 
 .secondary-block {
-  margin-top: 1.5rem;
-  padding: 0.9rem 1.1rem;
-  border: 1px dashed var(--line);
-  border-radius: 0.4rem;
-  background: #fafbfc;
+  border-top: 1px solid var(--line);
+  padding-top: 1.2rem;
+  margin-top: 1.4rem;
 }
 
-.secondary-block h3 { margin-top: 0; font-size: 0.95rem; color: var(--ink-soft); }
-.secondary-label { margin: 0 0 0.4rem; font-size: 0.85rem; color: var(--ink-soft); }
-.tumor-type { margin: 0; font-size: 1.1rem; font-weight: 600; }
+.secondary-label { font-size: 0.79rem; color: var(--text-3); margin-bottom: 0.3rem; }
+.tumor-type { font-size: 1rem; font-weight: 560; }
 
-/* ------------------------------------------------------------ disclaimer */
+/* -------------------------------------------------------------- disclaimer */
 
 .disclaimer {
-  margin-top: 1.75rem;
-  padding: 1rem 1.15rem;
-  border: 2px solid var(--tumor);
-  border-radius: 0.45rem;
-  background: #fffafa;
+  border: 1px solid var(--danger);
+  background: var(--danger-soft);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.3rem;
+  margin: 1.6rem 0 1.2rem;
 }
 
-.disclaimer h3 { margin: 0 0 0.5rem; color: var(--tumor); }
-.disclaimer p { margin: 0; white-space: pre-wrap; font-size: 0.95rem; }
+.disclaimer h3 { color: var(--danger); margin-bottom: 0.4rem; }
+.disclaimer p { font-size: 0.875rem; }
 
-/* --------------------------------------------------------------- actions */
+/* ----------------------------------------------------------------- buttons */
 
-.actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
-
-button {
-  font: inherit;
-  border-radius: 0.35rem;
-  padding: 0.65rem 1.25rem;
-  cursor: pointer;
+.primary-button,
+.secondary-button,
+.small-button {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 560;
+  padding: 0.62rem 1.25rem;
+  border-radius: 8px;
   border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.13s ease, border-color 0.13s ease, opacity 0.13s ease;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.primary-button { background: #1d4e89; color: #fff; font-weight: 600; }
-.primary-button:hover { background: #163d6b; }
+.primary-button { background: var(--accent); color: #fff; }
+.primary-button:hover { opacity: 0.9; }
 
-.secondary-button { background: #fff; color: var(--ink); border-color: var(--line); }
-.secondary-button:hover { background: #f0f2f5; }
+.secondary-button {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.secondary-button:hover { background: var(--surface-2); }
 
 .small-button {
-  background: #fff;
-  border-color: var(--line);
-  padding: 0.35rem 0.75rem;
-  font-size: 0.9rem;
+  padding: 0.34rem 0.75rem;
+  font-size: 0.79rem;
+  background: var(--surface);
+  color: var(--text-2);
+  border-color: var(--line-strong);
+}
+.small-button:hover { background: var(--surface-2); }
+
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.actions { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.2rem; }
+
+/* --------------------------------------------------------------- technical */
+
+.technical { margin-top: 1.5rem; }
+
+summary {
+  cursor: pointer;
+  font-size: 0.86rem;
+  color: var(--text-2);
+  font-weight: 540;
+  padding: 0.35rem 0;
+}
+summary:hover { color: var(--text); }
+
+.technical table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.79rem;
+  margin-top: 0.7rem;
+  font-family: var(--mono);
 }
 
-/* ------------------------------------------------------------- technical */
-
-.technical { margin-top: 1.5rem; font-size: 0.9rem; color: var(--ink-soft); }
-.technical summary { cursor: pointer; }
-.technical table { margin-top: 0.75rem; border-collapse: collapse; }
-.technical td { padding: 0.2rem 1rem 0.2rem 0; vertical-align: top; }
-.technical td:first-child { color: var(--ink-soft); white-space: nowrap; }
+.technical td {
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-2);
+}
+.technical td:first-child { color: var(--text-3); width: 42%; }
 
 .checkbox-row {
-  display: block;
-  margin-top: 1rem;
-  max-width: 34rem;
-  line-height: 1.35;
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  margin-top: 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
 }
 
-/* ---------------------------------------------------------------- footer */
+/* ---------------------------------------------------------------- download */
 
-footer {
-  max-width: 56rem;
-  margin: 2rem auto 0;
-  padding: 0 1.25rem;
-  color: var(--ink-soft);
-  font-size: 0.85rem;
+.download-intro { max-width: 66ch; color: var(--text-2); font-size: 0.91rem; }
+
+.package-block {
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.3rem 1.4rem;
+  margin: 1.1rem 0 1.4rem;
+  background: var(--accent-soft);
 }
 
-footer p { margin: 0.35rem 0; white-space: pre-wrap; }
-.footer-scope { font-style: italic; }
+.package-heading { color: var(--accent); margin-bottom: 0.9rem; }
 
-.footer-validation {
-  margin-top: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--warn-bg);
-  border-left: 4px solid var(--warn);
-  border-radius: 0.25rem;
-  color: var(--warn);
-  font-weight: 600;
-}
-
-/* Shown instead of the "nothing leaves this laptop" line when the app is
-   served over a network. It must read as a warning, not as reassurance. */
-.privacy-warning {
-  background: #fff4e5;
-  border-left: 4px solid #b26a00;
-  padding: 0.6rem 0.8rem;
-  border-radius: 4px;
-}
-
-/* ------------------------------------------------------------- downloads */
-
-.download-intro { max-width: 62ch; color: #333; }
-
-.download-summary {
-  background: #eef4fb;
-  border-left: 4px solid #2b6cb0;
-  padding: 0.7rem 0.9rem;
-  border-radius: 4px;
-  margin: 1rem 0;
-}
-
-.download-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
-.download-table th,
-.download-table td {
-  text-align: left;
-  padding: 0.45rem 0.6rem;
-  border-bottom: 1px solid #e2e2e2;
-  vertical-align: top;
-}
-.download-table th { background: #f6f6f6; font-weight: 600; }
-
-/* The SHA-256 is 64 characters. Let it wrap rather than stretch the table
-   past the width of the page. */
-.download-table .hash {
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
-  font-size: 0.72rem;
-  color: #555;
-  word-break: break-all;
-  max-width: 20ch;
-}
-
-.download-link { font-weight: 600; }
-
-.download-howto { margin-top: 1rem; }
-.download-howto ol { max-width: 62ch; }
-.download-howto code {
-  background: #f2f2f2;
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  font-size: 0.85rem;
-}
-
-.download-warning {
-  margin-top: 1rem;
-  padding: 0.7rem 0.9rem;
-  background: #fdecea;
-  border-left: 4px solid #b3261e;
-  border-radius: 4px;
-  max-width: 70ch;
-}
-
-/* The setup path is the point of the section. The file table is reference
-   material behind a disclosure, so these two steps carry the weight. */
-.setup-steps {
-  margin: 1.2rem 0;
-  padding: 1rem 1.2rem;
-  background: #f4f8f4;
-  border-left: 4px solid #2e7d32;
-  border-radius: 4px;
-}
+.setup-steps { display: grid; gap: 0.75rem; margin: 0 0 1rem; }
 
 .setup-step {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  margin: 0.6rem 0;
+  gap: 0.75rem;
+  margin: 0;
   flex-wrap: wrap;
+  font-size: 0.91rem;
 }
 
 .step-number {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
-  background: #2e7d32;
+  background: var(--accent);
   color: #fff;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.77rem;
+  font-weight: 660;
   flex: 0 0 auto;
 }
 
-.setup-download { text-decoration: none; }
+.package-size { color: var(--text-3); font-size: 0.81rem; font-family: var(--mono); }
 
 .setup-command {
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
-  background: #22292f;
-  color: #f5f5f5;
-  padding: 0.4rem 0.7rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  font-family: var(--mono);
+  background: var(--text);
+  color: var(--bg);
+  padding: 0.32rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.81rem;
+  border: none;
   user-select: all;
 }
 
-/* The no-Python route, shown above everything else. Someone who does not know
-   what Python is should never have to find out. */
-.package-block {
-  border: 2px solid #2e7d32;
+.download-note {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  background: var(--warn-soft);
+  border-left: 3px solid var(--warn);
+  padding: 0.55rem 0.8rem;
   border-radius: 6px;
-  padding: 0.2rem 1.1rem 1rem;
-  margin: 1.2rem 0;
-  background: #fbfdfb;
+  max-width: 66ch;
 }
 
-.package-heading { margin-bottom: 0.2rem; }
+.download-howto { margin-top: 0.9rem; }
 
-.package-size {
-  color: #555;
-  font-size: 0.9rem;
+.download-howto ol,
+.download-howto p { font-size: 0.87rem; color: var(--text-2); max-width: 66ch; }
+
+.download-summary {
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  padding: 0.7rem 0.9rem;
+  border-radius: 6px;
+  margin: 0.9rem 0;
+  font-size: 0.85rem;
+}
+
+.download-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  display: block;
+  overflow-x: auto;
+}
+
+.download-table th,
+.download-table td {
+  text-align: left;
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.download-table th {
+  color: var(--text-3);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.69rem;
+  letter-spacing: 0.05em;
+}
+
+.download-table .hash {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-3);
+  word-break: break-all;
+  max-width: 18ch;
+}
+
+.download-link { font-weight: 560; }
+
+.download-warning {
+  margin-top: 1rem;
+  padding: 0.75rem 0.95rem;
+  background: var(--danger-soft);
+  border-left: 3px solid var(--danger);
+  border-radius: 6px;
+  max-width: 70ch;
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------------ footer */
+
+footer {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 1.4rem 1.4rem 3rem;
+  color: var(--text-3);
+  font-size: 0.77rem;
+  border-top: 1px solid var(--line);
+}
+
+footer p { margin-bottom: 0.4rem; max-width: 78ch; }
+
+.footer-validation { color: var(--text-2); }
+
+/* ------------------------------------------------------------------ mobile */
+
+@media (max-width: 620px) {
+  .panel { padding: 1.25rem; border-radius: var(--radius); }
+  .call-text { font-size: 1.3rem; }
+  .dropzone { padding: 2.2rem 1rem; }
+  main { padding: 1.1rem 0.9rem 3rem; gap: 1.1rem; }
+  .topbar { padding: 1.6rem 0.9rem 0; }
+  footer { padding: 1.4rem 0.9rem 3rem; }
 }

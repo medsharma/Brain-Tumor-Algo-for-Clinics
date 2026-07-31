@@ -9,6 +9,19 @@
 - Do not flatter me or pad answers with praise.
 - When there is a risk to patients, say so plainly. Do not soften it.
 
+# Repositories
+
+There are two. Do not mix them up.
+
+- **Clinical work goes here: https://github.com/medsharma/Brain-Tumor-Algo-for-Clinics**
+  This is `origin`. Every change from 2026-07-30 onward goes to this repo.
+- **The paper lives here: https://github.com/medsharma/Brain-Tumor-ML-Publication**
+  Frozen at commit `b53c0b3`. Do not push to it. Do not add it as a remote.
+  It is not configured in this checkout, and that is deliberate.
+
+If a future task genuinely needs to update the paper repo, ask first. Do not
+assume it.
+
 # What I am working on
 
 - A brain tumor MRI classifier I want to get to clinical grade for rural clinics.

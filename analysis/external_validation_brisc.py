@@ -71,7 +71,11 @@ from common import (  # noqa: E402
 )
 
 sys.path.insert(0, str(REPO_ROOT / "src"))
-from code import ManifestDataset  # noqa: E402
+from code import (  # noqa: E402
+    ManifestDataset,
+    compute_calibration_metrics,
+    mcnemar_test,
+)
 
 # ---------------------------------------------------------------------------
 # Absolute paths. Git worktrees do not contain the checkpoints (they are
@@ -579,10 +583,581 @@ def ensemble_frames(frames: List[pd.DataFrame]) -> pd.DataFrame:
     return out
 
 
+# ===========================================================================
+# Subcommand: metrics  (Phase 2 and Phase 3)
+# ===========================================================================
+
+def _figure_style():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "figures_common", REPO_ROOT / "figures" / "common.py")
+    if spec is None or spec.loader is None:
+        return lambda: None
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.set_style
+
+
+def _plots(brisc: pd.DataFrame, itest: pd.DataFrame, tag: str, out_dir: Path) -> None:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from code import compute_risk_coverage_curve as rc_curve
+
+    set_style = _figure_style()
+    set_style()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    PC = ["p_glioma", "p_meningioma", "p_pituitary", "p_notumor"]
+
+    # --- reliability diagram, BRISC vs internal test -----------------------
+    fig, axes = plt.subplots(1, 2, figsize=(9.5, 4.2))
+    for ax, (name, d) in zip(axes, [("Internal test", itest), ("BRISC 2025 (external)", brisc)]):
+        probs = d[PC].to_numpy()
+        y = d["true_label"].to_numpy()
+        conf = probs.max(axis=1)
+        corr = (probs.argmax(axis=1) == y).astype(float)
+        bins = np.linspace(0, 1, 16)
+        accs = [corr[(conf > lo) & (conf <= hi)].mean()
+                if ((conf > lo) & (conf <= hi)).sum() else 0.0
+                for lo, hi in zip(bins[:-1], bins[1:])]
+        ece = compute_calibration_metrics(probs, y, n_bins=15)["ece"]
+        ax.plot([0, 1], [0, 1], "k--", lw=1, label="Perfect")
+        ax.bar(bins[:-1], accs, width=1/15, align="edge", alpha=0.75,
+               edgecolor="black", linewidth=0.3)
+        ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+        ax.set_xlabel("Confidence"); ax.set_ylabel("Accuracy")
+        ax.set_title(f"{name}\nECE = {ece:.4f}  n = {len(d)}")
+        ax.legend(fontsize=8, loc="upper left")
+    fig.suptitle(f"Reliability - {tag}", y=1.02)
+    fig.tight_layout(); fig.savefig(out_dir / f"reliability_{tag}.png"); plt.close(fig)
+
+    # --- risk-coverage ----------------------------------------------------
+    fig, ax = plt.subplots(figsize=(6.2, 4.2))
+    for name, d, col in [("Internal test", itest, "steelblue"),
+                         ("BRISC 2025", brisc, "crimson")]:
+        r = rc_curve(d[PC].to_numpy(), d["true_label"].to_numpy())
+        ax.plot(r["coverage"], r["risk"], lw=2, color=col,
+                label=f"{name}  AURC = {r['aurc']:.4f}")
+    ax.set_xlabel("Coverage (share of scans the tool answers on)")
+    ax.set_ylabel("Risk (1 - accuracy)")
+    ax.set_title(f"Risk-coverage - {tag}")
+    ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(out_dir / f"risk_coverage_{tag}.png"); plt.close(fig)
+
+    # --- confusion matrices ----------------------------------------------
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.4))
+    for ax, (name, d) in zip(axes, [("Internal test", itest), ("BRISC 2025", brisc)]):
+        cm = np.zeros((4, 4), dtype=int)
+        for t, q in zip(d["true_label"], d["pred_label"]):
+            cm[t, q] += 1
+        cmn = cm / np.maximum(cm.sum(axis=1, keepdims=True), 1)
+        im = ax.imshow(cmn, cmap="Blues", vmin=0, vmax=1)
+        for i in range(4):
+            for j in range(4):
+                ax.text(j, i, f"{cm[i,j]}\n{cmn[i,j]*100:.1f}%", ha="center", va="center",
+                        fontsize=7, color="white" if cmn[i, j] > 0.5 else "black")
+        ax.set_xticks(range(4)); ax.set_xticklabels(CLASS_NAMES, rotation=45, ha="right", fontsize=8)
+        ax.set_yticks(range(4)); ax.set_yticklabels(CLASS_NAMES, fontsize=8)
+        ax.set_xlabel("Predicted"); ax.set_ylabel("True")
+        ax.set_title(f"{name}  (n = {len(d)})")
+        ax.grid(False)
+    fig.suptitle(f"Confusion - {tag}. Bottom-left 3 cells of the last column are missed tumours.",
+                 fontsize=9)
+    fig.colorbar(im, ax=axes, fraction=0.02)
+    fig.savefig(out_dir / f"confusion_{tag}.png"); plt.close(fig)
+
+    # --- entropy by correctness ------------------------------------------
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.0))
+    for ax, (name, d) in zip(axes, [("Internal test", itest), ("BRISC 2025", brisc)]):
+        y, p, e = d["true_label"].to_numpy(), d["pred_label"].to_numpy(), d["entropy"].to_numpy()
+        wrong = p != y
+        missed = (y != NOTUMOR_IDX) & (p == NOTUMOR_IDX)
+        bins = np.linspace(0, max(e.max(), 1e-6), 45)
+        ax.hist(e[~wrong], bins=bins, alpha=0.6, density=True, label=f"Correct (n={int((~wrong).sum())})", color="steelblue")
+        ax.hist(e[wrong], bins=bins, alpha=0.6, density=True, label=f"Wrong (n={int(wrong.sum())})", color="darkorange")
+        if missed.any():
+            for v in e[missed]:
+                ax.axvline(v, color="crimson", lw=0.7, alpha=0.55)
+            ax.plot([], [], color="crimson", lw=1, label=f"Missed tumour (n={int(missed.sum())})")
+        ax.set_xlabel("Predictive entropy (nats)"); ax.set_ylabel("Density")
+        ax.set_title(name); ax.legend(fontsize=7)
+    fig.suptitle(f"Entropy on right vs wrong answers - {tag}. Overlap means deferral cannot separate them.",
+                 fontsize=9)
+    fig.tight_layout(); fig.savefig(out_dir / f"entropy_correct_vs_wrong_{tag}.png"); plt.close(fig)
+
+
+def cmd_metrics(args: argparse.Namespace) -> None:
+    import safety_metrics as sm
+
+    fig_dir = BRISC_OUT / "figures"
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    nb = args.boot
+
+    report: Dict[str, Any] = {
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "dataset": "BRISC2025",
+        "n": 6000,
+        "mc_T": MC_T,
+        "n_bootstrap": nb,
+        "binary_threshold": 0.5,
+        "entropy_units": "nats",
+        "note": "Nothing here was fitted on BRISC. These are scores of a frozen model.",
+        "models": {},
+    }
+
+    per_seed_preds: Dict[str, np.ndarray] = {}
+
+    for model_name in MODELS:
+        entry: Dict[str, Any] = {"per_seed": {}, "ensemble5": {}, "internal_test": {}}
+        brisc_frames, itest_frames, val_frames = [], [], []
+
+        for seed in SEEDS:
+            b = load_brisc_cache(model_name, seed)
+            t = load_internal_cache(model_name, seed, "test")
+            v = load_internal_cache(model_name, seed, "val")
+            brisc_frames.append(b); itest_frames.append(t); val_frames.append(v)
+            entry["per_seed"][str(seed)] = {
+                "brisc": sm.full_report(b, 0.5, seed=seed, n_resamples=nb),
+                "internal_test": sm.full_report(t, 0.5, seed=seed, n_resamples=nb),
+            }
+            print(f"  {model_name} seed {seed}: BRISC miss="
+                  f"{entry['per_seed'][str(seed)]['brisc']['tumor_miss_rate']['value']:.4f} "
+                  f"acc={entry['per_seed'][str(seed)]['brisc']['standard']['four_way_accuracy']['value']:.4f}")
+
+        be = ensemble_frames(brisc_frames)
+        te = ensemble_frames(itest_frames)
+        ve = ensemble_frames(val_frames)
+        per_seed_preds[model_name] = be["pred_label"].to_numpy()
+
+        entry["ensemble5"]["brisc"] = sm.full_report(
+            be, 0.5, n_resamples=nb, subgroups=("plane", "brisc_split"))
+        entry["ensemble5"]["internal_test"] = sm.full_report(te, 0.5, n_resamples=nb)
+        entry["ensemble5"]["internal_val"] = sm.full_report(ve, 0.5, n_resamples=nb)
+
+        # The drop is the finding. Internal test vs BRISC, same checkpoints.
+        entry["drop_internal_to_brisc"] = {
+            "four_way_accuracy": sm.drop_with_ci(
+                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
+                ("standard", "four_way_accuracy")),
+            "macro_f1": sm.drop_with_ci(
+                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
+                ("standard", "macro_f1")),
+            "macro_auc": sm.drop_with_ci(
+                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
+                ("standard", "macro_auc")),
+            "tumor_miss_rate": sm.drop_with_ci(
+                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
+                ("tumor_miss_rate",)),
+            "binary_sensitivity": sm.drop_with_ci(
+                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
+                ("binary", "sensitivity")),
+            "ece_15bin": {
+                "internal": entry["ensemble5"]["internal_test"]["standard"]["ece_15bin"],
+                "external": entry["ensemble5"]["brisc"]["standard"]["ece_15bin"],
+                "drop": (entry["ensemble5"]["internal_test"]["standard"]["ece_15bin"]
+                         - entry["ensemble5"]["brisc"]["standard"]["ece_15bin"]),
+            },
+        }
+        report["models"][model_name] = entry
+        _plots(be, te, model_name, fig_dir)
+
+    # ViT vs ResNet-50 on BRISC, paired on the same images.
+    y_true = load_brisc_cache("vit", 42)["true_label"].to_numpy()
+    chi2, pval = mcnemar_test(y_true, per_seed_preds["vit"], per_seed_preds["resnet50"])
+    report["vit_vs_resnet50_brisc_mcnemar"] = {
+        "chi2": chi2, "p_value": pval, "significant": bool(pval < 0.05),
+        "note": "5-seed ensembles, paired on the same 6000 BRISC images",
+    }
+    print(f"\n  McNemar ViT vs ResNet-50 on BRISC: chi2={chi2:.3f} p={pval:.4g}")
+
+    out_path = BRISC_OUT / "brisc_metrics.json"
+    out_path.write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
+    print(f"\n-> {out_path}")
+
+
+# ===========================================================================
+# Subcommand: domain  (Phase 3)
+# ===========================================================================
+
+def _symmetry_features(path: str) -> Tuple[float, float, float]:
+    """Three cheap, learning-free descriptors of a brain MRI slice.
+
+    Returns (lr_symmetry, bbox_aspect, brain_fraction).
+
+    lr_symmetry: correlation between the image and its left-right mirror, over
+    the brain region. Axial and coronal slices are close to mirror-symmetric
+    about the midline. Sagittal slices are not, because a sagittal cut shows a
+    profile. This is the one plane cue that is robust without a model.
+
+    bbox_aspect: width / height of the brain bounding box.
+    brain_fraction: share of the frame occupied by brain.
+    """
+    from PIL import Image
+    img = Image.open(path).convert("L").resize((160, 160))
+    a = np.asarray(img, dtype=np.float64) / 255.0
+    mask = a > max(0.08, float(np.percentile(a, 40)) * 0.35)
+    if mask.sum() < 200:
+        return float("nan"), float("nan"), float("nan")
+    ys, xs = np.nonzero(mask)
+    h = ys.max() - ys.min() + 1
+    w = xs.max() - xs.min() + 1
+    flipped = a[:, ::-1]
+    v1, v2 = a[mask], flipped[mask]
+    if v1.std() < 1e-8 or v2.std() < 1e-8:
+        sym = float("nan")
+    else:
+        sym = float(np.corrcoef(v1, v2)[0, 1])
+    return sym, float(w / h), float(mask.mean())
+
+
+def cmd_domain(args: argparse.Namespace) -> None:
+    """Characterise the shift between the internal training data and BRISC."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from PIL import Image
+
+    out_dir = BRISC_OUT / "figures" / "domain_shift"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    set_style = _figure_style()
+    set_style()
+
+    brisc_df = build_brisc_manifest(args.brisc)
+    internal = pd.read_csv(REPO_ROOT / "data" / "split_manifest.csv")
+    internal["filepath_abs"] = internal["filepath"].map(
+        lambda p: str(REPO_ROOT / Path(str(p).replace("\\", "/"))))
+
+    res: Dict[str, Any] = {
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "brisc": {
+            "n": int(len(brisc_df)),
+            "sequence": brisc_df["sequence"].value_counts().to_dict(),
+            "plane": brisc_df["plane"].value_counts().to_dict(),
+            "plane_by_class": pd.crosstab(brisc_df["class_name"], brisc_df["plane"]).to_dict(),
+            "source": "shipped manifest.csv metadata, not inferred",
+        },
+        "internal": {
+            "n": int(len(internal)),
+            "by_split_class": pd.crosstab(internal["split"], internal["class_name"]).to_dict(),
+            "sequence": "UNKNOWN. The Kaggle Nickparvar merge (Br35H + SARTAJ + "
+                        "Figshare) ships no sequence metadata. Visual inspection "
+                        "shows a mix consistent with T1, T1-contrast and T2. "
+                        "We do not claim a number.",
+        },
+    }
+
+    # --- contact sheets, 40 images per class, internal training data -------
+    rng = np.random.default_rng(0)
+    for cls in CLASS_NAMES:
+        sub = internal[(internal["class_name"] == cls) & (internal["split"] == "train")]
+        pick = sub.iloc[rng.choice(len(sub), size=min(40, len(sub)), replace=False)]
+        fig, axes = plt.subplots(5, 8, figsize=(14, 9))
+        for ax, (_, row) in zip(axes.ravel(), pick.iterrows()):
+            ax.imshow(Image.open(row["filepath_abs"]).convert("L"), cmap="gray")
+            ax.set_title(Path(row["filepath"]).name[:18], fontsize=5)
+            ax.axis("off")
+        for ax in axes.ravel()[len(pick):]:
+            ax.axis("off")
+        fig.suptitle(f"Internal TRAIN data, class = {cls}, 40 random images", fontsize=12)
+        fig.tight_layout()
+        fig.savefig(out_dir / f"internal_contact_sheet_{cls}.png", dpi=110)
+        plt.close(fig)
+
+    # BRISC contact sheets, one per plane, for side-by-side comparison.
+    for plane in ["axial", "coronal", "sagittal"]:
+        sub = brisc_df[brisc_df["plane"] == plane]
+        pick = sub.iloc[rng.choice(len(sub), size=min(24, len(sub)), replace=False)]
+        fig, axes = plt.subplots(3, 8, figsize=(14, 5.6))
+        for ax, (_, row) in zip(axes.ravel(), pick.iterrows()):
+            ax.imshow(Image.open(row["filepath"]).convert("L"), cmap="gray")
+            ax.set_title(row["class_name"], fontsize=6)
+            ax.axis("off")
+        for ax in axes.ravel()[len(pick):]:
+            ax.axis("off")
+        fig.suptitle(f"BRISC, plane = {plane} (ground-truth metadata label)", fontsize=12)
+        fig.tight_layout()
+        fig.savefig(out_dir / f"brisc_contact_sheet_{plane}.png", dpi=110)
+        plt.close(fig)
+
+    # --- symmetry heuristic ------------------------------------------------
+    n_s = args.sample
+    b_pick = (brisc_df.groupby("plane", group_keys=False)
+              .apply(lambda g: g.sample(min(len(g), n_s), random_state=0)))
+    i_pick = internal[internal["split"] == "train"].sample(
+        min(len(internal[internal["split"] == "train"]), n_s * 3), random_state=0)
+
+    print(f"computing symmetry features: {len(b_pick)} BRISC, {len(i_pick)} internal ...")
+    b_feat = pd.DataFrame([_symmetry_features(p) for p in b_pick["filepath"]],
+                          columns=["sym", "aspect", "frac"])
+    b_feat["plane"] = b_pick["plane"].to_numpy()
+    i_feat = pd.DataFrame([_symmetry_features(p) for p in i_pick["filepath_abs"]],
+                          columns=["sym", "aspect", "frac"])
+    i_feat["class_name"] = i_pick["class_name"].to_numpy()
+
+    res["symmetry_heuristic"] = {
+        "method": "left-right mirror correlation over the brain region, on a "
+                  "160x160 grayscale resize. No model, no fitting. Axial and "
+                  "coronal slices are near mirror-symmetric about the midline; "
+                  "sagittal slices are not.",
+        "brisc_by_plane": {k: {kk: float(vv) for kk, vv in v.items()}
+                           for k, v in b_feat.groupby("plane")["sym"].describe().T.to_dict().items()},
+        "internal_train": {k: float(v) for k, v in i_feat["sym"].describe().to_dict().items()},
+        "n_brisc": int(len(b_feat)), "n_internal": int(len(i_feat)),
+    }
+
+    # Sagittal share of internal data, estimated by the threshold that best
+    # separates BRISC sagittal from BRISC axial+coronal. Reported WITH the
+    # separation quality, because a weak separator makes the estimate weak.
+    sag = b_feat.loc[b_feat["plane"] == "sagittal", "sym"].dropna().to_numpy()
+    nonsag = b_feat.loc[b_feat["plane"] != "sagittal", "sym"].dropna().to_numpy()
+    grid = np.linspace(0, 1, 501)
+    accs = [((sag < t).sum() + (nonsag >= t).sum()) / (len(sag) + len(nonsag)) for t in grid]
+    t_best = float(grid[int(np.argmax(accs))])
+    acc_best = float(max(accs))
+    from sklearn.metrics import roc_auc_score as _auc
+    sep_auc = float(_auc(np.r_[np.ones(len(sag)), np.zeros(len(nonsag))],
+                         np.r_[-sag, -nonsag]))
+    isym = i_feat["sym"].dropna().to_numpy()
+    res["internal_plane_estimate"] = {
+        "method": "threshold on the symmetry score, calibrated on BRISC PLANE "
+                  "metadata only (never BRISC tumour labels), then applied to "
+                  "internal training images",
+        "threshold": t_best,
+        "separator_accuracy_on_brisc": acc_best,
+        "separator_auroc_on_brisc": sep_auc,
+        "estimated_sagittal_share_internal_train": float((isym < t_best).mean()),
+        "uncertainty": ("The separator only distinguishes sagittal from "
+                        "axial-or-coronal. It cannot tell axial from coronal, "
+                        "because both are mirror-symmetric. The axial/coronal "
+                        "split of the internal data is reported as UNKNOWN."),
+    }
+
+    fig, ax = plt.subplots(figsize=(7, 4.2))
+    for plane, col in [("axial", "steelblue"), ("coronal", "seagreen"), ("sagittal", "crimson")]:
+        ax.hist(b_feat.loc[b_feat["plane"] == plane, "sym"].dropna(), bins=40, alpha=0.45,
+                density=True, label=f"BRISC {plane}", color=col)
+    ax.hist(isym, bins=40, alpha=0.9, density=True, histtype="step", lw=2.2,
+            color="black", label="Internal train (plane unknown)")
+    ax.axvline(t_best, color="grey", ls="--", lw=1, label=f"sagittal cutoff {t_best:.2f}")
+    ax.set_xlabel("Left-right mirror symmetry"); ax.set_ylabel("Density")
+    ax.set_title("Plane cue: internal training data vs BRISC by known plane")
+    ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(out_dir / "symmetry_internal_vs_brisc.png"); plt.close(fig)
+
+    path = BRISC_OUT / "domain_shift.json"
+    path.write_text(json.dumps(res, indent=2, default=str), encoding="utf-8")
+    print(json.dumps(res["internal_plane_estimate"], indent=2))
+    print(f"-> {path}\n-> contact sheets in {out_dir}")
+
+
+# ===========================================================================
+# Subcommand: overlap  -  is BRISC actually external?
+# ===========================================================================
+
+def cmd_overlap(args: argparse.Namespace) -> None:
+    """Look for images shared between BRISC and the internal training data.
+
+    This check exists because the external result came out BETTER than the
+    internal one, which is the classic signature of a leak. The internal data is
+    the Kaggle Nickparvar merge of Br35H, SARTAJ and Figshare. BRISC 2025 is a
+    curated collection. If BRISC re-used images from those same public sources,
+    then part of "external validation" is the model being tested on its own
+    training set, and every number in this session is inflated.
+
+    Method: 64-bit perceptual hash (pHash) of every image on both sides, then
+    exact-hash matching plus a Hamming-distance search. Hamming distance 0 means
+    visually identical. Distance <= 5 is the same near-duplicate threshold
+    `src/code.py` already uses for its leakage-safe splitting.
+    """
+    import imagehash
+    from PIL import Image
+
+    brisc_df = build_brisc_manifest(args.brisc)
+    internal = pd.read_csv(REPO_ROOT / "data" / "split_manifest.csv")
+    internal["filepath_abs"] = internal["filepath"].map(
+        lambda p: str(REPO_ROOT / Path(str(p).replace("\\", "/"))))
+
+    def hashes(paths: List[str], label: str) -> np.ndarray:
+        bits = np.zeros((len(paths), 64), dtype=np.uint8)
+        for i, p in enumerate(paths):
+            if i % 1000 == 0:
+                print(f"  {label}: {i}/{len(paths)}", flush=True)
+            h = imagehash.phash(Image.open(p).convert("L"))
+            bits[i] = h.hash.flatten().astype(np.uint8)
+        return bits
+
+    b_bits = hashes(brisc_df["filepath"].tolist(), "brisc")
+    i_bits = hashes(internal["filepath_abs"].tolist(), "internal")
+
+    # Hamming distance via matrix product: d = popcount(a XOR b).
+    # (a != b).sum() == a@(1-b).T + (1-a)@b.T
+    # float32 so the matmul goes through BLAS; values are small integers so the
+    # representation is exact.
+    a = b_bits.astype(np.float32)
+    b = i_bits.astype(np.float32)
+    dist = (a @ (1 - b).T + (1 - a) @ b.T).astype(np.int16)   # (6000, 7200)
+    nearest = dist.min(axis=1)
+    nearest_idx = dist.argmin(axis=1)
+
+    rows: List[Dict[str, Any]] = []
+    for thr in (0, 1, 2, 3, 5, 8, 10):
+        n_hit = int((nearest <= thr).sum())
+        rows.append({"hamming_threshold": thr, "n_brisc_images_matched": n_hit,
+                     "share_of_brisc": n_hit / len(brisc_df)})
+        print(f"  hamming <= {thr:2d}: {n_hit:5d} of {len(brisc_df)} BRISC images "
+              f"({100*n_hit/len(brisc_df):.2f}%)")
+
+    matched = brisc_df.loc[nearest <= args.threshold].copy()
+    matched["hamming"] = nearest[nearest <= args.threshold]
+    matched["internal_match"] = internal["filepath"].to_numpy()[nearest_idx[nearest <= args.threshold]]
+    matched["internal_split"] = internal["split"].to_numpy()[nearest_idx[nearest <= args.threshold]]
+    matched["internal_class"] = internal["class_name"].to_numpy()[nearest_idx[nearest <= args.threshold]]
+
+    out_dir = BRISC_OUT
+    out_dir.mkdir(parents=True, exist_ok=True)
+    matched[["image_path", "class_name", "brisc_split", "plane", "hamming",
+             "internal_match", "internal_split", "internal_class"]].to_csv(
+        out_dir / "brisc_internal_overlap.csv", index=False)
+
+    res = {
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "method": "64-bit pHash, minimum Hamming distance from each BRISC image "
+                  "to any internal image. Distance 0 = visually identical. "
+                  "Distance <= 5 is the near-duplicate threshold src/code.py "
+                  "already uses for leakage-safe splitting.",
+        "n_brisc": int(len(brisc_df)),
+        "n_internal": int(len(internal)),
+        "nearest_distance_percentiles": {
+            str(q): float(np.percentile(nearest, q)) for q in (0, 1, 5, 25, 50, 75, 100)
+        },
+        "by_threshold": rows,
+        "reported_threshold": args.threshold,
+        "n_matched_at_reported_threshold": int(len(matched)),
+        "matched_by_internal_split": matched["internal_split"].value_counts().to_dict(),
+        "matched_by_brisc_split": matched["brisc_split"].value_counts().to_dict(),
+    }
+    (out_dir / "brisc_internal_overlap.json").write_text(
+        json.dumps(res, indent=2, default=str), encoding="utf-8")
+    print(json.dumps(res["nearest_distance_percentiles"], indent=2))
+    print(f"-> {out_dir / 'brisc_internal_overlap.json'}")
+
+
+# ===========================================================================
+# Subcommand: misses  (Phase 5)
+# ===========================================================================
+
+def cmd_misses(args: argparse.Namespace) -> None:
+    """Extract true tumours the model called `notumor` with low entropy."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from PIL import Image
+    import safety_metrics as sm
+
+    out_dir = BRISC_OUT / "confident_misses"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    model_name, seeds = args.model, (args.seeds or SEEDS)
+    frames = [load_brisc_cache(model_name, s) for s in seeds]
+    brisc = frames[0] if len(frames) == 1 else ensemble_frames(frames)
+
+    # "Confident" means the tool would NOT have deferred it. The cutoff is the
+    # internal-val entropy quantile for a 20 percent deferral budget, fitted on
+    # internal val, applied to BRISC unchanged.
+    vframes = [load_internal_cache(model_name, s, "val") for s in seeds]
+    val = vframes[0] if len(vframes) == 1 else ensemble_frames(vframes)
+    cut = float(np.quantile(val["entropy"].to_numpy(), 1.0 - args.defer_budget))
+
+    y = brisc["true_label"].to_numpy()
+    p = brisc["pred_label"].to_numpy()
+    missed_all = brisc.loc[(y != NOTUMOR_IDX) & (p == NOTUMOR_IDX)].copy()
+    conf = sm.confident_misses(brisc, cut).sort_values("entropy")
+
+    brisc_man = build_brisc_manifest(args.brisc).set_index("image_path")
+    for d in (missed_all, conf):
+        d["plane"] = d["image_path"].map(brisc_man["plane"])
+        d["abs_path"] = d["image_path"].map(brisc_man["filepath"])
+
+    summary: Dict[str, Any] = {
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "model": model_name, "seeds": list(seeds),
+        "defer_budget_used_to_define_confident": args.defer_budget,
+        "entropy_cutoff_nats_fitted_on_internal_val": cut,
+        "n_tumors_in_brisc": int((y != NOTUMOR_IDX).sum()),
+        "n_missed_tumors": int(len(missed_all)),
+        "n_confidently_missed": int(len(conf)),
+        "confident_share_of_misses": (float(len(conf) / len(missed_all)) if len(missed_all) else 0.0),
+        "missed_by_class": missed_all["true_label_name"].value_counts().to_dict(),
+        "confident_missed_by_class": conf["true_label_name"].value_counts().to_dict(),
+        "missed_by_plane": missed_all["plane"].value_counts().to_dict(),
+        "confident_missed_by_plane": conf["plane"].value_counts().to_dict(),
+        "confident_missed_by_brisc_split": conf["brisc_split"].value_counts().to_dict(),
+        "p_tumor_summary_confident": {k: float(v) for k, v in conf["p_tumor"].describe().to_dict().items()} if len(conf) else {},
+        "entropy_summary_confident": {k: float(v) for k, v in conf["entropy"].describe().to_dict().items()} if len(conf) else {},
+    }
+
+    cols = ["image_path", "true_label_name", "brisc_split", "plane",
+            "p_glioma", "p_meningioma", "p_pituitary", "p_notumor",
+            "p_tumor", "entropy", "entropy_bits"]
+    missed_all[cols].to_csv(out_dir / "all_missed_tumors.csv", index=False)
+    conf[cols].to_csv(out_dir / "confident_missed_tumors.csv", index=False)
+
+    # Contact sheets, every confident miss, labelled.
+    per_sheet = 24
+    n_sheets = 0
+    for start in range(0, len(conf), per_sheet):
+        chunk = conf.iloc[start:start + per_sheet]
+        rows = int(np.ceil(len(chunk) / 6))
+        fig, axes = plt.subplots(rows, 6, figsize=(16, 3.1 * rows), squeeze=False)
+        for ax, (_, r) in zip(axes.ravel(), chunk.iterrows()):
+            ax.imshow(Image.open(r["abs_path"]).convert("L"), cmap="gray")
+            ax.set_title(
+                f"true {r['true_label_name']} -> pred notumor\n"
+                f"{r['plane']} | p_tumor {r['p_tumor']:.3f} | H {r['entropy']:.3f}",
+                fontsize=7, color="crimson")
+            ax.axis("off")
+        for ax in axes.ravel()[len(chunk):]:
+            ax.axis("off")
+        fig.suptitle(
+            f"BRISC confidently missed tumours [{model_name}, {len(seeds)} seed(s)] "
+            f"sheet {n_sheets+1}. Entropy below {cut:.3f} nats, so the tool would "
+            f"NOT have deferred these.", fontsize=11)
+        fig.tight_layout()
+        fig.savefig(out_dir / f"contact_sheet_{n_sheets+1:02d}.png", dpi=110)
+        plt.close(fig)
+        n_sheets += 1
+    summary["n_contact_sheets"] = n_sheets
+
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2, default=str), encoding="utf-8")
+    print(json.dumps(summary, indent=2, default=str))
+    print(f"\n-> {out_dir}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
+
+    m = sub.add_parser("metrics", help="Phase 2: external validation metrics and figures")
+    m.add_argument("--boot", type=int, default=1000)
+    m.set_defaults(func=cmd_metrics)
+
+    d = sub.add_parser("domain", help="Phase 3: characterise the domain shift")
+    d.add_argument("--brisc", type=Path, default=BRISC)
+    d.add_argument("--sample", type=int, default=400)
+    d.set_defaults(func=cmd_domain)
+
+    o = sub.add_parser("overlap", help="check whether BRISC shares images with the training data")
+    o.add_argument("--brisc", type=Path, default=BRISC)
+    o.add_argument("--threshold", type=int, default=5)
+    o.set_defaults(func=cmd_overlap)
+
+    x = sub.add_parser("misses", help="Phase 5: extract confidently wrong missed tumours")
+    x.add_argument("--brisc", type=Path, default=BRISC)
+    x.add_argument("--model", default="resnet50", choices=MODELS)
+    x.add_argument("--seeds", nargs="+", type=int, default=None)
+    x.add_argument("--defer-budget", type=float, default=0.20)
+    x.set_defaults(func=cmd_misses)
 
     c = sub.add_parser("cache", help="build the BRISC and internal prediction caches")
     c.add_argument("--brisc", type=Path, default=BRISC)

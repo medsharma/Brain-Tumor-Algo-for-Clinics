@@ -1,0 +1,1089 @@
+{
+  "_what_this_is": "Internal held-out test split of the same merged Kaggle pool the model trained on, grouped at the phash near-duplicate-cluster level. n=1112. NOT an external result. Do not present as one.",
+  "_source": "analysis/results/{model}_seed{seed}_predictions.json, run results/20260703_155524",
+  "_computed_by": "session E, docs/internal_safety_metrics.py",
+  "_canonical_owner": "session A owns the authoritative safety analysis; if A disagrees, A wins",
+  "dataset": "internal_test",
+  "n": 1112,
+  "mc_T": 20,
+  "per_model": {
+    "resnet50": {
+      "per_seed": {
+        "42": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9649280575539568,
+          "binary_accuracy": 0.9856115107913669,
+          "tumor_miss_count": 11,
+          "tumor_miss_rate": 0.013398294762484775,
+          "tumor_miss_rate_ci95_wilson": [
+            0.007497597271325098,
+            0.0238314036489088
+          ],
+          "binary_sensitivity": 0.9866017052375152,
+          "binary_sensitivity_ci95_wilson": [
+            0.9761685963510913,
+            0.9925024027286748
+          ],
+          "binary_specificity": 0.9828178694158075,
+          "binary_specificity_ci95_wilson": [
+            0.9604155138608497,
+            0.9926390569658735
+          ],
+          "false_alarm_count": 5,
+          "false_alarm_rate": 0.01718213058419244,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 6,
+              "rate": 0.021660649819494584,
+              "ci95_wilson": [
+                0.009964186163948214,
+                0.04644293723199422
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 5,
+              "rate": 0.018796992481203006,
+              "ci95_wilson": [
+                0.008055014925743332,
+                0.04323976713961029
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 0.9599800318479543,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9810606060606061,
+              "n_tumor_kept": 777,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.005148005148005148
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.6466721415519714,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.987,
+              "n_tumor_kept": 737,
+              "tumor_missed_among_kept": 3,
+              "miss_rate_among_kept": 0.004070556309362279
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.5708049535751343,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9887514060742407,
+              "n_tumor_kept": 659,
+              "tumor_missed_among_kept": 2,
+              "miss_rate_among_kept": 0.0030349013657056147
+            }
+          },
+          "missed_case_entropies": [
+            1.4722461700439453,
+            0.40184810757637024,
+            0.5753708481788635,
+            1.6830010414123535,
+            0.4583096206188202,
+            0.6576553583145142,
+            0.9779126644134521,
+            1.3068122863769531,
+            1.0087578296661377,
+            1.1388479471206665,
+            1.2593045234680176
+          ],
+          "missed_case_max_prob": [
+            0.4747103750705719,
+            0.9434178471565247,
+            0.9107198715209961,
+            0.5169780254364014,
+            0.9333898425102234,
+            0.8931716680526733,
+            0.8106620907783508,
+            0.6976791024208069,
+            0.8023607134819031,
+            0.7587828040122986,
+            0.7165718078613281
+          ],
+          "mean_entropy": 0.5587056852716337
+        },
+        "123": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9586330935251799,
+          "binary_accuracy": 0.987410071942446,
+          "tumor_miss_count": 7,
+          "tumor_miss_rate": 0.008526187576126675,
+          "tumor_miss_rate_ci95_wilson": [
+            0.0041361076809505026,
+            0.017494059706569844
+          ],
+          "binary_sensitivity": 0.9914738124238733,
+          "binary_sensitivity_ci95_wilson": [
+            0.9825059402934302,
+            0.9958638923190496
+          ],
+          "binary_specificity": 0.9759450171821306,
+          "binary_specificity_ci95_wilson": [
+            0.9511880179264179,
+            0.9882999397924515
+          ],
+          "false_alarm_count": 7,
+          "false_alarm_rate": 0.024054982817869417,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 4,
+              "rate": 0.01444043321299639,
+              "ci95_wilson": [
+                0.0056295533420543786,
+                0.036534658708921156
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 3,
+              "rate": 0.011278195488721804,
+              "ci95_wilson": [
+                0.0038428782106362585,
+                0.032628384824488516
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 1.2009941041469574,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9801136363636364,
+              "n_tumor_kept": 775,
+              "tumor_missed_among_kept": 0,
+              "miss_rate_among_kept": 0.0
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.8231107890605925,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.99,
+              "n_tumor_kept": 741,
+              "tumor_missed_among_kept": 0,
+              "miss_rate_among_kept": 0.0
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.6877493143081665,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9955005624296963,
+              "n_tumor_kept": 686,
+              "tumor_missed_among_kept": 0,
+              "miss_rate_among_kept": 0.0
+            }
+          },
+          "missed_case_entropies": [
+            1.8851410150527954,
+            1.2956100702285767,
+            1.5070199966430664,
+            1.2973759174346924,
+            1.6051316261291504,
+            1.6814467906951904,
+            1.307725191116333
+          ],
+          "missed_case_max_prob": [
+            0.4317423701286316,
+            0.7078667879104614,
+            0.6158588528633118,
+            0.6191466450691223,
+            0.5498674511909485,
+            0.5054989457130432,
+            0.6659652590751648
+          ],
+          "mean_entropy": 0.6304742891689856
+        },
+        "7": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9658273381294964,
+          "binary_accuracy": 0.9892086330935251,
+          "tumor_miss_count": 7,
+          "tumor_miss_rate": 0.008526187576126675,
+          "tumor_miss_rate_ci95_wilson": [
+            0.0041361076809505026,
+            0.017494059706569844
+          ],
+          "binary_sensitivity": 0.9914738124238733,
+          "binary_sensitivity_ci95_wilson": [
+            0.9825059402934302,
+            0.9958638923190496
+          ],
+          "binary_specificity": 0.9828178694158075,
+          "binary_specificity_ci95_wilson": [
+            0.9604155138608497,
+            0.9926390569658735
+          ],
+          "false_alarm_count": 5,
+          "false_alarm_rate": 0.01718213058419244,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 5,
+              "rate": 0.018050541516245487,
+              "ci95_wilson": [
+                0.007734139868515813,
+                0.04155152785494318
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 2,
+              "rate": 0.007518796992481203,
+              "ci95_wilson": [
+                0.0020643528070579736,
+                0.02699515071295237
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 1.1725634753704075,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9839015151515151,
+              "n_tumor_kept": 772,
+              "tumor_missed_among_kept": 1,
+              "miss_rate_among_kept": 0.0012953367875647669
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.8518433809280396,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.993,
+              "n_tumor_kept": 722,
+              "tumor_missed_among_kept": 0,
+              "miss_rate_among_kept": 0.0
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.6907216787338257,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9977502812148481,
+              "n_tumor_kept": 639,
+              "tumor_missed_among_kept": 0,
+              "miss_rate_among_kept": 0.0
+            }
+          },
+          "missed_case_entropies": [
+            1.5137929916381836,
+            1.3695564270019531,
+            1.5110535621643066,
+            1.5294880867004395,
+            0.9392810463905334,
+            1.7082961797714233,
+            1.7223068475723267
+          ],
+          "missed_case_max_prob": [
+            0.47931259870529175,
+            0.6678846478462219,
+            0.45395126938819885,
+            0.6136044263839722,
+            0.8167878985404968,
+            0.4966804087162018,
+            0.48862236738204956
+          ],
+          "mean_entropy": 0.6030411098232801
+        },
+        "2024": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.966726618705036,
+          "binary_accuracy": 0.9865107913669064,
+          "tumor_miss_count": 11,
+          "tumor_miss_rate": 0.013398294762484775,
+          "tumor_miss_rate_ci95_wilson": [
+            0.007497597271325098,
+            0.0238314036489088
+          ],
+          "binary_sensitivity": 0.9866017052375152,
+          "binary_sensitivity_ci95_wilson": [
+            0.9761685963510913,
+            0.9925024027286748
+          ],
+          "binary_specificity": 0.9862542955326461,
+          "binary_specificity_ci95_wilson": [
+            0.9651959509188356,
+            0.9946419264618147
+          ],
+          "false_alarm_count": 4,
+          "false_alarm_rate": 0.013745704467353952,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 6,
+              "rate": 0.021660649819494584,
+              "ci95_wilson": [
+                0.009964186163948214,
+                0.04644293723199422
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 5,
+              "rate": 0.018796992481203006,
+              "ci95_wilson": [
+                0.008055014925743332,
+                0.04323976713961029
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 1.1186828434467317,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9829545454545454,
+              "n_tumor_kept": 782,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.005115089514066497
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.8675298631191253,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.987,
+              "n_tumor_kept": 752,
+              "tumor_missed_among_kept": 2,
+              "miss_rate_among_kept": 0.0026595744680851063
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.6994201421737671,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9887514060742407,
+              "n_tumor_kept": 712,
+              "tumor_missed_among_kept": 1,
+              "miss_rate_among_kept": 0.0014044943820224719
+            }
+          },
+          "missed_case_entropies": [
+            1.634465217590332,
+            1.476067304611206,
+            0.7227569818496704,
+            1.1899017095565796,
+            0.5700773000717163,
+            0.9618034958839417,
+            1.3271011114120483,
+            1.429931879043579,
+            0.9140059947967529,
+            1.3028239011764526,
+            1.49772310256958
+          ],
+          "missed_case_max_prob": [
+            0.5277672410011292,
+            0.644404947757721,
+            0.8778946995735168,
+            0.7445051074028015,
+            0.911450207233429,
+            0.810694694519043,
+            0.6913877129554749,
+            0.529629647731781,
+            0.8306983709335327,
+            0.7011862397193909,
+            0.49248114228248596
+          ],
+          "mean_entropy": 0.5877244819036062
+        },
+        "31": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9649280575539568,
+          "binary_accuracy": 0.9919064748201439,
+          "tumor_miss_count": 5,
+          "tumor_miss_rate": 0.0060901339829476245,
+          "tumor_miss_rate_ci95_wilson": [
+            0.002604063830494611,
+            0.014176686790668956
+          ],
+          "binary_sensitivity": 0.9939098660170523,
+          "binary_sensitivity_ci95_wilson": [
+            0.985823313209331,
+            0.9973959361695055
+          ],
+          "binary_specificity": 0.9862542955326461,
+          "binary_specificity_ci95_wilson": [
+            0.9651959509188356,
+            0.9946419264618147
+          ],
+          "false_alarm_count": 4,
+          "false_alarm_rate": 0.013745704467353952,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 5,
+              "rate": 0.018050541516245487,
+              "ci95_wilson": [
+                0.007734139868515813,
+                0.04155152785494318
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.014235984489781495
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 1.2505222201347357,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9753787878787878,
+              "n_tumor_kept": 786,
+              "tumor_missed_among_kept": 2,
+              "miss_rate_among_kept": 0.002544529262086514
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.9034364283084869,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.984,
+              "n_tumor_kept": 742,
+              "tumor_missed_among_kept": 1,
+              "miss_rate_among_kept": 0.0013477088948787063
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.6920994043350222,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9876265466816648,
+              "n_tumor_kept": 693,
+              "tumor_missed_among_kept": 0,
+              "miss_rate_among_kept": 0.0
+            }
+          },
+          "missed_case_entropies": [
+            1.7499353885650635,
+            1.2991894483566284,
+            1.6792243719100952,
+            0.7682415246963501,
+            1.1671867370605469
+          ],
+          "missed_case_max_prob": [
+            0.4239038825035095,
+            0.71604323387146,
+            0.44627803564071655,
+            0.8663718104362488,
+            0.7397372722625732
+          ],
+          "mean_entropy": 0.630741453937275
+        }
+      },
+      "across_seeds": {
+        "tumor_miss_rate_mean": 0.009987819732034105,
+        "tumor_miss_rate_min": 0.0060901339829476245,
+        "tumor_miss_rate_max": 0.013398294762484775,
+        "binary_sensitivity_mean": 0.990012180267966,
+        "binary_sensitivity_min": 0.9866017052375152,
+        "binary_sensitivity_max": 0.9939098660170523,
+        "binary_specificity_mean": 0.9828178694158076,
+        "binary_specificity_min": 0.9759450171821306,
+        "binary_specificity_max": 0.9862542955326461,
+        "four_way_accuracy_mean": 0.9642086330935251
+      },
+      "pooled_over_seeds": {
+        "_note": "Seeds score the same 1,112 images, so these are 5 correlated reads of one test set, not 5,560 independent images. The CI below is therefore optimistic. Treat the per-seed range as the honest spread.",
+        "tumor_missed": 41,
+        "tumor_evaluations": 4105,
+        "tumor_miss_rate": 0.009987819732034105,
+        "ci95_wilson": [
+          0.007371131195571976,
+          0.013520757596627209
+        ]
+      }
+    },
+    "vit": {
+      "per_seed": {
+        "42": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9640287769784173,
+          "binary_accuracy": 0.9883093525179856,
+          "tumor_miss_count": 10,
+          "tumor_miss_rate": 0.012180267965895249,
+          "tumor_miss_rate_ci95_wilson": [
+            0.006629324364918179,
+            0.022274968172137328
+          ],
+          "binary_sensitivity": 0.9878197320341048,
+          "binary_sensitivity_ci95_wilson": [
+            0.9777250318278627,
+            0.9933706756350819
+          ],
+          "binary_specificity": 0.9896907216494846,
+          "binary_specificity_ci95_wilson": [
+            0.9701333446302924,
+            0.9964878393042846
+          ],
+          "false_alarm_count": 3,
+          "false_alarm_rate": 0.010309278350515464,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 7,
+              "rate": 0.02527075812274368,
+              "ci95_wilson": [
+                0.01229395193109949,
+                0.05123462713732641
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 3,
+              "rate": 0.011278195488721804,
+              "ci95_wilson": [
+                0.0038428782106362585,
+                0.032628384824488516
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 1.2510569512844087,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9810606060606061,
+              "n_tumor_kept": 767,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.005215123859191656
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.8668037235736846,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.988,
+              "n_tumor_kept": 720,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.005555555555555556
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.6706144690513611,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9921259842519685,
+              "n_tumor_kept": 633,
+              "tumor_missed_among_kept": 3,
+              "miss_rate_among_kept": 0.004739336492890996
+            }
+          },
+          "missed_case_entropies": [
+            1.4674755334854126,
+            1.6308557987213135,
+            0.4956059157848358,
+            1.415682077407837,
+            0.7744847536087036,
+            0.4420863389968872,
+            1.5986287593841553,
+            1.4264687299728394,
+            0.49227312207221985,
+            1.4026823043823242
+          ],
+          "missed_case_max_prob": [
+            0.6106327772140503,
+            0.5068291425704956,
+            0.9259229898452759,
+            0.6326996088027954,
+            0.8653327226638794,
+            0.936383843421936,
+            0.5874695181846619,
+            0.5959290266036987,
+            0.9270803332328796,
+            0.6120980381965637
+          ],
+          "mean_entropy": 0.6321900427984677
+        },
+        "123": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9640287769784173,
+          "binary_accuracy": 0.9856115107913669,
+          "tumor_miss_count": 10,
+          "tumor_miss_rate": 0.012180267965895249,
+          "tumor_miss_rate_ci95_wilson": [
+            0.006629324364918179,
+            0.022274968172137328
+          ],
+          "binary_sensitivity": 0.9878197320341048,
+          "binary_sensitivity_ci95_wilson": [
+            0.9777250318278627,
+            0.9933706756350819
+          ],
+          "binary_specificity": 0.979381443298969,
+          "binary_specificity_ci95_wilson": [
+            0.955754369572848,
+            0.9905168946999484
+          ],
+          "false_alarm_count": 6,
+          "false_alarm_rate": 0.020618556701030927,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 7,
+              "rate": 0.02527075812274368,
+              "ci95_wilson": [
+                0.01229395193109949,
+                0.05123462713732641
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 3,
+              "rate": 0.011278195488721804,
+              "ci95_wilson": [
+                0.0038428782106362585,
+                0.032628384824488516
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 0.9720132768154146,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9810606060606061,
+              "n_tumor_kept": 773,
+              "tumor_missed_among_kept": 6,
+              "miss_rate_among_kept": 0.007761966364812419
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.7227947115898132,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.989,
+              "n_tumor_kept": 732,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.00546448087431694
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.6259205579757692,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9943757030371203,
+              "n_tumor_kept": 690,
+              "tumor_missed_among_kept": 1,
+              "miss_rate_among_kept": 0.0014492753623188406
+            }
+          },
+          "missed_case_entropies": [
+            0.6920182704925537,
+            1.87001633644104,
+            0.6513265371322632,
+            0.7934314012527466,
+            0.9334928393363953,
+            0.6810246706008911,
+            1.0636072158813477,
+            1.0282649993896484,
+            0.5677683353424072,
+            1.0275959968566895
+          ],
+          "missed_case_max_prob": [
+            0.8855559229850769,
+            0.42083102464675903,
+            0.8948677182197571,
+            0.8619390726089478,
+            0.8229034543037415,
+            0.888032078742981,
+            0.7923705577850342,
+            0.7984863519668579,
+            0.911872386932373,
+            0.798257052898407
+          ],
+          "mean_entropy": 0.5833291899439671
+        },
+        "7": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9613309352517986,
+          "binary_accuracy": 0.987410071942446,
+          "tumor_miss_count": 9,
+          "tumor_miss_rate": 0.010962241169305725,
+          "tumor_miss_rate_ci95_wilson": [
+            0.005777820289053656,
+            0.020701763864823464
+          ],
+          "binary_sensitivity": 0.9890377588306942,
+          "binary_sensitivity_ci95_wilson": [
+            0.9792982361351765,
+            0.9942221797109463
+          ],
+          "binary_specificity": 0.9828178694158075,
+          "binary_specificity_ci95_wilson": [
+            0.9604155138608497,
+            0.9926390569658735
+          ],
+          "false_alarm_count": 5,
+          "false_alarm_rate": 0.01718213058419244,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 6,
+              "rate": 0.021660649819494584,
+              "ci95_wilson": [
+                0.009964186163948214,
+                0.04644293723199422
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 3,
+              "rate": 0.011278195488721804,
+              "ci95_wilson": [
+                0.0038428782106362585,
+                0.032628384824488516
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 0.9476753532886515,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9820075757575758,
+              "n_tumor_kept": 771,
+              "tumor_missed_among_kept": 8,
+              "miss_rate_among_kept": 0.010376134889753566
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.6741482555866242,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.986,
+              "n_tumor_kept": 716,
+              "tumor_missed_among_kept": 6,
+              "miss_rate_among_kept": 0.008379888268156424
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.5793118953704834,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9887514060742407,
+              "n_tumor_kept": 619,
+              "tumor_missed_among_kept": 5,
+              "miss_rate_among_kept": 0.008077544426494346
+            }
+          },
+          "missed_case_entropies": [
+            0.47974860668182373,
+            1.2348089218139648,
+            0.509307861328125,
+            0.48040488362312317,
+            0.6675413250923157,
+            0.49492549896240234,
+            0.6998471021652222,
+            0.4580177664756775,
+            0.8040204048156738
+          ],
+          "missed_case_max_prob": [
+            0.9293054342269897,
+            0.7296265363693237,
+            0.9237918853759766,
+            0.9292187690734863,
+            0.891099750995636,
+            0.926529049873352,
+            0.8809407949447632,
+            0.9330593943595886,
+            0.8563855886459351
+          ],
+          "mean_entropy": 0.5642050453227201
+        },
+        "2024": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9622302158273381,
+          "binary_accuracy": 0.9847122302158273,
+          "tumor_miss_count": 9,
+          "tumor_miss_rate": 0.010962241169305725,
+          "tumor_miss_rate_ci95_wilson": [
+            0.005777820289053656,
+            0.020701763864823464
+          ],
+          "binary_sensitivity": 0.9890377588306942,
+          "binary_sensitivity_ci95_wilson": [
+            0.9792982361351765,
+            0.9942221797109463
+          ],
+          "binary_specificity": 0.9725085910652921,
+          "binary_specificity_ci95_wilson": [
+            0.9466994536271042,
+            0.9860051975378386
+          ],
+          "false_alarm_count": 8,
+          "false_alarm_rate": 0.027491408934707903,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 6,
+              "rate": 0.021660649819494584,
+              "ci95_wilson": [
+                0.009964186163948214,
+                0.04644293723199422
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 3,
+              "rate": 0.011278195488721804,
+              "ci95_wilson": [
+                0.0038428782106362585,
+                0.032628384824488516
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 0.7402263998985291,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9820075757575758,
+              "n_tumor_kept": 774,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.00516795865633075
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.6263783216476441,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.985,
+              "n_tumor_kept": 736,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.005434782608695652
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.5785194993019104,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9865016872890888,
+              "n_tumor_kept": 669,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.005979073243647235
+            }
+          },
+          "missed_case_entropies": [
+            1.4195401668548584,
+            0.8999481797218323,
+            0.469858855009079,
+            1.398322582244873,
+            0.5087460279464722,
+            0.4992644488811493,
+            0.8215976357460022,
+            0.4658041000366211,
+            0.8966249823570251
+          ],
+          "missed_case_max_prob": [
+            0.5009756684303284,
+            0.832526683807373,
+            0.9311337471008301,
+            0.509320855140686,
+            0.9239147305488586,
+            0.9256291389465332,
+            0.8509422540664673,
+            0.932019054889679,
+            0.831795871257782
+          ],
+          "mean_entropy": 0.5503239396879142
+        },
+        "31": {
+          "n": 1112,
+          "n_tumor": 821,
+          "n_notumor": 291,
+          "four_way_accuracy": 0.9568345323741008,
+          "binary_accuracy": 0.9856115107913669,
+          "tumor_miss_count": 9,
+          "tumor_miss_rate": 0.010962241169305725,
+          "tumor_miss_rate_ci95_wilson": [
+            0.005777820289053656,
+            0.020701763864823464
+          ],
+          "binary_sensitivity": 0.9890377588306942,
+          "binary_sensitivity_ci95_wilson": [
+            0.9792982361351765,
+            0.9942221797109463
+          ],
+          "binary_specificity": 0.9759450171821306,
+          "binary_specificity_ci95_wilson": [
+            0.9511880179264179,
+            0.9882999397924515
+          ],
+          "false_alarm_count": 7,
+          "false_alarm_rate": 0.024054982817869417,
+          "per_class_miss": {
+            "glioma": {
+              "n": 277,
+              "missed": 5,
+              "rate": 0.018050541516245487,
+              "ci95_wilson": [
+                0.007734139868515813,
+                0.04155152785494318
+              ]
+            },
+            "meningioma": {
+              "n": 266,
+              "missed": 4,
+              "rate": 0.015037593984962405,
+              "ci95_wilson": [
+                0.005862958590525898,
+                0.0380200639597133
+              ]
+            },
+            "pituitary": {
+              "n": 278,
+              "missed": 0,
+              "rate": 0.0,
+              "ci95_wilson": [
+                0.0,
+                0.013629857149286256
+              ]
+            }
+          },
+          "deferral": {
+            "defer_5pct": {
+              "entropy_threshold": 1.249210971593858,
+              "coverage": 0.9496402877697842,
+              "accuracy_on_kept": 0.9734848484848485,
+              "n_tumor_kept": 773,
+              "tumor_missed_among_kept": 8,
+              "miss_rate_among_kept": 0.01034928848641656
+            },
+            "defer_10pct": {
+              "entropy_threshold": 0.8228928446769714,
+              "coverage": 0.8992805755395683,
+              "accuracy_on_kept": 0.985,
+              "n_tumor_kept": 724,
+              "tumor_missed_among_kept": 6,
+              "miss_rate_among_kept": 0.008287292817679558
+            },
+            "defer_20pct": {
+              "entropy_threshold": 0.6178959846496582,
+              "coverage": 0.7994604316546763,
+              "accuracy_on_kept": 0.9921259842519685,
+              "n_tumor_kept": 629,
+              "tumor_missed_among_kept": 4,
+              "miss_rate_among_kept": 0.006359300476947536
+            }
+          },
+          "missed_case_entropies": [
+            1.0575302839279175,
+            0.39486798644065857,
+            1.0747157335281372,
+            0.4898848831653595,
+            0.4164237976074219,
+            1.9224522113800049,
+            0.7605108618736267,
+            0.41010987758636475,
+            0.7695325613021851
+          ],
+          "missed_case_max_prob": [
+            0.7765219807624817,
+            0.9444935917854309,
+            0.7702045440673828,
+            0.9275214076042175,
+            0.9410141110420227,
+            0.345165491104126,
+            0.8657869100570679,
+            0.9419132471084595,
+            0.8640525937080383
+          ],
+          "mean_entropy": 0.5893691280494919
+        }
+      },
+      "across_seeds": {
+        "tumor_miss_rate_mean": 0.011449451887941536,
+        "tumor_miss_rate_min": 0.010962241169305725,
+        "tumor_miss_rate_max": 0.012180267965895249,
+        "binary_sensitivity_mean": 0.9885505481120583,
+        "binary_sensitivity_min": 0.9878197320341048,
+        "binary_sensitivity_max": 0.9890377588306942,
+        "binary_specificity_mean": 0.9800687285223368,
+        "binary_specificity_min": 0.9725085910652921,
+        "binary_specificity_max": 0.9896907216494846,
+        "four_way_accuracy_mean": 0.9616906474820144
+      },
+      "pooled_over_seeds": {
+        "_note": "Seeds score the same 1,112 images, so these are 5 correlated reads of one test set, not 5,560 independent images. The CI below is therefore optimistic. Treat the per-seed range as the honest spread.",
+        "tumor_missed": 47,
+        "tumor_evaluations": 4105,
+        "tumor_miss_rate": 0.011449451887941534,
+        "ci95_wilson": [
+          0.008621328279318352,
+          0.0151910917916513
+        ]
+      }
+    }
+  }
+}

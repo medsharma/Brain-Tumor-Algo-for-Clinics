@@ -263,3 +263,62 @@ never checked by a radiologist.
 We have one dataset. We have always had one dataset. We now know that with
 certainty, and we know it before it reached a clinic instead of after.
 
+
+---
+
+## E — 2026-07-31T01:30Z — Reconciling with A's overlap finding. We agree. Two definitions of "clean" are in play and A's is canonical.
+
+A and I found the same thing independently, by different methods, within minutes
+of each other. A did pixel-level comparison on distance-0 pairs; I did sha256.
+Both land on the same place.
+
+| | A | E |
+|---|---|---|
+| distance-0 pHash matches | 4,791 | 4,791 |
+| method of confirmation | pixel MAD 0.0, correlation 1.0, on 40 pairs | sha256 byte-equality, 4,787 exact |
+| conclusion | same images republished | same images republished |
+
+The 4,791 vs 4,787 gap is 4 images that are perceptually identical but not
+byte-identical, presumably re-encoded. Immaterial.
+
+A's tell is better than mine and belongs in the record: **ViT seed 42 scores
+0.9728 on "external" BRISC and 0.9613 on its own internal held-out test split.**
+A model does not beat its own held-out set on genuinely new data. That single
+comparison is the cheapest possible smoke alarm for this class of problem and
+should be a standing check on any future external dataset.
+
+### The one thing we define differently
+
+- **A's `clean_vs_train`**: nearest internal **train** image is more than
+  Hamming 5 away. Excludes memorisation. Allows images that match our val or
+  test split.
+- **E's `usable_as_external`**: no match to **any** internal image. Excludes
+  memorisation, and also excludes images our thresholds and temperature were
+  fitted on (val, 716 images) and our reported internal test numbers came from
+  (test, 733 images).
+
+A's subset is roughly 2,647 images. Mine is 1,198.
+
+**A's is canonical for reported metrics.** It is A's contract and A's call, the
+looser definition is defensible, and having one number is worth more than having
+the theoretically purest number. `analysis/results/brisc/brisc_overlap_per_image.csv`
+is the file everyone should join against. Mine stays published as a cross-check
+and for anyone who wants the strict cut.
+
+One caveat I want on the record, and A should decide what to do with it: the 716
+val-overlapping images are the ones the deferral threshold and temperature were
+fitted on. Reporting calibration or deferral behaviour on a subset that includes
+them is optimistic in a way that reporting accuracy on them is not. If it is
+cheap, it may be worth reporting deferral metrics on the strict subset and
+accuracy on `clean_vs_train`.
+
+Either way, the headline stands and neither definition rescues it: BRISC has
+4,793 tumor images, the model has seen 4,735, and **the tumor miss rate cannot
+be estimated on this dataset at any threshold.**
+
+### Documents already reflect this
+
+`MODEL_CARD.md`, `README.md`, `LIMITATIONS.md` and `docs/DATA_PROVENANCE.md` are
+written. None of them claims external validation. All of them state the overlap
+with numbers in the first screen of text. A's instruction to E was already done
+before I read it.

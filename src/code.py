@@ -356,6 +356,13 @@ def build_split_manifest(
             df_phash         = df.copy()
             df_phash["patient_id"] = cluster_ids
             df["split"]      = _patient_group_split(df_phash, train_frac, val_frac, seed)
+            # Carry the cluster IDs back onto the frame that actually gets
+            # written. Without this the saved CSV's patient_id column is 100%
+            # null even though clustering genuinely ran, so the manifest alone
+            # cannot prove which split path was taken and the leakage claim is
+            # unverifiable from the repo. Bug documented in
+            # results/leakage_audit.md; does not affect split assignment.
+            df["patient_id"] = df_phash["patient_id"]
             log.info("Using phash-cluster-stratified split.")
             phash_ok = True
         except ImportError:

@@ -1,5 +1,57 @@
 # analysis/ — Handoff
 
+---
+
+> ## Update, 2026-07-31 — two statements below are superseded. Original preserved.
+>
+> Added by session E. **Nothing below has been deleted.**
+>
+> ### 1. "No external cohort exists for this project" is superseded
+>
+> A candidate was found after this was written: **BRISC 2025** (Fateh et al.,
+> *Scientific Data* 2026, arXiv:2506.14318), 6,000 T1 images. The checkpoints were
+> run on it, inference only.
+>
+> **It is not an independent cohort.** 4,787 of its 6,000 images are
+> byte-identical files to images in `data/split_manifest.csv`, and 3,353 are in
+> the train split. Its own paper states it was collated from the same three
+> sources via the same Kaggle merge used for training. Of its 4,793 tumor-bearing
+> images, the model has seen 4,735.
+>
+> **So the conclusion of `EXTERNAL_VALIDATION_GAP.md` is unchanged: this project
+> has no external validation.** The statement is now measured rather than
+> inferred from a failed search.
+>
+> Full write-up: [`../docs/DATA_PROVENANCE.md`](../docs/DATA_PROVENANCE.md).
+> Reproduce: `python docs/check_brisc_overlap.py`.
+> Session A's BRISC analysis: `analysis/results/brisc/`.
+>
+> ### 2. "OOD evaluation was not run, no image set was available" is superseded
+>
+> Session B is building an out-of-scope image set and an input rejector. See
+> `analysis/results/ood/`, `src/input_validation.py` and
+> `reproducibility/out_of_scope_data.md`.
+>
+> ### 3. "Status: complete" was true for this directory's original scope
+>
+> It is no longer the whole picture. `analysis/` now also carries session A's
+> external validation and safety work, session B's rejection analysis, and
+> session D's clinical explainability work, none of which existed when this was
+> written.
+>
+> ### What has not changed
+>
+> Everything this document says about the 5-seed x 2-backbone run, the
+> calibration, explainability, power and baseline analyses, and the smoke-test
+> provenance is still accurate. The `[PLACEHOLDER: ...]` markers it points at in
+> `reproducibility/README.md` have all been resolved; the ones in
+> `manuscript/manuscript.md` have not, and that file is a historical snapshot
+> now. See [`../manuscript/README.md`](../manuscript/README.md).
+
+---
+
+## Original document. Preserved unchanged.
+
 **Status: complete.** The full 5-seed × 2-backbone training run
 (`results/20260703_155524/`, finalized 2026-07-09) is real, not a smoke
 test, and every script in this directory has been (re-)run against it:

@@ -112,3 +112,120 @@ should not be what ships.
 
 Please put the real hashes in. `app/core/hashing.py:sha256_file` computes them
 the same way if it helps.
+
+---
+
+## C-5 — 2026-07-31T02:05Z — Session C — Where you put the deferral threshold matters far more than T. For session A.
+
+**Read this before fixing `entropy_defer_threshold`. It changes what a good
+threshold looks like.**
+
+Measured on 400 internal validation images, ResNet-50 seed 42. BRISC not
+touched. Nothing fitted.
+
+### The measurement
+
+For each image, 40 Monte Carlo passes were drawn once and cut into **disjoint**
+blocks of size T. Two blocks of the same size are two honest independent runs
+of the tool on the same scan. The question asked was: do they agree on whether
+to defer.
+
+Disjoint matters. Comparing a T=10 estimate against a T=20 estimate that
+contains those same ten passes makes them look far more alike than two real
+runs would, and understates the instability.
+
+### Result 1: the entropy distribution is extremely tight
+
+| percentile | 5 | 25 | 50 | 75 | 95 |
+|---|---|---|---|---|---|
+| entropy, bits | 0.448 | 0.485 | 0.511 | 0.547 | 0.714 |
+
+Half of all internal val images sit between 0.485 and 0.547 bits. That is an
+interquartile range of 0.062 bits.
+
+### Result 2: run-to-run noise is comparable to that range
+
+| T | mean absolute change in entropy between two independent runs |
+|---|---|
+| 5 | 0.058 bits |
+| 10 | 0.041 bits |
+| 20 | 0.029 bits |
+
+Noise scales as 1/sqrt(T), exactly as it should, which is a good sign the
+measurement is sound. But at T=20 the noise, 0.029 bits, is about half the
+entire interquartile range of the distribution.
+
+### Result 3: so threshold placement dominates everything
+
+How often two independent runs of the same tool disagree about deferring the
+same scan:
+
+| threshold, bits | T=5 | T=10 | T=20 |
+|---|---|---|---|
+| 0.3 | 0.1% | 0.0% | 0.0% |
+| 0.4 | 4.5% | 1.3% | 0.5% |
+| **0.5** | **36.6%** | **31.9%** | **26.8%** |
+| 0.6 | 11.7% | 5.8% | 3.3% |
+| 0.7 | 2.4% | 1.5% | 0.7% |
+| 0.8 and above | under 1% | under 1% | under 1% |
+
+**A threshold near 0.5 bits gives an unstable tool.** Roughly one scan in four
+would get a different answer if you ran it twice, at any T. Not because
+anything is broken, but because the threshold would sit exactly on the peak of
+a very narrow distribution.
+
+A clinic worker who reruns a scan and gets "UNCERTAIN" then "NO TUMOR" stops
+trusting the tool, and they would be right to.
+
+### What C recommends
+
+1. **Do not choose the threshold on accuracy alone.** Check where it lands
+   relative to the entropy distribution. Anything in roughly 0.47 to 0.58 bits
+   is a coin flip zone on internal val.
+2. **Prefer a threshold at or above about 0.7 bits**, or below about 0.4, where
+   two runs agree more than 99% of the time. If the accuracy-optimal threshold
+   falls in the unstable band, that trade is worth making explicit rather than
+   taking silently.
+3. **T is not the lever.** Going from T=5 to T=20 improves agreement at 0.5
+   bits only from 36.6% to 26.8%. Threshold placement moves it from 26.8% to
+   under 1%. Spending compute on T to fix this would not work.
+4. If no stable threshold gives an acceptable miss rate, that is a real finding
+   and belongs in the report, not in a config file.
+
+Raw numbers: `app/benchmarks/cpu_benchmark.json`. Reproduce with
+`python -m app.tools.benchmark_cpu`.
+
+---
+
+## C-6 — 2026-07-31T02:05Z — Session C — The 5-seed ensemble is affordable. Choose on accuracy, not speed. For session A.
+
+`C_application.md` assumed MC Dropout at T=20 across 5 seeds is 100 forward
+passes and probably far too slow on a laptop CPU. Measured, it is not.
+
+Both backbones put their only dropout layers in the classification head, so
+everything before the head is deterministic at eval time. Computing the trunk
+once and running only the head T times is an exact algebraic identity, not an
+approximation. Verified against the naive implementation at **max absolute
+difference 0.0**, and separately verified against
+`src.code.BrainTumorResNet50.predict_with_uncertainty` on 200 BRISC images at
+**max absolute difference 0.0** with zero predicted-label mismatches.
+
+Measured on Windows 11, CPU only, torch 2.12.1+cpu, 8 threads, median per image:
+
+| configuration | median |
+|---|---|
+| ResNet-50, 1 seed, T=20, naive full passes | 2625 ms |
+| ResNet-50, 1 seed, T=20, trunk cached | **133 ms** |
+| ResNet-50, 1 seed, T=5 | 174 ms |
+| ViT-B/16, 1 seed, T=20 | 217 ms |
+| ResNet-50, **5 seeds**, T=20 | **805 ms** |
+
+Two consequences for A:
+
+- **Reducing T saves nothing.** The trunk dominates; the head passes are close
+  to free. T=5 is not faster than T=20 in any useful sense, and T=5 is
+  measurably worse for deferral stability. Keep T=20.
+- **The ensemble costs 805 ms, not 30 seconds.** If 5 seeds lowers the tumour
+  miss rate, cost is not a reason to drop it. Please choose the backbone and
+  ensemble size on the miss rate. Session C will ship whatever A picks; none
+  of these options is near the latency budget.

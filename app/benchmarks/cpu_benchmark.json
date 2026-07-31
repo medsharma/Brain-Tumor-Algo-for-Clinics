@@ -1,0 +1,201 @@
+{
+  "generated_utc": "2026-07-31T01:36:12Z",
+  "machine": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 198 Stepping 2, GenuineIntel",
+    "python": "3.10.11",
+    "torch": "2.12.1+cpu",
+    "cuda_available": false,
+    "torch_threads": 8
+  },
+  "notes": "Measured on the internal validation split. Nothing is fitted and no threshold is chosen here. BRISC is not touched.",
+  "latency": [
+    {
+      "label": "resnet50 x1 seed, T=5",
+      "backbone": "resnet50",
+      "n_models": 1,
+      "mc_T": 5,
+      "path": "cached-trunk",
+      "n_images": 28,
+      "median_ms": 173.8,
+      "mean_ms": 183.8,
+      "p95_ms": 314.6,
+      "forward_passes": 5
+    },
+    {
+      "label": "resnet50 x1 seed, T=10",
+      "backbone": "resnet50",
+      "n_models": 1,
+      "mc_T": 10,
+      "path": "cached-trunk",
+      "n_images": 28,
+      "median_ms": 116.2,
+      "mean_ms": 118.0,
+      "p95_ms": 206.2,
+      "forward_passes": 10
+    },
+    {
+      "label": "resnet50 x1 seed, T=20",
+      "backbone": "resnet50",
+      "n_models": 1,
+      "mc_T": 20,
+      "path": "cached-trunk",
+      "n_images": 28,
+      "median_ms": 133.3,
+      "mean_ms": 134.4,
+      "p95_ms": 212.4,
+      "forward_passes": 20
+    },
+    {
+      "label": "resnet50 x1 seed, T=20, naive",
+      "backbone": "resnet50",
+      "n_models": 1,
+      "mc_T": 20,
+      "path": "full-network",
+      "n_images": 28,
+      "median_ms": 2625.3,
+      "mean_ms": 2569.5,
+      "p95_ms": 2972.0,
+      "forward_passes": 20
+    },
+    {
+      "label": "vit x1 seed, T=5",
+      "backbone": "vit",
+      "n_models": 1,
+      "mc_T": 5,
+      "path": "cached-trunk",
+      "n_images": 28,
+      "median_ms": 211.7,
+      "mean_ms": 210.6,
+      "p95_ms": 271.1,
+      "forward_passes": 5
+    },
+    {
+      "label": "vit x1 seed, T=20",
+      "backbone": "vit",
+      "n_models": 1,
+      "mc_T": 20,
+      "path": "cached-trunk",
+      "n_images": 28,
+      "median_ms": 217.4,
+      "mean_ms": 215.8,
+      "p95_ms": 298.2,
+      "forward_passes": 20
+    },
+    {
+      "label": "resnet50 x5 seeds, T=20",
+      "backbone": "resnet50",
+      "n_models": 5,
+      "mc_T": 20,
+      "path": "cached-trunk",
+      "n_images": 28,
+      "median_ms": 804.7,
+      "mean_ms": 789.8,
+      "p95_ms": 1105.7,
+      "forward_passes": 100
+    }
+  ],
+  "entropy_stability": {
+    "n_images": 400,
+    "n_passes_drawn": 40,
+    "method": "One draw of n_passes per image, cut into disjoint blocks of size T. Every T is compared the same way: independent block against independent block.",
+    "best_estimate_entropy_mean": 0.5405,
+    "best_estimate_entropy_sd": 0.1278,
+    "best_estimate_entropy_percentiles": {
+      "5": 0.4482,
+      "25": 0.4853,
+      "50": 0.5108,
+      "75": 0.5472,
+      "95": 0.7136
+    },
+    "by_T": {
+      "5": {
+        "independent_runs_per_image": 8,
+        "mean_abs_delta_between_runs_bits": 0.0582,
+        "p95_abs_delta_between_runs_bits": 0.1462,
+        "max_abs_delta_between_runs_bits": 0.2906,
+        "deferral_disagreement_by_threshold": {
+          "0.1": 0.0,
+          "0.2": 0.0,
+          "0.3": 0.0014,
+          "0.4": 0.0446,
+          "0.5": 0.3661,
+          "0.6": 0.1166,
+          "0.7": 0.0243,
+          "0.8": 0.0068,
+          "0.9": 0.0065,
+          "1.0": 0.0058,
+          "1.1": 0.0039,
+          "1.2": 0.0066,
+          "1.3": 0.0045,
+          "1.4": 0.0029,
+          "1.5": 0.0,
+          "1.6": 0.0,
+          "1.7": 0.0,
+          "1.8": 0.0,
+          "1.9": 0.0
+        },
+        "worst_threshold": 0.5,
+        "worst_disagreement_rate": 0.3661
+      },
+      "10": {
+        "independent_runs_per_image": 4,
+        "mean_abs_delta_between_runs_bits": 0.0411,
+        "p95_abs_delta_between_runs_bits": 0.1043,
+        "max_abs_delta_between_runs_bits": 0.228,
+        "deferral_disagreement_by_threshold": {
+          "0.1": 0.0,
+          "0.2": 0.0,
+          "0.3": 0.0,
+          "0.4": 0.0133,
+          "0.5": 0.3192,
+          "0.6": 0.0579,
+          "0.7": 0.015,
+          "0.8": 0.0029,
+          "0.9": 0.0054,
+          "1.0": 0.0042,
+          "1.1": 0.0025,
+          "1.2": 0.0042,
+          "1.3": 0.0046,
+          "1.4": 0.0013,
+          "1.5": 0.0,
+          "1.6": 0.0,
+          "1.7": 0.0,
+          "1.8": 0.0,
+          "1.9": 0.0
+        },
+        "worst_threshold": 0.5,
+        "worst_disagreement_rate": 0.3192
+      },
+      "20": {
+        "independent_runs_per_image": 2,
+        "mean_abs_delta_between_runs_bits": 0.0291,
+        "p95_abs_delta_between_runs_bits": 0.0703,
+        "max_abs_delta_between_runs_bits": 0.1341,
+        "deferral_disagreement_by_threshold": {
+          "0.1": 0.0,
+          "0.2": 0.0,
+          "0.3": 0.0,
+          "0.4": 0.005,
+          "0.5": 0.2675,
+          "0.6": 0.0325,
+          "0.7": 0.0075,
+          "0.8": 0.0025,
+          "0.9": 0.0025,
+          "1.0": 0.0025,
+          "1.1": 0.0025,
+          "1.2": 0.0025,
+          "1.3": 0.0075,
+          "1.4": 0.0025,
+          "1.5": 0.0,
+          "1.6": 0.0,
+          "1.7": 0.0,
+          "1.8": 0.0,
+          "1.9": 0.0
+        },
+        "worst_threshold": 0.5,
+        "worst_disagreement_rate": 0.2675
+      }
+    }
+  }
+}

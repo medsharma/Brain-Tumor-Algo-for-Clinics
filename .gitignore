@@ -4,3 +4,10 @@ __pycache__/
 
 # Model checkpoints (>100MB, exceed GitHub's file size limit)
 *.pth
+
+# Session C: local app state and large benchmark caches
+.venv/
+app/benchmarks/brisc_deployed_*.csv
+dist/
+build/
+*.spec.bak

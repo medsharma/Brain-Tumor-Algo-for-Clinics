@@ -977,17 +977,26 @@ def cmd_overlap(args: argparse.Namespace) -> None:
     internal["filepath_abs"] = internal["filepath"].map(
         lambda p: str(REPO_ROOT / Path(str(p).replace("\\", "/"))))
 
+    out_dir = BRISC_OUT
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cache_npz = out_dir / "phash_bits.npz"
+
     def hashes(paths: List[str], label: str) -> np.ndarray:
         bits = np.zeros((len(paths), 64), dtype=np.uint8)
         for i, p in enumerate(paths):
-            if i % 1000 == 0:
+            if i % 2000 == 0:
                 print(f"  {label}: {i}/{len(paths)}", flush=True)
-            h = imagehash.phash(Image.open(p).convert("L"))
-            bits[i] = h.hash.flatten().astype(np.uint8)
+            bits[i] = imagehash.phash(Image.open(p).convert("L")).hash.flatten().astype(np.uint8)
         return bits
 
-    b_bits = hashes(brisc_df["filepath"].tolist(), "brisc")
-    i_bits = hashes(internal["filepath_abs"].tolist(), "internal")
+    if cache_npz.exists() and not args.rehash:
+        z = np.load(cache_npz)
+        b_bits, i_bits = z["brisc"], z["internal"]
+        print(f"  reusing cached pHashes from {cache_npz.name}")
+    else:
+        b_bits = hashes(brisc_df["filepath"].tolist(), "brisc")
+        i_bits = hashes(internal["filepath_abs"].tolist(), "internal")
+        np.savez_compressed(cache_npz, brisc=b_bits, internal=i_bits)
 
     # Hamming distance via matrix product: d = popcount(a XOR b).
     # (a != b).sum() == a@(1-b).T + (1-a)@b.T
@@ -996,50 +1005,87 @@ def cmd_overlap(args: argparse.Namespace) -> None:
     a = b_bits.astype(np.float32)
     b = i_bits.astype(np.float32)
     dist = (a @ (1 - b).T + (1 - a) @ b.T).astype(np.int16)   # (6000, 7200)
-    nearest = dist.min(axis=1)
-    nearest_idx = dist.argmin(axis=1)
+
+    # Nearest internal image overall, and nearest within each internal split.
+    # The split that matters is TRAIN: an image the model was fitted on is not
+    # external test data, whatever dataset it was later republished in.
+    per = pd.DataFrame({"image_path": brisc_df["image_path"].to_numpy()})
+    split_arr = internal["split"].to_numpy()
+    for sp in ("train", "val", "test"):
+        cols = np.nonzero(split_arr == sp)[0]
+        sub = dist[:, cols]
+        per[f"d_{sp}"] = sub.min(axis=1)
+        idx_local = sub.argmin(axis=1)
+        per[f"match_{sp}"] = internal["filepath"].to_numpy()[cols[idx_local]]
+    per["d_any"] = dist.min(axis=1)
+    per["class_name"] = brisc_df["class_name"].to_numpy()
+    per["brisc_split"] = brisc_df["brisc_split"].to_numpy()
+    per["plane"] = brisc_df["plane"].to_numpy()
+    thr = args.threshold
+    per["clean_vs_train"] = per["d_train"] > thr
+    per["clean_vs_any"] = per["d_any"] > thr
+    per.to_csv(out_dir / "brisc_overlap_per_image.csv", index=False)
 
     rows: List[Dict[str, Any]] = []
-    for thr in (0, 1, 2, 3, 5, 8, 10):
-        n_hit = int((nearest <= thr).sum())
-        rows.append({"hamming_threshold": thr, "n_brisc_images_matched": n_hit,
-                     "share_of_brisc": n_hit / len(brisc_df)})
-        print(f"  hamming <= {thr:2d}: {n_hit:5d} of {len(brisc_df)} BRISC images "
-              f"({100*n_hit/len(brisc_df):.2f}%)")
+    for t in (0, 1, 2, 3, 5, 8, 10):
+        rows.append({
+            "hamming_threshold": t,
+            "n_matching_any_internal": int((per["d_any"] <= t).sum()),
+            "share_matching_any_internal": float((per["d_any"] <= t).mean()),
+            "n_matching_internal_TRAIN": int((per["d_train"] <= t).sum()),
+            "share_matching_internal_TRAIN": float((per["d_train"] <= t).mean()),
+        })
+        print(f"  hamming <= {t:2d}:  any-internal {rows[-1]['n_matching_any_internal']:5d} "
+              f"({100*rows[-1]['share_matching_any_internal']:5.2f}%)   "
+              f"internal-TRAIN {rows[-1]['n_matching_internal_TRAIN']:5d} "
+              f"({100*rows[-1]['share_matching_internal_TRAIN']:5.2f}%)")
 
-    matched = brisc_df.loc[nearest <= args.threshold].copy()
-    matched["hamming"] = nearest[nearest <= args.threshold]
-    matched["internal_match"] = internal["filepath"].to_numpy()[nearest_idx[nearest <= args.threshold]]
-    matched["internal_split"] = internal["split"].to_numpy()[nearest_idx[nearest <= args.threshold]]
-    matched["internal_class"] = internal["class_name"].to_numpy()[nearest_idx[nearest <= args.threshold]]
-
-    out_dir = BRISC_OUT
-    out_dir.mkdir(parents=True, exist_ok=True)
-    matched[["image_path", "class_name", "brisc_split", "plane", "hamming",
-             "internal_match", "internal_split", "internal_class"]].to_csv(
-        out_dir / "brisc_internal_overlap.csv", index=False)
-
+    clean = per[per["clean_vs_train"]]
     res = {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
-        "method": "64-bit pHash, minimum Hamming distance from each BRISC image "
-                  "to any internal image. Distance 0 = visually identical. "
-                  "Distance <= 5 is the near-duplicate threshold src/code.py "
-                  "already uses for leakage-safe splitting.",
+        "verdict": (
+            "BRISC 2025 is NOT external data for these checkpoints. "
+            f"{int((per['d_train'] <= thr).sum())} of {len(per)} BRISC images "
+            f"({100*(per['d_train'] <= thr).mean():.1f}%) are near-duplicates of "
+            "images the model was trained on."
+        ),
+        "method": "64-bit pHash Hamming distance from every BRISC image to every "
+                  "internal image, split by internal split. Distance 0 means the "
+                  "pHash is identical; a 40-pair pixel check on distance-0 pairs "
+                  "found mean absolute difference 0.0 and correlation 1.0, i.e. "
+                  "the same image file content. Distance <= 5 is the near-duplicate "
+                  "threshold src/code.py already uses for leakage-safe splitting.",
         "n_brisc": int(len(brisc_df)),
         "n_internal": int(len(internal)),
-        "nearest_distance_percentiles": {
-            str(q): float(np.percentile(nearest, q)) for q in (0, 1, 5, 25, 50, 75, 100)
-        },
+        "internal_split_sizes": internal["split"].value_counts().to_dict(),
+        "nearest_distance_percentiles_any": {
+            str(q): float(np.percentile(per["d_any"], q)) for q in (0, 1, 5, 25, 50, 75, 95, 100)},
+        "nearest_distance_percentiles_train": {
+            str(q): float(np.percentile(per["d_train"], q)) for q in (0, 1, 5, 25, 50, 75, 95, 100)},
         "by_threshold": rows,
-        "reported_threshold": args.threshold,
-        "n_matched_at_reported_threshold": int(len(matched)),
-        "matched_by_internal_split": matched["internal_split"].value_counts().to_dict(),
-        "matched_by_brisc_split": matched["brisc_split"].value_counts().to_dict(),
+        "reported_threshold": thr,
+        "clean_subset_vs_train": {
+            "definition": f"BRISC images whose nearest internal TRAIN image is more "
+                          f"than Hamming {thr} away. These are the only BRISC images "
+                          f"that constitute genuine external test data.",
+            "n": int(len(clean)),
+            "share_of_brisc": float(len(clean) / len(per)),
+            "by_class": clean["class_name"].value_counts().to_dict(),
+            "by_plane": clean["plane"].value_counts().to_dict(),
+            "by_brisc_split": clean["brisc_split"].value_counts().to_dict(),
+        },
+        "clean_subset_vs_any": {
+            "n": int(per["clean_vs_any"].sum()),
+            "by_class": per.loc[per["clean_vs_any"], "class_name"].value_counts().to_dict(),
+        },
     }
     (out_dir / "brisc_internal_overlap.json").write_text(
         json.dumps(res, indent=2, default=str), encoding="utf-8")
-    print(json.dumps(res["nearest_distance_percentiles"], indent=2))
+    print("\n" + res["verdict"])
+    print(f"\nclean subset (unseen in training): n={len(clean)} "
+          f"({100*len(clean)/len(per):.1f}%)  {clean['class_name'].value_counts().to_dict()}")
     print(f"-> {out_dir / 'brisc_internal_overlap.json'}")
+    print(f"-> {out_dir / 'brisc_overlap_per_image.csv'}")
 
 
 # ===========================================================================
@@ -1150,6 +1196,7 @@ def main() -> None:
     o = sub.add_parser("overlap", help="check whether BRISC shares images with the training data")
     o.add_argument("--brisc", type=Path, default=BRISC)
     o.add_argument("--threshold", type=int, default=5)
+    o.add_argument("--rehash", action="store_true", help="ignore the cached pHash matrix")
     o.set_defaults(func=cmd_overlap)
 
     x = sub.add_parser("misses", help="Phase 5: extract confidently wrong missed tumours")

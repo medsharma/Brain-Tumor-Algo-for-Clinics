@@ -558,6 +558,39 @@ def load_internal_cache(model_name: str, seed: int, split: str) -> pd.DataFrame:
     )
 
 
+OVERLAP_CSV = BRISC_OUT / "brisc_overlap_per_image.csv"
+
+
+def attach_overlap_flags(df: pd.DataFrame) -> pd.DataFrame:
+    """Add the contamination columns to a BRISC prediction frame.
+
+    Roughly 80 percent of BRISC 2025 is pixel-identical to images in the
+    internal dataset, and a large share of that is in the internal TRAINING
+    split. Any BRISC number computed without filtering on `clean_vs_train` is
+    partly the model being scored on its own training data. Run
+    `external_validation_brisc.py overlap` to produce the file.
+    """
+    if not OVERLAP_CSV.exists():
+        raise FileNotFoundError(
+            f"{OVERLAP_CSV} is missing. Run: python analysis/"
+            "external_validation_brisc.py overlap"
+        )
+    ov = pd.read_csv(OVERLAP_CSV).set_index("image_path")
+    out = df.copy()
+    for col in ("d_train", "d_val", "d_test", "d_any", "clean_vs_train", "clean_vs_any"):
+        out[col] = out["image_path"].map(ov[col])
+    if out[["d_train", "clean_vs_train"]].isna().any().any():
+        raise AssertionError("overlap flags did not join cleanly onto the cache")
+    out["clean_vs_train"] = out["clean_vs_train"].astype(bool)
+    out["clean_vs_any"] = out["clean_vs_any"].astype(bool)
+    return out
+
+
+def clean_subset(df: pd.DataFrame) -> pd.DataFrame:
+    """The BRISC images the model genuinely never trained on."""
+    return attach_overlap_flags(df).query("clean_vs_train").reset_index(drop=True)
+
+
 PROB_COLS = ["p_glioma", "p_meningioma", "p_pituitary", "p_notumor"]
 
 
@@ -693,82 +726,144 @@ def cmd_metrics(args: argparse.Namespace) -> None:
     fig_dir.mkdir(parents=True, exist_ok=True)
     nb = args.boot
 
+    ov = pd.read_csv(OVERLAP_CSV)
+    n_clean = int(ov["clean_vs_train"].sum())
+
     report: Dict[str, Any] = {
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "dataset": "BRISC2025",
-        "n": 6000,
         "mc_T": MC_T,
         "n_bootstrap": nb,
         "binary_threshold": 0.5,
         "entropy_units": "nats",
+        "CONTAMINATION_WARNING": (
+            "About 80 percent of BRISC 2025 is pixel-identical to images in "
+            "data/brain_tumor/, and 56 percent matches the internal TRAINING "
+            "split specifically. `brisc_full` below is therefore NOT an external "
+            "result and must never be quoted as one. `brisc_clean` is the only "
+            "genuine external number: BRISC images whose nearest internal "
+            f"training image is more than Hamming 5 away, n={n_clean}. See "
+            "analysis/results/brisc/brisc_internal_overlap.json."
+        ),
+        "subsets": {
+            "brisc_full": {"n": int(len(ov)), "status": "CONTAMINATED, reference only"},
+            "brisc_clean": {"n": n_clean, "definition": "d_train > 5",
+                            "status": "the genuine external test set"},
+            "brisc_clean_strict": {"n": int((ov["d_train"] > 10).sum()),
+                                   "definition": "d_train > 10",
+                                   "status": "sensitivity check; too few tumours to "
+                                             "carry the headline"},
+        },
         "note": "Nothing here was fitted on BRISC. These are scores of a frozen model.",
         "models": {},
     }
 
     per_seed_preds: Dict[str, np.ndarray] = {}
+    clean_mask_global: Optional[np.ndarray] = None
 
     for model_name in MODELS:
-        entry: Dict[str, Any] = {"per_seed": {}, "ensemble5": {}, "internal_test": {}}
+        entry: Dict[str, Any] = {"per_seed": {}, "ensemble5": {}}
         brisc_frames, itest_frames, val_frames = [], [], []
 
         for seed in SEEDS:
-            b = load_brisc_cache(model_name, seed)
+            b = attach_overlap_flags(load_brisc_cache(model_name, seed))
             t = load_internal_cache(model_name, seed, "test")
             v = load_internal_cache(model_name, seed, "val")
             brisc_frames.append(b); itest_frames.append(t); val_frames.append(v)
+            bc = b[b["clean_vs_train"]]
             entry["per_seed"][str(seed)] = {
-                "brisc": sm.full_report(b, 0.5, seed=seed, n_resamples=nb),
+                "brisc_clean": sm.full_report(bc, 0.5, seed=seed, n_resamples=nb),
+                "brisc_full": sm.full_report(b, 0.5, seed=seed, n_resamples=nb),
                 "internal_test": sm.full_report(t, 0.5, seed=seed, n_resamples=nb),
             }
-            print(f"  {model_name} seed {seed}: BRISC miss="
-                  f"{entry['per_seed'][str(seed)]['brisc']['tumor_miss_rate']['value']:.4f} "
-                  f"acc={entry['per_seed'][str(seed)]['brisc']['standard']['four_way_accuracy']['value']:.4f}")
+            e = entry["per_seed"][str(seed)]
+            print(f"  {model_name} seed {seed}: "
+                  f"CLEAN miss={e['brisc_clean']['tumor_miss_rate']['value']:.4f} "
+                  f"acc={e['brisc_clean']['standard']['four_way_accuracy']['value']:.4f}  |  "
+                  f"full(contaminated) miss={e['brisc_full']['tumor_miss_rate']['value']:.4f} "
+                  f"acc={e['brisc_full']['standard']['four_way_accuracy']['value']:.4f}")
 
         be = ensemble_frames(brisc_frames)
+        be = attach_overlap_flags(be)
         te = ensemble_frames(itest_frames)
         ve = ensemble_frames(val_frames)
+        be_clean = be[be["clean_vs_train"]].reset_index(drop=True)
+        be_strict = be[be["d_train"] > 10].reset_index(drop=True)
         per_seed_preds[model_name] = be["pred_label"].to_numpy()
+        clean_mask_global = be["clean_vs_train"].to_numpy()
 
-        entry["ensemble5"]["brisc"] = sm.full_report(
+        entry["ensemble5"]["brisc_clean"] = sm.full_report(
+            be_clean, 0.5, n_resamples=nb, subgroups=("plane", "brisc_split"))
+        entry["ensemble5"]["brisc_full"] = sm.full_report(
             be, 0.5, n_resamples=nb, subgroups=("plane", "brisc_split"))
+        entry["ensemble5"]["brisc_clean_strict"] = sm.full_report(be_strict, 0.5, n_resamples=nb)
         entry["ensemble5"]["internal_test"] = sm.full_report(te, 0.5, n_resamples=nb)
         entry["ensemble5"]["internal_val"] = sm.full_report(ve, 0.5, n_resamples=nb)
 
-        # The drop is the finding. Internal test vs BRISC, same checkpoints.
-        entry["drop_internal_to_brisc"] = {
-            "four_way_accuracy": sm.drop_with_ci(
-                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
-                ("standard", "four_way_accuracy")),
-            "macro_f1": sm.drop_with_ci(
-                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
-                ("standard", "macro_f1")),
-            "macro_auc": sm.drop_with_ci(
-                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
-                ("standard", "macro_auc")),
-            "tumor_miss_rate": sm.drop_with_ci(
-                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
-                ("tumor_miss_rate",)),
-            "binary_sensitivity": sm.drop_with_ci(
-                entry["ensemble5"]["internal_test"], entry["ensemble5"]["brisc"],
-                ("binary", "sensitivity")),
-            "ece_15bin": {
-                "internal": entry["ensemble5"]["internal_test"]["standard"]["ece_15bin"],
-                "external": entry["ensemble5"]["brisc"]["standard"]["ece_15bin"],
-                "drop": (entry["ensemble5"]["internal_test"]["standard"]["ece_15bin"]
-                         - entry["ensemble5"]["brisc"]["standard"]["ece_15bin"]),
+        # Contamination effect, measured directly: same checkpoints, the BRISC
+        # images they trained on vs the ones they did not.
+        be_dirty = be[~be["clean_vs_train"]].reset_index(drop=True)
+        entry["contamination_effect"] = {
+            "seen_in_training": {
+                "n": int(len(be_dirty)),
+                "accuracy": float((be_dirty["pred_label"] == be_dirty["true_label"]).mean()),
+                "tumor_miss_rate": sm.tumor_miss_rate(be_dirty, n_resamples=nb),
+            },
+            "not_seen_in_training": {
+                "n": int(len(be_clean)),
+                "accuracy": float((be_clean["pred_label"] == be_clean["true_label"]).mean()),
+                "tumor_miss_rate": sm.tumor_miss_rate(be_clean, n_resamples=nb),
             },
         }
-        report["models"][model_name] = entry
-        _plots(be, te, model_name, fig_dir)
 
-    # ViT vs ResNet-50 on BRISC, paired on the same images.
-    y_true = load_brisc_cache("vit", 42)["true_label"].to_numpy()
-    chi2, pval = mcnemar_test(y_true, per_seed_preds["vit"], per_seed_preds["resnet50"])
-    report["vit_vs_resnet50_brisc_mcnemar"] = {
-        "chi2": chi2, "p_value": pval, "significant": bool(pval < 0.05),
-        "note": "5-seed ensembles, paired on the same 6000 BRISC images",
+        # The drop is the finding. Internal held-out test vs the CLEAN external set.
+        for label, ext in (("clean", "brisc_clean"), ("full_contaminated", "brisc_full")):
+            entry[f"drop_internal_to_{label}"] = {
+                "four_way_accuracy": sm.drop_with_ci(
+                    entry["ensemble5"]["internal_test"], entry["ensemble5"][ext],
+                    ("standard", "four_way_accuracy")),
+                "macro_f1": sm.drop_with_ci(
+                    entry["ensemble5"]["internal_test"], entry["ensemble5"][ext],
+                    ("standard", "macro_f1")),
+                "macro_auc": sm.drop_with_ci(
+                    entry["ensemble5"]["internal_test"], entry["ensemble5"][ext],
+                    ("standard", "macro_auc")),
+                "tumor_miss_rate": sm.drop_with_ci(
+                    entry["ensemble5"]["internal_test"], entry["ensemble5"][ext],
+                    ("tumor_miss_rate",)),
+                "binary_sensitivity": sm.drop_with_ci(
+                    entry["ensemble5"]["internal_test"], entry["ensemble5"][ext],
+                    ("binary", "sensitivity")),
+                "ece_15bin": {
+                    "internal": entry["ensemble5"]["internal_test"]["standard"]["ece_15bin"],
+                    "external": entry["ensemble5"][ext]["standard"]["ece_15bin"],
+                    "change": (entry["ensemble5"][ext]["standard"]["ece_15bin"]
+                               - entry["ensemble5"]["internal_test"]["standard"]["ece_15bin"]),
+                },
+                "note": "drop = internal minus external. For accuracy, F1, AUC and "
+                        "sensitivity a POSITIVE drop means external is worse. For "
+                        "tumour miss rate a NEGATIVE drop means external is worse, "
+                        "because a higher miss rate is worse.",
+            }
+        report["models"][model_name] = entry
+        _plots(be_clean, te, f"{model_name}_clean", fig_dir)
+        _plots(be, te, f"{model_name}_full_contaminated", fig_dir)
+
+    # ViT vs ResNet-50, paired on the same images, on the CLEAN subset.
+    y_full = attach_overlap_flags(load_brisc_cache("vit", 42))
+    m = clean_mask_global
+    chi2, pval = mcnemar_test(y_full["true_label"].to_numpy()[m],
+                              per_seed_preds["vit"][m], per_seed_preds["resnet50"][m])
+    chi2f, pvalf = mcnemar_test(y_full["true_label"].to_numpy(),
+                                per_seed_preds["vit"], per_seed_preds["resnet50"])
+    report["vit_vs_resnet50_mcnemar"] = {
+        "clean_subset": {"n": int(m.sum()), "chi2": chi2, "p_value": pval,
+                         "significant": bool(pval < 0.05)},
+        "full_contaminated": {"n": int(len(y_full)), "chi2": chi2f, "p_value": pvalf,
+                              "significant": bool(pvalf < 0.05)},
+        "note": "5-seed probability-averaged ensembles, paired on the same images",
     }
-    print(f"\n  McNemar ViT vs ResNet-50 on BRISC: chi2={chi2:.3f} p={pval:.4g}")
+    print(f"\n  McNemar ViT vs ResNet-50, clean subset: chi2={chi2:.3f} p={pval:.4g}")
 
     out_path = BRISC_OUT / "brisc_metrics.json"
     out_path.write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")

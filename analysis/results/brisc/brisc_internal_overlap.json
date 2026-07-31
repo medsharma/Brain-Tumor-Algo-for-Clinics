@@ -1,0 +1,112 @@
+{
+  "generated_utc": "2026-07-31T01:12:54.172489+00:00",
+  "verdict": "BRISC 2025 is NOT external data for these checkpoints. 3366 of 6000 BRISC images (56.1%) are near-duplicates of images the model was trained on.",
+  "method": "64-bit pHash Hamming distance from every BRISC image to every internal image, split by internal split. Distance 0 means the pHash is identical; a 40-pair pixel check on distance-0 pairs found mean absolute difference 0.0 and correlation 1.0, i.e. the same image file content. Distance <= 5 is the near-duplicate threshold src/code.py already uses for leakage-safe splitting.",
+  "n_brisc": 6000,
+  "n_internal": 7200,
+  "internal_split_sizes": {
+    "train": 4979,
+    "test": 1112,
+    "val": 1109
+  },
+  "nearest_distance_percentiles_any": {
+    "0": 0.0,
+    "1": 0.0,
+    "5": 0.0,
+    "25": 0.0,
+    "50": 0.0,
+    "75": 0.0,
+    "95": 14.0,
+    "100": 20.0
+  },
+  "nearest_distance_percentiles_train": {
+    "0": 0.0,
+    "1": 0.0,
+    "5": 0.0,
+    "25": 0.0,
+    "50": 0.0,
+    "75": 10.0,
+    "95": 14.0,
+    "100": 20.0
+  },
+  "by_threshold": [
+    {
+      "hamming_threshold": 0,
+      "n_matching_any_internal": 4791,
+      "share_matching_any_internal": 0.7985,
+      "n_matching_internal_TRAIN": 3348,
+      "share_matching_internal_TRAIN": 0.558
+    },
+    {
+      "hamming_threshold": 1,
+      "n_matching_any_internal": 4791,
+      "share_matching_any_internal": 0.7985,
+      "n_matching_internal_TRAIN": 3348,
+      "share_matching_internal_TRAIN": 0.558
+    },
+    {
+      "hamming_threshold": 2,
+      "n_matching_any_internal": 4793,
+      "share_matching_any_internal": 0.7988333333333333,
+      "n_matching_internal_TRAIN": 3351,
+      "share_matching_internal_TRAIN": 0.5585
+    },
+    {
+      "hamming_threshold": 3,
+      "n_matching_any_internal": 4793,
+      "share_matching_any_internal": 0.7988333333333333,
+      "n_matching_internal_TRAIN": 3351,
+      "share_matching_internal_TRAIN": 0.5585
+    },
+    {
+      "hamming_threshold": 5,
+      "n_matching_any_internal": 4802,
+      "share_matching_any_internal": 0.8003333333333333,
+      "n_matching_internal_TRAIN": 3366,
+      "share_matching_internal_TRAIN": 0.561
+    },
+    {
+      "hamming_threshold": 8,
+      "n_matching_any_internal": 4938,
+      "share_matching_any_internal": 0.823,
+      "n_matching_internal_TRAIN": 4367,
+      "share_matching_internal_TRAIN": 0.7278333333333333
+    },
+    {
+      "hamming_threshold": 10,
+      "n_matching_any_internal": 5154,
+      "share_matching_any_internal": 0.859,
+      "n_matching_internal_TRAIN": 4891,
+      "share_matching_internal_TRAIN": 0.8151666666666667
+    }
+  ],
+  "reported_threshold": 5,
+  "clean_subset_vs_train": {
+    "definition": "BRISC images whose nearest internal TRAIN image is more than Hamming 5 away. These are the only BRISC images that constitute genuine external test data.",
+    "n": 2634,
+    "share_of_brisc": 0.439,
+    "by_class": {
+      "notumor": 1158,
+      "pituitary": 539,
+      "meningioma": 501,
+      "glioma": 436
+    },
+    "by_plane": {
+      "sagittal": 901,
+      "axial": 889,
+      "coronal": 844
+    },
+    "by_brisc_split": {
+      "train": 2238,
+      "test": 396
+    }
+  },
+  "clean_subset_vs_any": {
+    "n": 1198,
+    "by_class": {
+      "notumor": 1140,
+      "meningioma": 33,
+      "glioma": 25
+    }
+  }
+}

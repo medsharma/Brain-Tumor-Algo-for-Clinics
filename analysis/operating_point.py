@@ -54,6 +54,7 @@ from external_validation_brisc import (  # noqa: E402
     MC_T,
     MODELS,
     SEEDS,
+    attach_overlap_flags,
     checkpoint_path,
     ensemble_frames,
     load_brisc_cache,
@@ -98,12 +99,20 @@ CLINIC_PREVALENCES = [0.02, 0.05, 0.10]
 # Loading
 # ===========================================================================
 
-def load_set(model: str, seeds: List[int], split: str) -> pd.DataFrame:
-    """One frame for a model/split: single seed as-is, several seeds averaged."""
+def load_set(model: str, seeds: List[int], split: str, clean: bool = True) -> pd.DataFrame:
+    """One frame for a model/split: single seed as-is, several seeds averaged.
+
+    For BRISC, `clean=True` (the default) drops every image that is a
+    near-duplicate of an internal TRAINING image. About 56 percent of BRISC is.
+    Reporting BRISC performance without this filter is reporting training
+    accuracy, so the default is the safe one and callers must opt out loudly.
+    """
     if split == "brisc":
         frames = [load_brisc_cache(model, s) for s in seeds]
-    else:
-        frames = [load_internal_cache(model, s, split) for s in seeds]
+        df = frames[0] if len(frames) == 1 else ensemble_frames(frames)
+        df = attach_overlap_flags(df)
+        return df[df["clean_vs_train"]].reset_index(drop=True) if clean else df
+    frames = [load_internal_cache(model, s, split) for s in seeds]
     return frames[0] if len(frames) == 1 else ensemble_frames(frames)
 
 
@@ -417,14 +426,47 @@ def main() -> None:
                 "percentage points, because it costs 5x the inference time on a laptop",
     }
 
-    val = load_set(chosen_model, chosen_seeds, "val")
-    itest = load_set(chosen_model, chosen_seeds, "test")
-    brisc = load_set(chosen_model, chosen_seeds, "brisc")
+    val_raw = load_set(chosen_model, chosen_seeds, "val")
+    itest_raw = load_set(chosen_model, chosen_seeds, "test")
+    brisc_raw = load_set(chosen_model, chosen_seeds, "brisc")
 
     # ------------------------------------------------------------------
-    # Step 2. Threshold sweep on internal val.
+    # Step 2. Temperature FIRST, fitted on internal val.
+    #
+    # Order matters. The deployed pipeline is: MC mean -> temperature ->
+    # p_tumor threshold and entropy deferral. So the threshold and the entropy
+    # cutoffs must be fitted on the temperature-scaled validation split, not the
+    # raw one, or the cutoffs are calibrated for a distribution the tool never
+    # actually produces.
+    #
+    # Temperature is a monotone power transform of the probability vector, so it
+    # never changes the argmax. The headline argmax-based tumour miss rate is
+    # therefore identical with or without it.
     # ------------------------------------------------------------------
-    print("\n=== Step 2: p_tumor threshold sweep, internal val ===")
+    print("\n=== Step 2: temperature scaling, fitted on internal val ===")
+    fit = fit_temperature_on_val(val_raw)
+    T = fit["temperature"]
+    print(f"  fitted T = {T:.4f}  (val NLL {fit['val_nll_before']:.4f} -> {fit['val_nll_after']:.4f})")
+    cal = {
+        "fit": fit,
+        "internal_val": calibration_before_after(val_raw, T),
+        "internal_test": calibration_before_after(itest_raw, T),
+        "brisc": calibration_before_after(brisc_raw, T),
+    }
+    for k in ("internal_val", "internal_test", "brisc"):
+        c = cal[k]
+        print(f"  {k:14s} ECE {c['ece_before']:.4f} -> {c['ece_after']:.4f}   "
+              f"Brier {c['brier_before']:.4f} -> {c['brier_after']:.4f}")
+    out["temperature_scaling"] = cal
+
+    val = apply_temperature(val_raw, T)
+    itest = apply_temperature(itest_raw, T)
+    brisc = apply_temperature(brisc_raw, T)
+
+    # ------------------------------------------------------------------
+    # Step 3. Threshold sweep on the temperature-scaled internal val.
+    # ------------------------------------------------------------------
+    print("\n=== Step 3: p_tumor threshold sweep, internal val (post-temperature) ===")
     curve = sweep_thresholds(val)
     curve.insert(0, "model", chosen_model)
     curve.insert(1, "config", chosen_cfg)
@@ -457,26 +499,8 @@ def main() -> None:
     fig_sens_spec_tradeoff(curve, chosen_thr_info, FIG_OUT / "sens_spec_tradeoff_internal_val.png")
 
     # ------------------------------------------------------------------
-    # Step 3. Temperature, fitted on internal val, applied unchanged.
-    # ------------------------------------------------------------------
-    print("\n=== Step 3: temperature scaling, fitted on internal val ===")
-    fit = fit_temperature_on_val(val)
-    T = fit["temperature"]
-    print(f"  fitted T = {T:.4f}  (val NLL {fit['val_nll_before']:.4f} -> {fit['val_nll_after']:.4f})")
-    cal = {
-        "fit": fit,
-        "internal_val": calibration_before_after(val, T),
-        "internal_test": calibration_before_after(itest, T),
-        "brisc": calibration_before_after(brisc, T),
-    }
-    for k in ("internal_val", "internal_test", "brisc"):
-        c = cal[k]
-        print(f"  {k:14s} ECE {c['ece_before']:.4f} -> {c['ece_after']:.4f}   "
-              f"Brier {c['brier_before']:.4f} -> {c['brier_after']:.4f}")
-    out["temperature_scaling"] = cal
-
-    # ------------------------------------------------------------------
-    # Step 4. Deferral. Cutoffs are internal-val entropy quantiles.
+    # Step 4. Deferral. Cutoffs are internal-val entropy quantiles,
+    # measured on the same temperature-scaled distribution the tool produces.
     # ------------------------------------------------------------------
     print("\n=== Step 4: deferral, entropy cutoffs from internal val ===")
     cuts = defer_thresholds_from_val(val, DEFER_BUDGETS)
@@ -508,26 +532,41 @@ def main() -> None:
     # ------------------------------------------------------------------
     # Step 5. Ensemble vs single seed at the chosen point, on BRISC.
     # ------------------------------------------------------------------
-    print("\n=== Step 5: ensemble vs single seed at the chosen point ===")
+    print("\n=== Step 5: ensemble vs single seed ===")
+    print("  Each config gets its own temperature and its own threshold, both")
+    print("  fitted on its own internal val. Otherwise the comparison is rigged.")
     ens_rows: List[Dict[str, Any]] = []
     for model in MODELS:
         for tag, seeds in [("single_seed42", [42]), ("ensemble5", SEEDS)]:
-            b = load_set(model, seeds, "brisc")
-            mr = sm.tumor_miss_rate(b, n_resamples=nb)
-            bn = sm.binary_metrics(b, tumor_threshold, n_resamples=nb)
-            st = sm.standard_metrics(b, n_resamples=nb)
+            v_raw = load_set(model, seeds, "val")
+            b_raw = load_set(model, seeds, "brisc")
+            T_i = fit_temperature_on_val(v_raw)["temperature"]
+            v_i, b_i = apply_temperature(v_raw, T_i), apply_temperature(b_raw, T_i)
+            pick_i = pick_threshold(sweep_thresholds(v_i), PRIMARY_SENS_TARGET)
+            thr_i = pick_i["threshold"] if pick_i.get("feasible") else 0.5
+            cut_i = defer_thresholds_from_val(v_i, [primary_budget := 0.20])[0.20]
+
+            mr = sm.tumor_miss_rate(b_i, n_resamples=nb)
+            bn = sm.binary_metrics(b_i, thr_i, n_resamples=nb)
+            st = sm.standard_metrics(b_i, n_resamples=nb)
+            df_i = sm.deferral_curve(b_i, {0.20: cut_i}, n_resamples=nb)[0]
             ens_rows.append({
                 "model": model, "config": tag, "n_seeds": len(seeds),
-                "brisc_miss_rate": mr["value"],
-                "brisc_miss_rate_ci": [mr["ci_lo"], mr["ci_hi"]],
-                "brisc_sensitivity_at_chosen_thr": bn["sensitivity"]["value"],
-                "brisc_specificity_at_chosen_thr": bn["specificity"]["value"],
-                "brisc_accuracy": st["four_way_accuracy"]["value"],
-                "brisc_ece": st["ece_15bin"],
                 "relative_inference_cost": len(seeds),
+                "own_temperature": T_i, "own_threshold": thr_i,
+                "brisc_miss_rate": mr["value"],
+                "brisc_miss_rate_ci_lo": mr["ci_lo"], "brisc_miss_rate_ci_hi": mr["ci_hi"],
+                "brisc_sensitivity": bn["sensitivity"]["value"],
+                "brisc_specificity": bn["specificity"]["value"],
+                "brisc_referrals_per_100": 100 * bn["referral_rate"]["value"],
+                "brisc_accuracy": st["four_way_accuracy"]["value"],
+                "brisc_macro_f1": st["macro_f1"]["value"],
+                "brisc_ece": st["ece_15bin"],
+                "brisc_miss_rate_after_20pct_defer": df_i["miss_rate_kept"],
             })
             print(f"  {model:9s} {tag:14s} miss={mr['value']:.4f} "
-                  f"sens={bn['sensitivity']['value']:.4f} acc={st['four_way_accuracy']['value']:.4f}")
+                  f"sens={bn['sensitivity']['value']:.4f} spec={bn['specificity']['value']:.4f} "
+                  f"acc={st['four_way_accuracy']['value']:.4f} T={T_i:.3f} thr={thr_i:.3f}")
     out["ensemble_vs_single_brisc"] = ens_rows
     pd.DataFrame(ens_rows).to_csv(SAFETY_OUT / "ensemble_vs_single.csv", index=False)
 
@@ -543,9 +582,25 @@ def main() -> None:
     st_final = sm.standard_metrics(brisc_T, n_resamples=nb)
     defer_final = sm.deferral_curve(brisc_T, {primary_budget: entropy_cut}, n_resamples=nb)[0]
 
+    brisc_dirty = apply_temperature(
+        load_set(chosen_model, chosen_seeds, "brisc", clean=False), T)
+    out["full_brisc_for_reference_only"] = {
+        "n": int(len(brisc_dirty)),
+        "WARNING": "56 percent of these images are in the training set. "
+                   "Not an external result. Do not quote.",
+        "tumor_miss_rate": sm.tumor_miss_rate(brisc_dirty, n_resamples=nb),
+        "four_way_accuracy": sm.standard_metrics(
+            brisc_dirty, n_resamples=nb)["four_way_accuracy"],
+    }
+
     expected = {
-        "dataset": "BRISC2025",
+        "dataset": "BRISC2025_clean_subset",
         "n": int(len(brisc)),
+        "subset_definition": (
+            "BRISC images whose nearest internal TRAINING image is more than "
+            "perceptual-hash Hamming distance 5 away. The other 56 percent of "
+            "BRISC 2025 is near-duplicate of the training data and is excluded."
+        ),
         "tumor_miss_rate": mr_final["value"],
         "tumor_miss_rate_ci": [mr_final["ci_lo"], mr_final["ci_hi"]],
         "binary_sensitivity": bn_final["sensitivity"]["value"],
@@ -554,9 +609,17 @@ def main() -> None:
         "defer_rate": defer_final["actual_defer_rate"],
         "miss_rate_after_defer": defer_final["miss_rate_kept"],
         "_caveats": [
-            "BRISC is 81 percent tumour. PPV and NPV measured on it do not "
-            "transfer to a clinic. Use sensitivity and specificity, and the "
-            "prevalence projections in OPERATING_POINT.md.",
+            "These numbers are from the CLEAN subset of BRISC 2025 only. About "
+            "56 percent of BRISC is near-duplicate of the training data and was "
+            "excluded. Full-BRISC numbers are training accuracy, not external.",
+            "Image-level duplication is excluded. PATIENT-level leakage cannot "
+            "be ruled out: neither dataset ships patient identifiers, so other "
+            "slices from the same patients may still be in training. The clean "
+            "subset is therefore an upper bound on true external performance.",
+            "Class balance in the clean subset is not the same as full BRISC. "
+            "PPV and NPV measured here do not transfer to a clinic. Use "
+            "sensitivity and specificity and the prevalence projections in "
+            "OPERATING_POINT.md.",
             "BRISC is entirely T1 across three planes. Performance on other "
             "sequences is unmeasured.",
             "tumor_miss_rate here is argmax-based: a real tumour displayed as "

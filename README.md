@@ -258,6 +258,8 @@ None of these are done. None are in progress.
 
 ## Documents
 
+- [docs/FOR_CLINICIANS.md](docs/FOR_CLINICIANS.md) — plain words, no maths, for
+  anyone deciding whether this should go near a patient
 - [MODEL_CARD.md](MODEL_CARD.md) — read this before trusting any output
 - [LIMITATIONS.md](LIMITATIONS.md) — everything this cannot do
 - [docs/DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md) — where the images came from

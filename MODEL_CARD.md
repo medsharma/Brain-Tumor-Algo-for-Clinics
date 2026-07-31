@@ -275,11 +275,18 @@ CI wide enough that it constrains nothing.
 
 Dataset: internal held-out test split, pooled over 5 seeds.
 
-| tumor type | ResNet-50 | ViT-B/16 |
-|---|---|---|
-| **glioma** | **1.88%** (26/1,385) | **2.24%** (31/1,385) |
-| meningioma | 1.13% (15/1,330) | 1.20% (16/1,330) |
-| pituitary | 0.00% (0/1,390) | 0.00% (0/1,390) |
+95% CIs are Wilson score intervals, which behave correctly at 0 where a normal
+approximation does not.
+
+| tumor type | ResNet-50 | 95% CI | ViT-B/16 | 95% CI |
+|---|---|---|---|---|
+| **glioma** | **1.88%** (26/1,385) | 1.28 to 2.74 | **2.24%** (31/1,385) | 1.58 to 3.16 |
+| meningioma | 1.13% (15/1,330) | 0.68 to 1.85 | 1.20% (16/1,330) | 0.74 to 1.95 |
+| pituitary | 0.00% (0/1,390) | 0.00 to 0.28 | 0.00% (0/1,390) | 0.00 to 0.28 |
+
+"0.00%" for pituitary does not mean the model never misses a pituitary tumor. It
+means it missed none of 1,390 evaluations, which bounds the true rate at roughly
+0.28% or below. Zero observed is not zero.
 
 Gliomas are missed roughly twice as often as meningiomas and are the only class
 driving most of the total. Pituitary tumors are never missed, which is
@@ -294,12 +301,18 @@ tool misses most is the class where delay costs the most.
 
 Dataset: internal held-out test split, n = 1,112. 821 tumor, 291 no-tumor.
 
-| backbone | sensitivity, mean (range) | specificity, mean (range) |
-|---|---|---|
-| ResNet-50 | 99.00% (98.66 to 99.39) | 98.28% (97.59 to 98.63) |
-| ViT-B/16 | 98.86% (98.78 to 98.90) | 98.01% (97.25 to 98.97) |
+| backbone | sensitivity | 95% CI | specificity | 95% CI | false alarms |
+|---|---|---|---|---|---|
+| ResNet-50 | 99.00% | 98.65 to 99.26 | 98.28% | 97.48 to 98.83 | 25 / 1,455 |
+| ViT-B/16 | 98.86% | 98.48 to 99.14 | 98.01% | 97.15 to 98.61 | 29 / 1,455 |
 
-Specificity rests on 291 no-tumor images. A false alarm rate estimated on 291
+Pooled over 5 seeds, Wilson intervals. Per-seed ranges: ResNet-50 sensitivity
+98.66 to 99.39, specificity 97.59 to 98.63; ViT sensitivity 98.78 to 98.90,
+specificity 97.25 to 98.97.
+
+Specificity rests on **291 distinct no-tumor images** scored 5 times. The
+denominator of 1,455 is not 1,455 independent images, so the interval above is
+narrower than the evidence really justifies. A false-alarm rate estimated on 291
 images is not a precise quantity.
 
 **Dataset: BRISC 2025:** `[PENDING: session A binary sensitivity and specificity,
@@ -338,7 +351,7 @@ so a per-plane miss rate on clean data is not going to be estimable either.
 
 Dataset: internal held-out test split, n = 1,112.
 
-MC-Dropout mean-probability expected calibration error (ECE, 15-bin): 0.065 to
+MC-Dropout mean-probability expected calibration error (ECE, 15-bin): 0.064 to
 0.081 (ViT), 0.068 to 0.077 (ResNet-50). That is moderate, not good. The raw
 model is overconfident.
 
@@ -652,7 +665,8 @@ time, by everyone.
 Issues, and any suspected clinical safety problem, to the repository:
 <https://github.com/medsharma/Brain-Tumor-Algo-for-Clinics/issues>.
 
-**Companion documents:** [README.md](README.md) ·
+**Companion documents:** [docs/FOR_CLINICIANS.md](docs/FOR_CLINICIANS.md) (plain
+words, for a non-technical reader) · [README.md](README.md) ·
 [LIMITATIONS.md](LIMITATIONS.md) ·
 [docs/DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md) ·
 [MISSION.md](MISSION.md)

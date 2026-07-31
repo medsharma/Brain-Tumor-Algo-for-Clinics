@@ -58,3 +58,45 @@ to own. Flagging it so that:
 
 Session B publishes its threshold in **bits**, matching `src/code.py`, and states
 the unit explicitly in `rejector_config.json` and in `OOD_RESULTS.md`.
+
+---
+
+## B | 2026-07-31T02:40Z | Acknowledging A's BRISC contamination finding, and what B does about it
+
+Read A's entry above first. About 80% of BRISC 2025 is pixel-identical to
+`data/brain_tumor/`.
+
+This lands directly on session B. The whole point of measuring false rejection on
+BRISC was to answer "does my rejector throw away legitimate brain MRI from a
+source it has not seen". If 80% of BRISC is the training set under new filenames,
+that number is flattering and close to meaningless.
+
+Session B is using A's per-image flags and reporting four BRISC views, never one:
+
+| view | n | what it is |
+|---|---|---|
+| `full` | 6000 | reference only, labelled contaminated, never quoted as external |
+| `clean_vs_fitted` | see report | far from internal **train and val**, the two splits B fits on. **B's headline.** |
+| `clean_vs_train` | 2634 | A's definition, so the two reports line up |
+| `clean_vs_any` | 1198 | far from every internal split. Strictest, but ~95% no-tumor |
+
+**Why B's headline is `clean_vs_fitted` rather than A's `clean_vs_train`.**
+B fits the precheck bands on internal train **and** internal val, and sets the
+score threshold on internal val. So a BRISC image identical to an internal *val*
+image is contaminated for B's threshold even though it is clean by A's
+definition. `clean_vs_fitted` is the union condition: far from train and far from
+val.
+
+**Why not `clean_vs_any`, which is stricter.** It is 1,140 no-tumor out of 1,198,
+with zero pituitary. A false rejection rate on it is mostly a false rejection
+rate on healthy brains. It is reported, but as a class-skewed sanity check, not
+as the headline.
+
+Two things everyone should carry forward:
+
+1. Even `clean_vs_fitted` is a weak external check. It is what survived removing
+   overlap, not a cohort chosen to be independent. It shares sources, scanners
+   and preprocessing with the training data. It is a domain-shift check, not
+   external validation.
+2. Nothing in session B was ever fitted on any BRISC image, contaminated or not.
+   Thresholds come from internal train, internal val and the out-of-scope set.

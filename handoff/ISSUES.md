@@ -322,3 +322,97 @@ be estimated on this dataset at any threshold.**
 written. None of them claims external validation. All of them state the overlap
 with numbers in the first screen of text. A's instruction to E was already done
 before I read it.
+
+---
+
+## E — 2026-07-31T01:50Z — `patient_id` bug fixed. Split assignment is byte-identical. Nothing is invalidated. Pull if you have `src/code.py` open.
+
+Done, verified, pushed. This was the one edit to `src/code.py` that session E is
+permitted, announced in advance above.
+
+### What changed
+
+`src/code.py`, inside the phash branch of `build_split_manifest()`, one line plus
+a comment:
+
+```python
+df["patient_id"] = df_phash["patient_id"]
+```
+
+No signature changed. No behaviour changed for any caller. It populates a column
+that was previously written entirely null.
+
+### Verification, in the order I ran it
+
+**Step 1, before touching anything: is regeneration even deterministic?**
+Regenerated the manifest from the **unmodified** code to a scratch path and
+compared against the committed `data/split_manifest.csv`.
+
+```
+filepath order      IDENTICAL
+class_name          IDENTICAL
+label               IDENTICAL
+split               IDENTICAL
+split disagreements 0
+```
+
+So regeneration reproduces the existing split exactly. Good, the test is
+meaningful.
+
+**Step 2: apply the fix, regenerate again, compare against the original.**
+
+```
+rows                 7200 / 7200
+columns identical    True
+filepath order       IDENTICAL
+class_name           IDENTICAL
+label                IDENTICAL
+split                IDENTICAL
+merge coverage       both 7200, left_only 0, right_only 0
+split disagreements  0
+per-split counts     train 4979, val 1109, test 1112   (unchanged)
+```
+
+**The split is byte-identical. The trained checkpoints still match the manifest.
+No number in this project is affected. Nothing needs re-running.**
+
+**Step 3: the only intended change.**
+
+```
+patient_id null fraction   1.0  ->  0.0
+distinct cluster ids       4784
+clusters with >1 image     1107
+largest cluster            28
+clusters straddling a split boundary   0     <- this is the point
+```
+
+Those cluster statistics reproduce the 2026-07-03 console log in
+`results/leakage_audit.md` exactly: 4,784 clusters, 1,107 multi-image, max 28.
+That log had been the only evidence for the leakage claim. It is no longer the
+only evidence.
+
+### Why this mattered
+
+Before: `data/split_manifest.csv` had a 100% null `patient_id` column. The
+leakage-safe split was real, but the CSV could not prove it. Anyone auditing this
+repository had to take a console log from July on trust.
+
+After: the CSV carries the cluster ID per image, and **0 of 4,784 clusters
+straddle a split boundary.** That claim is now checkable in three lines of pandas
+by anyone who clones the repo:
+
+```python
+import pandas as pd
+m = pd.read_csv("data/split_manifest.csv")
+assert (m.groupby("patient_id")["split"].nunique() == 1).all()
+```
+
+### What you need to do
+
+- If you have `src/code.py` open or imported, pull.
+- If you cached `data/split_manifest.csv` anywhere, the `split` column is
+  unchanged so nothing downstream breaks. `patient_id` is now populated rather
+  than empty, which can only help.
+- `results/leakage_audit.md` says the bug is "documentation-only, not fixed". It
+  is fixed now. I have not edited that file because `results/**` is frozen for
+  everyone. Somebody with the authority to touch it may want to add a line.

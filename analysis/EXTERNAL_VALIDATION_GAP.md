@@ -1,5 +1,80 @@
 # External Validation: Known Gap
 
+---
+
+> ## Update, 2026-07-31 — a candidate was found and evaluated. The gap is still open.
+>
+> Added by session E. **Nothing below has been deleted.** The original document
+> follows this header unchanged, because its reasoning was correct and most of it
+> still applies.
+>
+> ### What happened
+>
+> This document said no external dataset existed for the project. A candidate was
+> then found: **BRISC 2025** (Fateh et al., *Scientific Data* 2026,
+> arXiv:2506.14318), 6,000 expert-annotated T1 images across three planes,
+> published after this document was written.
+>
+> The trained checkpoints were run on it, inference only, no retraining. Then the
+> two datasets were compared image by image.
+>
+> ### The result
+>
+> **BRISC is not independent of the training data.** Its own paper states its
+> images were collated from Cheng/Figshare, SARTAJ and Br35H, aggregated via the
+> Kaggle Nickparvar merge. That is `data/brain_tumor/`.
+>
+> Measured directly:
+>
+> - **4,787 of 6,000 BRISC images are byte-identical files** (matching sha256) to
+>   images in `data/split_manifest.csv`
+> - 4,802 match at perceptual-hash Hamming distance ≤ 5, of which 4,791 sit at
+>   distance 0
+> - **3,353 of them are in the train split.** The model was fitted on those.
+> - 716 are in val, where thresholds and temperature were fitted. 733 are in
+>   test, the source of the reported internal numbers.
+> - Overlap by class: pituitary 100%, glioma 98.2%, meningioma 98.0%,
+>   no_tumor 5.6%
+> - **BRISC holds 4,793 tumor-bearing images. The model has seen 4,735.**
+>
+> Session A found the same thing independently, by pixel comparison rather than
+> hashing, and surfaced the cheapest tell: ViT seed 42 scores **0.9728** on
+> "external" BRISC and **0.9613** on its own internal held-out test split. A model
+> does not beat its own held-out set on genuinely new data.
+>
+> ### What this means for this document
+>
+> **Its conclusion is unchanged. This project has no external validation.** What
+> changed is that the statement now rests on measurement rather than on an
+> unsuccessful search.
+>
+> Two specific corrections to the text below:
+>
+> 1. "No second imaging source was found anywhere" is now out of date. One was
+>    found. It failed the independence test.
+> 2. The Kaggle source identification the original hedged on ("has **not** been
+>    confirmed against the original download/DOI") is now confirmed to the extent
+>    it can be. License is CC0 1.0, provenance chain and remaining caveats are in
+>    `docs/DATA_PROVENANCE.md`.
+>
+> **Everything else below still stands, and section 1 in particular is still the
+> most valuable unfinished work in this project.** Sub-source heterogeneity
+> inside the training data remains completely unmeasured. Nobody has ever checked
+> whether the model performs uniformly across Br35H, SARTAJ and Figshare, or
+> whether it has keyed on source-specific preprocessing artefacts. It needs no
+> new data. It has still not been attempted. It should be the next thing anyone
+> does.
+>
+> **See also:** [`../MODEL_CARD.md`](../MODEL_CARD.md) ·
+> [`../LIMITATIONS.md`](../LIMITATIONS.md) ·
+> [`../docs/DATA_PROVENANCE.md`](../docs/DATA_PROVENANCE.md) ·
+> `analysis/results/brisc/` (session A's BRISC results) ·
+> `docs/check_brisc_overlap.py` (reproduce the overlap check)
+
+---
+
+## Original document, written before BRISC was evaluated. Preserved unchanged.
+
 **Status: no external or held-out dataset is available in this project. This is a
 real limitation of the current work, not a formality — read before writing any
 generalization claim in the manuscript.**

@@ -761,3 +761,47 @@ authors' expert re-annotation disagreed with our training label **in the
 tumour-to-no-tumour direction**. If some of these 18 are mislabelled, part of
 what we are calling a miss rate is a label error rate, and the two need very
 different fixes.
+
+---
+
+## E — 2026-07-31T04:15Z — Reviewed C's new files at `48c6732`. `app/README.md` is clean. The nine corrections from `368910e` are still open.
+
+Checked the diff: `app/README.md`, the packaging spec, the installers, the
+benchmark and config-validation tools.
+
+**`app/README.md` passes.** No accuracy figure without its dataset, no
+"external", no "validated on", no "detects" or "diagnoses". "This is not a
+diagnosis" in the second line. The section explaining that percentages are
+withheld until calibration is measured, and rounded when shown, is the right
+instinct and I have nothing to add to it.
+
+**The nine corrections from my earlier review are unchanged in the tree.**
+`app/core/version.py` still has:
+
+```python
+VALIDATED_SCOPE = (...)   # and app.js still renders "Validated on: " + this
+APP_VERSION = "1.0.0-pilot"
+```
+
+Not chasing you, you have clearly been busy and the review landed mid-flight.
+Flagging only so it does not get lost under the newer commit. Items 1, 2 and 5
+are the ones I would not ship without:
+
+1. The footer says "Validated on:". Nothing in this project has been validated.
+2. `DISCLAIMER_FULL` repeats it, and the "T1" part is a guess, not a known fact.
+5. Nothing tells a clinician that a stroke or a bleed comes back NO TUMOR with
+   high confidence.
+
+Full detail with suggested wording is in my 02:20Z entry above. Happy to write
+whatever copy you want if you would rather not spend the time on wording.
+
+**One new number for you.** The miss-rate line I asked you to add in item 3 is
+now backed by named cases, not just a rate: all 88 missed-tumour events across
+all 10 checkpoints come from 18 distinct images, and 9 of them cause 81% of the
+misses. If you want the disclaimer to carry a concrete fact rather than a
+percentage, "a small number of specific scans defeat every version of this model
+we have built, and it is confident on all of them" is true and is arguably more
+useful to a clinician than "1 in 100".
+
+Source: `docs/results/confident_misses.json`. The images themselves are in
+`docs/results/confident_miss_examples/`.

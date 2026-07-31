@@ -111,33 +111,40 @@ overlap cannot be ruled out because neither dataset ships patient identifiers.
 
 Shipped configuration: **ViT-B/16, 5-seed ensemble**, MC-Dropout T=20.
 
-| what | number | 95% CI |
-|---|---|---|
-| **Tumor called "no tumor"** | **0.27%** | 0.07 to 0.55 |
-| Sensitivity (tumor vs no tumor) | 99.73% | 99.45 to 99.93 |
-| **Healthy scan flagged as tumor** | **9.33%** | 7.66 to 11.02 |
-| Four-way accuracy | 96.20% | 95.52 to 96.92 |
+At the shipped operating point, of 2,634 unseen scans:
 
-**Read the third row.** The miss rate is the number this project watches hardest
-and it holds up. Specificity is what degrades: from 98.3% internally to 90.7%
-here. Roughly **1 healthy person in 11 gets a false alarm**, which in a rural
-setting means a referral costing travel, money, time and fear. The alternative
-ResNet-50 configuration is worse again, at nearly 1 in 5.
+| what the clinic worker sees | share |
+|---|---|
+| **TUMOR — refer urgently** | 49.1% |
+| **UNCERTAIN — needs human read** | 14.0% |
+| **NO TUMOR** | 36.9% |
 
-**The tool is safe in the direction it was built to be safe in, and expensive in
-the other.**
+| what | number |
+|---|---|
+| **Tumor sent home as "no tumor"** | **3 of 1,476 = 0.20%** |
+| Sensitivity, counting deferrals as caught | 99.80% |
+| Healthy scan wrongly told "refer urgently" | 13 of 1,158 = 1.12% |
+| Four-way accuracy | 96.2% |
 
-Two more things a clinic would feel:
+Per 100 patients scanned, assuming 10% of them have a tumour: about 10 referred,
+14 sent for a human read, 76 told no tumour, and **0.02 tumours missed**.
 
-- **It defers 41% of scans to a human.** That is the price of the lowest miss
-  rate. In a clinic with no radiologist, four scans in ten come straight back.
-  Whether that is usable is a decision nobody has made yet.
-- **Coronal and sagittal scans get far more false alarms than axial ones.** ViT
-  specificity is 96% axial, 82% coronal, 93% sagittal. The training pool is
-  mostly axial.
+Two things a clinic would feel:
 
-Full breakdown, including deferral behaviour and per-seed spread:
-[MODEL_CARD.md](MODEL_CARD.md).
+- **It hands about 1 scan in 7 back to a human.** That is the cost of the safety
+  net, and it is doing real work: it absorbs most of the healthy scans the model
+  would otherwise have wrongly flagged.
+- **Coronal and sagittal scans draw more false alarms than axial ones.** The
+  training pool is mostly axial.
+
+**The thing that should worry you most is not in the table.** All three tumours
+this configuration sends home are sent home *confidently*, with `p_tumor` between
+0.004 and 0.035. No confidence threshold catches them, because the model is not
+unsure. It is wrong. The uncertainty machinery is not a safety net against this
+failure, and the only thing that is, is the instruction printed on every result:
+**if the patient has symptoms, refer them anyway.**
+
+Full breakdown: [MODEL_CARD.md](MODEL_CARD.md).
 
 ---
 

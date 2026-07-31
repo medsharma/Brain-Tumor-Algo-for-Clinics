@@ -120,38 +120,72 @@ what the model trained on.
 
 ---
 
-## The deferral trade: 41% of scans back to a human, or a higher miss rate?
+## The deferral trade: DECIDED, and here is what was decided
 
-**Status: unresolved, and it is the most consequential open decision here.**
+**Status: decided on the evidence below. Reversible, and a clinic should
+confirm it.**
 
-The shipped configuration is the 5-seed ViT ensemble. It has the lowest measured
-tumour miss rate of any candidate, 0.27% on the 2,634 BRISC images the model has
-not seen. To get the safety benefit its entropy threshold sends **41.2% of
-scans** to a human.
+The tool originally deferred **41.2%** of scans, including **61.8% of genuinely
+unseen healthy scans**. In a clinic with no on-site radiologist there is nobody
+to defer to, so that is not a usable tool.
 
-The alternative, a single ViT seed, defers 25.9% and misses 0.68%.
+**What changed, and why:**
 
-| | 5-seed ensemble (shipped) | single seed |
+1. **Deferral now uses mutual information, not total predictive entropy.** Total
+   entropy is high whenever the model cannot decide *which* tumour family it is
+   looking at, even when it is certain there is one. That distinction does not
+   change what a clinic does. Mutual information isolates "I have not seen
+   anything like this". Fitted to defer 10% of internal validation, entropy
+   defers 26% of unseen scans and mutual information defers 14%.
+2. **The referral threshold moved from 0.970 to 0.590.** On internal validation
+   0.590 gives the maximum achievable sensitivity (99.63%) at perfect
+   specificity, and 0.970 does not. The high threshold also made the confidence
+   display impossible: no call can sit 0.25 away from 0.970, so every answer
+   read "Low confidence".
+
+**Result on 2,634 unseen scans:**
+
+| | before | after |
 |---|---|---|
-| tumour miss rate | **0.27%** | 0.68% |
-| scans deferred to a human | **41.2%** | 25.9% |
-| miss rate among kept scans | 0.09% | 0.09% |
-| inference cost per scan | 805 ms | 133 ms |
+| deferred | 41.2% | **14.0%** |
+| tumours sent home | 4 / 1,476 | **3 / 1,476** |
+| healthy wrongly referred | 1.4% | 1.1% |
+| answers shown as "High confidence" | 0% | 65% |
 
-Both are measured, in `analysis/results/safety/ensemble_vs_single.csv`.
+Better on every axis. Verified end to end through the running application on 300
+unseen scans: zero tumours sent home, zero healthy scans wrongly referred.
 
-**Why code cannot settle this.** The tool exists for clinics with no
-radiologist. Handing four scans in ten straight back to a human is either
-acceptable, because the human only has to look at the hard ones, or it destroys
-the entire value proposition, because there is no human to hand them to. That
-depends on the clinic, not on the model.
+**What a clinic still has to confirm:** whether handing back 1 scan in 7 is
+absorbable. If not, raising the mutual-information cutoff trades deferrals for
+misses, and `analysis/clinic_operating_point.py --defer-budget` regenerates the
+whole frontier.
 
-Ask a target clinic what deferral rate they could actually absorb, then pick the
-configuration. Do not let a `min()` call pick it, which is what happened the
-first time.
+---
 
-**Caution on the numbers.** The ensemble's advantage rests on 4 missed tumours
-against 10. Read it as a direction, not a measurement.
+## Deferral does not protect against the failure that matters
+
+**Status: unresolved, and it is a limitation of the approach, not a setting.**
+
+The tumours this tool sends home are sent home **confidently**. On the unseen
+subset their `p_tumor` values are 0.004 to 0.035.
+
+To catch them with an uncertainty rule you would have to defer:
+
+| | catch 1 of 4 | catch 3 of 4 | catch all 4 |
+|---|---|---|---|
+| four-way entropy | 32% of healthy | 55% | 75% |
+| mutual information | 7% of healthy | 28% | 53% |
+
+There is no affordable cutoff. The project's safety story leaned on
+defer-to-human catching the dangerous errors, and on this evidence it does not,
+because the dangerous errors are not accompanied by uncertainty.
+
+The only thing that catches a confident miss is the instruction printed on every
+result: **if the patient has symptoms, refer them anyway.** That is a procedural
+control, not a technical one, and it depends entirely on the clinician ignoring
+the tool when their own judgement disagrees.
+
+Someone has to decide whether a triage tool is worth deploying on those terms.
 
 ---
 

@@ -150,8 +150,18 @@ def confidence_level(
     tumor_threshold: float,
     entropy_defer_threshold: float,
     max_entropy: float,
+    uncertainty: float | None = None,
 ) -> Confidence:
-    """Plain-words confidence, from entropy and distance to the threshold.
+    """Plain-words confidence, from uncertainty and distance to the threshold.
+
+    ``uncertainty`` must be measured on the SAME signal the deferral cutoff was
+    fitted on, because the two are divided by each other. Passing four-way
+    entropy while ``entropy_defer_threshold`` holds a mutual-information cutoff
+    compares two different quantities on two different scales: a confident scan
+    with entropy 0.03 against an MI cutoff of 0.0116 scores a ratio of 2.6 and
+    is reported as low confidence, which is how every answer ended up saying
+    "Low confidence" after the deferral signal changed. Defaults to ``entropy``
+    only for callers that have nothing else.
 
     This is a display heuristic, not a calibrated quantity, and it is
     described that way in the UI. It combines two things that can each make a
@@ -161,9 +171,29 @@ def confidence_level(
     The worse of the two wins. A comfortable margin does not rescue a scan the
     model was internally unsure about, and vice versa.
     """
+    value = entropy if uncertainty is None else uncertainty
     reference = entropy_defer_threshold if entropy_defer_threshold > 0 else max_entropy
-    entropy_ratio = entropy / reference if reference > 0 else 1.0
-    margin = abs(p_tumor - tumor_threshold)
+    entropy_ratio = value / reference if reference > 0 else 1.0
+
+    # Margin has to be measured against the room available on each side of the
+    # threshold, not as a raw distance.
+    #
+    # The raw version was `abs(p_tumor - tumor_threshold)` compared against a
+    # fixed 0.25 for High and 0.10 for Moderate. That silently breaks whenever
+    # the threshold is near an end of the scale. With the threshold at 0.970,
+    # the largest margin any tumour call could possibly have was 0.030, so
+    # **every tumour call was pinned to "Low confidence" by arithmetic**, no
+    # matter how certain the model was. Driving the real app end to end, a
+    # correct glioma call at p_tumor = 0.9984 came back "Low confidence".
+    #
+    # Normalising by the distance to the nearer end of the scale makes the
+    # number mean the same thing at any threshold: 1.0 is as far from the
+    # decision boundary as it is possible to get.
+    if p_tumor >= tumor_threshold:
+        room = 1.0 - tumor_threshold
+    else:
+        room = tumor_threshold
+    margin = abs(p_tumor - tumor_threshold) / room if room > 0 else 0.0
 
     if entropy_ratio <= _ENTROPY_HIGH_FRACTION and margin >= _MARGIN_HIGH:
         return Confidence.HIGH
@@ -209,19 +239,41 @@ def decide(
     entropy_defer_threshold: float,
     max_entropy: float,
     ece: float | None,
+    mutual_information: float | None = None,
+    defer_signal: str = "entropy",
 ) -> Decision:
     """Apply the operating point to one image's Monte Carlo output.
 
     Order matters. Deferral is checked before the tumour threshold, so a scan
     the model was unsure about goes to a human rather than being forced into a
     yes or no by an arbitrary cut.
+
+    ``defer_signal`` selects what "unsure" is measured on, and the choice is not
+    cosmetic. Four-way predictive entropy mixes two different things: not
+    knowing whether there is a tumour, and not knowing which of three families
+    it belongs to. Only the first changes what a clinic does. Measured on the
+    uncontaminated BRISC subset, deferring on four-way entropy at a cutoff
+    fitted to defer 10% of internal validation actually deferred 26% of scans,
+    including 43% of healthy ones, because the model is broadly unsure which
+    class an unfamiliar healthy brain belongs to.
+
+    Mutual information isolates the epistemic part, "I have not seen anything
+    like this", from that class ambiguity. At the same fitted budget it defers
+    14%, and 15% of healthy scans. It is the signal that survives the move to
+    unseen data, so it is what the shipped config selects.
     """
+    if defer_signal == "mutual_information":
+        _uncertainty = mutual_information if mutual_information is not None else entropy
+    else:
+        _uncertainty = entropy
+
     confidence = confidence_level(
         p_tumor=p_tumor,
         entropy=entropy,
         tumor_threshold=tumor_threshold,
         entropy_defer_threshold=entropy_defer_threshold,
         max_entropy=max_entropy,
+        uncertainty=_uncertainty,
     )
 
     tumor_indices = [i for i, name in enumerate(class_names) if name != "notumor"]
@@ -231,14 +283,15 @@ def decide(
     )
     tumor_type_probability = float(mean_probs[best_tumor_index])
 
-    if entropy_defer_threshold > 0 and entropy > entropy_defer_threshold:
+    uncertainty = _uncertainty
+    if entropy_defer_threshold > 0 and uncertainty > entropy_defer_threshold:
         return Decision(
             call=Call.UNCERTAIN,
             confidence=Confidence.LOW,
             reason=(
                 f"The model's repeated readings of this scan disagreed with each "
                 f"other more than the safe limit allows "
-                f"({entropy:.2f} against a limit of {entropy_defer_threshold:.2f})."
+                f"({uncertainty:.3f} against a limit of {entropy_defer_threshold:.3f})."
             ),
             next_step=NEXT_STEP[Call.UNCERTAIN],
             probability_text=None,

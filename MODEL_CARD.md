@@ -251,17 +251,33 @@ name is not a number, it is a rumour.
 | seeds | 5-seed ensemble (42, 123, 7, 2024, 31) |
 | MC-Dropout passes | T = 20 |
 | temperature | 0.527, fitted on internal validation |
-| refer if `p_tumor` >= | 0.970 |
-| defer to a human if entropy >= | 0.0378 **nats** |
+| refer if `p_tumor` >= | 0.590 |
+| defer to a human if **mutual information** >= | 0.0116 **nats** |
 | thresholds fitted on | internal validation split, never BRISC |
 
-**Read the deferral threshold with the operating cost attached: this
-configuration sends 41.2% of scans to a human.** That is the price of the lowest
-measured miss rate. In a clinic with no radiologist, four scans in ten coming
-straight back may not be a tool anyone can use. A single-seed configuration
-defers 25.9% and misses more. Both are measured in
-`analysis/results/safety/ensemble_vs_single.csv`. **Which trade to take is a
-human decision and it has not been made.**
+**Two settings above were changed after the tool was driven end to end, and the
+reasons matter.**
+
+The referral threshold was 0.970 and deferral was on four-way predictive
+entropy. That combination deferred 41.2% of scans, including **61.8% of
+genuinely unseen healthy scans**, and it pinned the on-screen confidence to
+"Low" for every single answer, because no call can ever sit 0.25 away from a
+threshold of 0.970. A correct glioma call at `p_tumor = 0.9984` was displayed as
+low confidence.
+
+Deferring on **mutual information** instead of total entropy fixes most of it.
+Total entropy mixes "is there a tumour" with "which of the three families is
+it", and only the first changes what a clinic does. Mutual information isolates
+the "I have not seen anything like this" part. At a cutoff fitted to defer 10%
+of internal validation, four-way entropy actually defers 26% of unseen scans;
+mutual information defers 14%. It transfers; entropy does not.
+
+At the shipped point, on 2,634 unseen scans: 49.1% referred, 14.0% deferred,
+36.9% cleared, **3 tumours of 1,476 sent home**, 13 healthy scans of 1,158
+wrongly referred.
+
+Derivation: `analysis/clinic_operating_point.py` and
+`analysis/results/safety/clinic_operating_point.json`.
 
 The backbone choice was originally made by buggy code that selected ViT on the
 strength of the 5-seed ensemble and then shipped the single seed, which was the
@@ -628,10 +644,21 @@ else unchanged. The unit is declared explicitly in
 Reading one as the other would make the tool under-defer, and under-deferring
 surfaces as confident "no tumor" calls.
 
-**At that threshold the tool defers 41.2% of scans.** Among the scans it does
-not defer, the miss rate falls from 0.27% to 0.09%. Deferral works. It is also
-expensive, and the numbers below use the unit-invariant "defer the most
-uncertain X%" rule so they can be read independently of that choice.
+**At that cutoff the tool defers 14.0% of unseen scans**, 15.1% of healthy ones
+and 13.1% of tumours. Among the scans it does not defer, 3 tumours in 1,476 are
+sent home.
+
+**Deferral is not the safety net it was hoped to be, and this is the most
+important negative result in the project.** The tumours this tool sends home are
+sent home confidently. On the unseen subset their `p_tumor` values are 0.004 to
+0.035 and their entropies are near the bottom of the distribution. To catch
+3 of those 4 with an entropy rule you must defer **55% of healthy scans**; to
+catch all 4, **75%**. With mutual information it is 28% and 53%. There is no
+affordable cutoff, because the failures are confident failures, not uncertain
+ones.
+
+The numbers below use the unit-invariant "defer the most uncertain X%" rule so
+they can be read independently of the chosen cutoff.
 
 ### What it catches, and what it does not
 

@@ -12,8 +12,8 @@
   "ensemble": true,
   "mc_T": 20,
   "temperature": 0.5271263718605042,
-  "tumor_threshold": 0.97,
-  "entropy_defer_threshold": 0.03780069116592899,
+  "tumor_threshold": 0.59,
+  "entropy_defer_threshold": 0.01158844232559204,
   "thresholds_fitted_on": "internal_val",
   "class_names": [
     "glioma",
@@ -97,5 +97,12 @@
     "temperature is applied as softmax(log(mean_probs)/T); it does not change the predicted class, only the displayed confidence.",
     "tumor_threshold is applied to p_tumor = p_glioma + p_meningioma + p_pituitary AFTER temperature scaling.",
     "Every threshold here was fitted on the internal validation split and applied to BRISC unchanged."
-  ]
+  ],
+  "defer_signal": "mutual_information",
+  "clinic_operating_point": {
+    "chosen_for": "a clinic with no on-site radiologist",
+    "prevalence_assumed": 0.1,
+    "supersedes": "p_tumor 0.970 with four-way-entropy deferral at 0.0378, which deferred 41.2% of scans and 61.8% of unseen healthy scans, and which locked the confidence display to 'Low' for every answer because no call could ever be 0.25 away from a 0.970 threshold.",
+    "detail": "analysis/results/safety/clinic_operating_point.json"
+  }
 }

@@ -144,12 +144,16 @@ is about an hour of a radiologist's time.
   there, which is the good case and was not guaranteed. This is a weak shift,
   not a real one: same sources, same preprocessing. Calibration under a genuine
   scanner change is still untested.
-- **The deferral threshold has not been validated against clinician workload,
-  and the shipped configuration defers 41.2%.** That is not a hypothetical
-  concern any more. Four scans in ten come back to a human in a clinic that has
-  no radiologist, which is the situation the tool exists to address. A
-  single-seed configuration defers 25.9% and misses more tumours. Nobody has
-  decided which trade is right, and nobody has asked a clinic.
+- **The deferral threshold has not been validated against clinician workload.**
+  The shipped configuration defers 14% of unseen scans, down from 41% before the
+  operating point was rechosen against clinic workload. Nobody has asked a real
+  clinic whether 1 scan in 7 coming back is absorbable.
+- **Deferral does not protect against the failure that matters.** The tumours
+  this tool sends home are sent home confidently. Catching 3 of the 4 in the
+  unseen subset would require deferring 55% of healthy scans on entropy, or 28%
+  on mutual information; catching all 4 needs 75% or 53%. The uncertainty
+  machinery cannot be tuned to catch confident errors, and the project's safety
+  story leaned on it being able to.
 - **Test-retest variation is now partly characterised, and it is not small.**
   Running the identical pipeline on CPU and on GPU, which differ only in how
   MC-Dropout draws its random masks, flips **0.17% of predicted labels**. Mean

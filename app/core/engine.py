@@ -320,6 +320,8 @@ class TriageEngine:
             entropy_defer_threshold=self.config.entropy_defer_threshold,
             max_entropy=self.config.max_entropy(),
             ece=self._ece,
+            mutual_information=mc.mutual_information,
+            defer_signal=str(self.config.raw.get("defer_signal", "entropy")),
         )
 
         return self._finalise(

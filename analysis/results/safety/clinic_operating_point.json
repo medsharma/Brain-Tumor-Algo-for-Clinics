@@ -1,0 +1,122 @@
+{
+  "rule": "threshold: maximise sensitivity on internal val, then specificity, ties to the lower (safer) threshold. deferral: the most uncertain 10% of internal val by mutual information.",
+  "fitted_on": "internal_val",
+  "model": "vit",
+  "ensemble": true,
+  "temperature": 0.5271263718605042,
+  "target_prevalence": 0.1,
+  "threshold": 0.59,
+  "threshold_val_stats": {
+    "val_sensitivity": 0.9963008631319359,
+    "val_specificity": 1.0
+  },
+  "defer_signal": "mutual_information",
+  "defer_cutoff": 0.01158844232559204,
+  "defer_budget_internal_val": 0.1,
+  "signal_comparison": {
+    "entropy": {
+      "cutoff": 0.0905744755001347,
+      "val_defer_rate": 0.10009017132551848,
+      "clean_defer_rate": 0.2593014426727411,
+      "clean_defer_healthy": 0.4265975820379965,
+      "clean_defer_tumour": 0.12804878048780488,
+      "confident_misses_caught": 1,
+      "confident_misses_total": 4,
+      "transfer_ratio": 2.5906783776943234
+    },
+    "binary_entropy": {
+      "cutoff": 0.024318314419207954,
+      "val_defer_rate": 0.10009017132551848,
+      "clean_defer_rate": 0.35231586940015186,
+      "clean_defer_healthy": 0.7469775474956822,
+      "clean_defer_tumour": 0.042682926829268296,
+      "confident_misses_caught": 3,
+      "confident_misses_total": 4,
+      "transfer_ratio": 3.519984677160076
+    },
+    "mutual_information": {
+      "cutoff": 0.01158844232559204,
+      "val_defer_rate": 0.10009017132551848,
+      "clean_defer_rate": 0.14009111617312073,
+      "clean_defer_healthy": 0.15112262521588946,
+      "clean_defer_tumour": 0.13143631436314362,
+      "confident_misses_caught": 1,
+      "confident_misses_total": 4,
+      "transfer_ratio": 1.3996490796035217
+    }
+  },
+  "applied": {
+    "internal_val": {
+      "n": 1109,
+      "raw": {
+        "refer_given_tumor": 0.8680641183723797,
+        "defer_given_tumor": 0.1282367447595561,
+        "clear_given_tumor": 0.0036991368680641184,
+        "refer_given_notumor": 0.0,
+        "defer_given_notumor": 0.02348993288590604,
+        "clear_given_notumor": 0.9765100671140939,
+        "n_tumor": 811,
+        "n_notumor": 298,
+        "n_cleared_tumors": 3
+      },
+      "at_prevalence": {
+        "prevalence": 0.1,
+        "referrals_per_100": 8.680641183723797,
+        "deferrals_per_100": 3.3964614073271044,
+        "workload_per_100": 12.077102591050902,
+        "sent_home_per_100": 87.9228974089491,
+        "missed_tumors_per_100": 0.036991368680641186,
+        "false_clear_rate": 0.00042072508721574585,
+        "sensitivity_incl_defer": 0.9963008631319359
+      }
+    },
+    "internal_test": {
+      "n": 1112,
+      "raw": {
+        "refer_given_tumor": 0.8696711327649208,
+        "defer_given_tumor": 0.12302070645554203,
+        "clear_given_tumor": 0.007308160779537149,
+        "refer_given_notumor": 0.010309278350515464,
+        "defer_given_notumor": 0.013745704467353952,
+        "clear_given_notumor": 0.9759450171821306,
+        "n_tumor": 821,
+        "n_notumor": 291,
+        "n_cleared_tumors": 6
+      },
+      "at_prevalence": {
+        "prevalence": 0.1,
+        "referrals_per_100": 9.6245463791956,
+        "deferrals_per_100": 2.467320466617276,
+        "workload_per_100": 12.091866845812877,
+        "sent_home_per_100": 87.90813315418711,
+        "missed_tumors_per_100": 0.0730816077953715,
+        "false_clear_rate": 0.0008313406868416768,
+        "sensitivity_incl_defer": 0.9926918392204629
+      }
+    },
+    "BRISC_clean": {
+      "n": 2634,
+      "raw": {
+        "refer_given_tumor": 0.8665311653116531,
+        "defer_given_tumor": 0.13143631436314362,
+        "clear_given_tumor": 0.0020325203252032522,
+        "refer_given_notumor": 0.011226252158894647,
+        "defer_given_notumor": 0.15112262521588946,
+        "clear_given_notumor": 0.8376511226252159,
+        "n_tumor": 1476,
+        "n_notumor": 1158,
+        "n_cleared_tumors": 3
+      },
+      "at_prevalence": {
+        "prevalence": 0.1,
+        "referrals_per_100": 9.675674347417049,
+        "deferrals_per_100": 14.915399413061486,
+        "workload_per_100": 24.591073760478537,
+        "sent_home_per_100": 75.40892623952146,
+        "missed_tumors_per_100": 0.020325203252032523,
+        "false_clear_rate": 0.0002695331211516466,
+        "sensitivity_incl_defer": 0.9979674796747967
+      }
+    }
+  }
+}

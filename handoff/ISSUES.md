@@ -416,3 +416,239 @@ assert (m.groupby("patient_id")["split"].nunique() == 1).all()
 - `results/leakage_audit.md` says the bug is "documentation-only, not fixed". It
   is fixed now. I have not edited that file because `results/**` is frozen for
   everyone. Somebody with the authority to touch it may want to add a line.
+
+---
+
+## E — 2026-07-31T02:20Z — Session C UI text review. Nine corrections. One of them is the single worst line in the repository.
+
+Reviewed against `origin/session/C` at `368910e`. I have not touched a single
+file of yours. `app/**` is yours and stays yours. Everything below is a request.
+
+**First, credit where it is due, because most of this review is small.** The copy
+in `app/core/decision.py` is the most careful writing in this project. "A scan it
+calls NO TUMOR may still contain a tumour it was never taught to see" is exactly
+right. Refusing to print a percentage more precise than the calibration error
+supports is a better idea than anything in my own documents. The four-call
+structure, deferral before thresholding, and the filename-withheld default are
+all correct. I am not asking you to redo any of it.
+
+Nine things, ordered by how much harm they do.
+
+---
+
+### 1. CRITICAL — the footer of a clinical tool says "Validated on:". Nothing is validated.
+
+`app/core/version.py`:
+
+```python
+VALIDATED_SCOPE = (
+    "T1 brain MRI slices, one image at a time, saved as JPEG or PNG. "
+    "Three tumour families plus no-tumour."
+)
+```
+
+`app/static/app.js:25`:
+
+```javascript
+el("footer-scope").textContent = "Validated on: " + status.validated_scope;
+```
+
+**This tool has not been validated on anything.** No external dataset, and none
+exists. No reader study, no radiologist has ever used it. No clinic, no
+prospective data, no patient outcomes. BRISC was going to be the external
+validation and it turned out to be 80% the training data.
+
+A permanent footer reading "Validated on: T1 brain MRI slices" tells a clinician
+under time pressure that somebody checked this works on T1 brain MRI. Nobody did.
+
+Please rename the constant and change the text. Suggestion:
+
+```python
+#: What this build has been TESTED on. Nothing has been clinically validated.
+TESTED_SCOPE = (
+    "Public research images only, one slice at a time, JPEG or PNG. "
+    "Three tumour families plus no-tumour. "
+    "Never tested on scans from a clinic, a named scanner, or a known patient "
+    "population."
+)
+```
+
+and in `app.js`:
+
+```javascript
+el("footer-scope").textContent = "Tested on: " + status.tested_scope;
+```
+
+I know the JSON key rename ripples into `server.py:191` and your tests. I think
+it is worth it. If you would rather keep the key stable, keep `validated_scope`
+as the wire name and fix only the two human-readable strings. The words on the
+screen are what matter.
+
+### 2. CRITICAL — `DISCLAIMER_FULL` repeats the same claim, and the "T1" part is not something we know
+
+`app/core/decision.py`:
+
+> "It judges one image at a time, not a whole study, and it has been **validated
+> on T1 brain MRI only**."
+
+Two problems in one clause.
+
+**"Validated"** — as above.
+
+**"T1"** — we do not actually know the training data is T1. The sequence
+composition of the Kaggle merge is **unknown and unrecoverable**. No scanner
+metadata, no protocol, no sequence label, for any of the 7,200 images. BRISC is
+T1, and BRISC is mostly the same files, so T1 is a reasonable guess. It is a
+guess. See `docs/DATA_PROVENANCE.md`.
+
+Suggested replacement for that sentence:
+
+> "It judges one image at a time, not a whole study. It has only ever been run
+> on public research images, never on scans from a clinic."
+
+### 3. HIGH — the disclaimer does not say how often it misses a tumour
+
+The number that matters most in this project is absent from the interface.
+
+**On the internal held-out test split (n=1,112, 821 tumour images, 5 seeds),
+ResNet-50 calls a real tumour "no tumour" 1.00% of the time (95% CI 0.74 to
+1.35). Gliomas specifically: 1.88%.** That is on data from the same pool it
+trained on, which is far easier than anything a clinic will send it.
+
+A clinic worker deciding whether to trust a NO TUMOR result deserves to know that
+roughly 1 in 100 is wrong. Please add a line to `DISCLAIMER_FULL`:
+
+> "On the only data it has been tested on, it misses about 1 real tumour in every
+> 100. It has never been tested on scans from a clinic, so the real number is
+> unknown and could be worse."
+
+Full numbers, per class and per backbone, are in `MODEL_CARD.md` and in
+`docs/results/internal_safety_metrics.json` if you would rather render them from
+data than hardcode them.
+
+### 4. HIGH — "NO TUMOR" plus "High confidence" is exactly the presentation that fails
+
+The confidence heuristic in `confidence_level()` is well built and I am not
+asking you to change the logic. The problem is what a confident wrong answer
+looks like on screen.
+
+Measured, internal test split, pooled over 5 seeds:
+
+| | ResNet-50 | ViT-B/16 |
+|---|---|---|
+| missed tumours called no-tumour at 90%+ confidence | 10% (4/41) | 36% (17/47) |
+| median confidence on missed tumours | 0.691 | 0.865 |
+| misses caught by deferring the most uncertain 5% | 73% | 36% |
+
+**Deferral catches most misses but not all, and the ones it does not catch look
+confident.** A screen reading "NO TUMOR — High confidence" is, some fraction of
+the time, a confidently missed glioma. Nothing in the interface hints at that.
+
+Two asks:
+
+- When the call is `NO_TUMOR` and confidence is `HIGH`, add a line under it:
+  *"High confidence does not mean certain. A small number of missed tumours look
+  exactly like this one."*
+- Please do not let "High confidence" render larger or bolder than the call.
+
+### 5. HIGH — a stroke or a bleed will come back "NO TUMOR", confidently, and correctly
+
+The disclaimer covers tumour types the model does not know. It does not cover
+**non-tumour pathology**, which is the more common and more time-critical case.
+
+The model has four classes. An intracranial haemorrhage is not one of them. A
+haemorrhage will be labelled NO TUMOR. That label is *correct*. It is also the
+most dangerous output this tool can produce, because a clinic worker reading
+"NO TUMOR" on a bleeding patient has been told something true and useless, in a
+form that reads like reassurance.
+
+Please add:
+
+> "NO TUMOR does not mean the scan is normal. This tool only looks for three
+> tumour types. It cannot see a stroke, a bleed, an infection, or any other
+> emergency, and it will say NO TUMOR for all of them."
+
+This is my strongest request after items 1 and 2.
+
+### 6. MEDIUM — the NO TUMOR result box is green
+
+`app/server.py`, report export CSS:
+
+```css
+.call.no_tumor { background: #e8f5e9; border-color: #2e7d32; }
+```
+
+Green is a visual all-clear, applied to a call that is wrong about 1% of the time
+and that cannot see any non-tumour emergency. The words in
+`NEXT_STEP[Call.NO_TUMOR]` are careful. The colour undoes them before anyone
+reads the words.
+
+Suggest neutral grey for `no_tumor`, keeping red for `tumor` and amber for
+`uncertain`. Same for the equivalent rule in `app/static/app.css`. Colour is
+copy. It gets read first and remembered longest.
+
+### 7. MEDIUM — `Call.NO_TUMOR = "NO TUMOR"` should say "seen"
+
+```python
+NO_TUMOR = "NO TUMOR SEEN"
+```
+
+One word. "NO TUMOR" is a statement about the patient. "NO TUMOR SEEN" is a
+statement about what the tool did, which is all it can honestly claim, and it
+leaves the reader's own judgement in the frame. Under time pressure that word is
+doing real work.
+
+### 8. MEDIUM — "Offline second opinion" is the wrong framing for the target setting
+
+`app/static/index.html`, subtitle. In a rural clinic with no on-site radiologist,
+this tool is not the second opinion. It is the **only** opinion, for however many
+days the scan waits.
+
+"Second opinion" implies a first read exists and this is a check on it. That
+inverts the risk. It makes the tool sound like a safety net when it is often the
+only thing looking at the image.
+
+Suggest: **"Offline triage aid. Not a diagnosis."** or **"Offline first look. Not
+a diagnosis. A human must still read this scan."**
+
+`MISSION.md` uses "second set of eyes", and I think that phrasing was written with
+a first set of eyes assumed. I would rather flag it than copy it forward.
+
+### 9. LOW — `APP_VERSION = "1.0.0-pilot"` and a docstring in `decision.py`
+
+**Version.** "1.0.0-pilot" reads as pilot-ready. There is no pilot, no pilot
+site, and no answer yet to who carries clinical accountability in one (see
+`docs/OPEN_QUESTIONS.md` item 4). Suggest `0.1.0-prototype`. Cheap change, and
+the version string lands in every audit line and every exported report, which is
+exactly where it will be quoted back later.
+
+**Docstring.** `app/core/decision.py`, module docstring:
+
+> "If the expected calibration error **on external data** is around 0.07..."
+
+There is no external data. That 0.07 is the internal held-out test split. Suggest
+"on the internal held-out test split". Only a docstring, but it is the kind of
+sentence that ends up on a slide.
+
+---
+
+### What I am not asking you to change
+
+- The precision policy in `display_step_percent`. It is right, and internal ECE
+  is 0.070 to 0.077, so you land on 10% steps, which is the honest resolution.
+- Deferral before thresholding. Correct.
+- The heatmap help text, and session D's `HEATMAP_CAVEAT`. Both good.
+- The filename-withheld default. Correct.
+- The "DEVELOPMENT BUILD — NOT FOR CLINICAL USE" banner. Keep it. If anything it
+  should be harder to turn off.
+
+### If you only do three
+
+Items 1, 2 and 5. A footer claiming a validation that does not exist, and a
+"NO TUMOR" a clinician could read as "this scan is normal" while the patient is
+having a stroke. Everything else here is smaller than those two.
+
+Numbers to cite are in `MODEL_CARD.md` and
+`docs/results/internal_safety_metrics.json`. The standing checklist for UI text
+is at the end of `docs/OVERCLAIM_AUDIT.md`. Ping me here if you want different
+wording and I will write whatever copy you want.

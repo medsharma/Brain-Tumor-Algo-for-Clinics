@@ -43,26 +43,58 @@ async function loadStatus() {
     }
   }
 
+  // The banner has to survive being read fifty times a day. A wall of red text
+  // that nobody finishes is not a safety feature, it is decoration, and the
+  // thing it is trying to say gets lost. So the top line carries the two facts
+  // that change what somebody does: this is a development build, and it is not
+  // the only thing you decide on. The full reasoning stays available underneath
+  // rather than being removed, because a clinic deciding whether to trust this
+  // is entitled to the whole of it.
   if (status.state !== "clinical") {
     const banner = el("mode-banner");
+    banner.textContent = "";
+
+    const headline = document.createElement("span");
+    headline.className = "banner-headline";
+    headline.textContent = "Development build";
+    banner.appendChild(headline);
+
+    const lead = document.createElement("span");
+    lead.className = "banner-detail";
+    lead.textContent =
+      "A second opinion, not a decision. Do not use this tool on its own to " +
+      "decide about a patient. A person makes the call.";
+    banner.appendChild(lead);
+
     const messages = (status.warnings || []).map((w) => w.message).join(" ");
-    banner.textContent = "DEVELOPMENT BUILD — NOT FOR CLINICAL USE";
-    const detail = document.createElement("span");
-    detail.className = "banner-detail";
-    detail.textContent = messages;
-    banner.appendChild(detail);
+    if (messages) {
+      const more = document.createElement("details");
+      more.className = "banner-more";
+      const summary = document.createElement("summary");
+      summary.textContent = "What has and has not been tested";
+      more.appendChild(summary);
+      const body = document.createElement("p");
+      body.textContent = messages;
+      more.appendChild(body);
+      banner.appendChild(more);
+    }
+
     banner.classList.remove("hidden");
-    el("config-badge").textContent = "STUB CONFIG";
+    if (status.config && status.config.is_stub) {
+      el("config-badge").textContent = "STUB CONFIG";
+    }
   }
 }
 
 /* --------------------------------------------------------------- analysis */
 
+const PANELS = ["upload-panel", "working", "result-panel", "error-panel", "batch-panel"];
+
 function show(panelId) {
-  ["upload-panel", "working", "result-panel", "error-panel"].forEach((id) => {
-    el(id).classList.toggle("hidden", id !== panelId && id !== "upload-panel");
-  });
-  el("upload-panel").classList.toggle("hidden", panelId !== "upload-panel");
+  // One panel at a time. The dropzone in particular goes away while a scan is
+  // being read: leaving it there invites a second file on top of the first,
+  // and this app reads one at a time.
+  PANELS.forEach((id) => el(id).classList.add("hidden"));
   el(panelId).classList.remove("hidden");
   // The download panel is reference material, not a step in reading a scan.
   // It stays out of the way while a result is on screen.
@@ -142,24 +174,127 @@ async function loadDownloads() {
   }
 }
 
-async function analyze(file) {
-  show("working");
+async function readOne(file) {
   const form = new FormData();
   form.append("file", file, file.name);
 
+  const response = await fetch("/api/analyze", { method: "POST", body: form });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({}));
+    throw new Error(detail.detail || "The scan could not be read.");
+  }
+  return response.json();
+}
+
+async function analyze(file) {
+  el("working-text").textContent = "Reading the scan. This takes a few seconds.";
+  show("working");
+
   try {
-    const response = await fetch("/api/analyze", { method: "POST", body: form });
-    if (!response.ok) {
-      const detail = await response.json().catch(() => ({}));
-      throw new Error(detail.detail || "The scan could not be read.");
-    }
-    currentResult = await response.json();
+    currentResult = await readOne(file);
     render(currentResult);
     show("result-panel");
   } catch (error) {
     el("error-text").textContent = error.message;
     show("error-panel");
   }
+}
+
+/* ----------------------------------------------------------------- batches */
+
+/* Several slices at once, because that is how a study arrives.
+ *
+ * One at a time, deliberately. The app holds one model in memory and reads a
+ * scan in well under a second; firing twenty requests at once would queue them
+ * anyway and lose the progress count, which is the only thing making a
+ * twenty-slice wait bearable.
+ *
+ * Worst first in the list. A clinician scanning a list of twenty rows should
+ * not have to reach row nineteen to find the one that says refer. */
+const CALL_ORDER = { tumor: 0, uncertain: 1, cannot_read: 2, no_tumor: 3 };
+
+let batchResults = [];
+
+async function analyzeMany(files) {
+  batchResults = [];
+  show("working");
+
+  for (let i = 0; i < files.length; i++) {
+    el("working-text").textContent =
+      "Reading slice " + (i + 1) + " of " + files.length + ".";
+    try {
+      const result = await readOne(files[i]);
+      batchResults.push({ name: files[i].name, result: result, error: null });
+    } catch (error) {
+      batchResults.push({ name: files[i].name, result: null, error: error.message });
+    }
+  }
+
+  renderBatch();
+  show("batch-panel");
+}
+
+function renderBatch() {
+  const sorted = batchResults.slice().sort((a, b) => {
+    const ra = a.result ? CALL_ORDER[a.result.call_key] : 2;
+    const rb = b.result ? CALL_ORDER[b.result.call_key] : 2;
+    return ra - rb;
+  });
+
+  const flagged = batchResults.filter(
+    (row) => row.result && row.result.call_key === "tumor"
+  ).length;
+  const unread = batchResults.filter((row) => !row.result).length;
+
+  el("batch-note").textContent =
+    batchResults.length + " slices, judged one by one. " +
+    "These are NOT combined into a single answer for the study: this tool " +
+    "reads one image at a time and has no measured threshold for a whole " +
+    "study. " + flagged + " flagged for referral" +
+    (unread ? ", " + unread + " could not be read" : "") +
+    ". Open any row for the full result.";
+
+  const list = el("batch-list");
+  list.textContent = "";
+
+  sorted.forEach((row) => {
+    const item = document.createElement("li");
+    item.className = "batch-item " + (row.result ? row.result.call_key : "cannot_read");
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "batch-button";
+
+    const name = document.createElement("span");
+    name.className = "batch-name";
+    name.textContent = row.name;
+
+    const call = document.createElement("span");
+    call.className = "batch-call";
+    call.textContent = row.result ? row.result.call : "Could not be read";
+
+    const detail = document.createElement("span");
+    detail.className = "batch-detail";
+    detail.textContent = row.result ? row.result.confidence : row.error;
+
+    button.appendChild(name);
+    button.appendChild(call);
+    button.appendChild(detail);
+
+    if (row.result) {
+      button.addEventListener("click", () => {
+        currentResult = row.result;
+        render(row.result);
+        show("result-panel");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    } else {
+      button.disabled = true;
+    }
+
+    item.appendChild(button);
+    list.appendChild(item);
+  });
 }
 
 /* ---------------------------------------------------------------- render */
@@ -255,6 +390,7 @@ function renderTumorType(result) {
 function renderTechnical(result) {
   const rows = [
     ["File name", result.display_name],
+    ["Read at (UTC)", result.read_at_utc || "not recorded"],
     ["Image fingerprint", result.image_sha256],
     ["Model", result.model_backbone + ", seed(s) " + (result.model_seeds || []).join(", ")],
     ["Config version", result.config_version],
@@ -265,7 +401,9 @@ function renderTechnical(result) {
         : result.entropy.toFixed(3) + " " + (result.entropy_units || "")],
     ["Time taken", Math.round(result.latency_ms) + " ms"],
     ["Image check", result.validator_method],
-    ["DICOM", "Not supported by this version"],
+    ["Came from", result.source_format === "dicom"
+      ? "DICOM, converted by this app"
+      : "an image file, as supplied"],
   ];
 
   const table = el("technical-table");
@@ -294,6 +432,9 @@ async function saveReport() {
   if (!currentResult) return;
   const payload = Object.assign({}, currentResult, {
     include_filename: el("include-filename").checked,
+    // Operator-typed, export-only. Never added to currentResult, so it cannot
+    // travel anywhere else by accident.
+    case_reference: el("case-reference").value.trim(),
   });
 
   const response = await fetch("/api/export", {
@@ -320,9 +461,24 @@ async function saveReport() {
 
 /* ------------------------------------------------------------------ wire */
 
+/* One slice goes straight to the result. Several go to the list. */
+function handle(fileList) {
+  if (!fileList || !fileList.length) return;
+  const files = Array.prototype.slice.call(fileList);
+  if (files.length === 1) {
+    analyze(files[0]);
+  } else {
+    analyzeMany(files);
+  }
+}
+
 function reset() {
   currentResult = null;
+  batchResults = [];
   el("file-input").value = "";
+  // The reference belongs to one patient's sheet. Carrying it to the next scan
+  // would file one person's result under another's number.
+  el("case-reference").value = "";
   show("upload-panel");
 }
 
@@ -339,24 +495,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   fileInput.addEventListener("change", () => {
-    if (fileInput.files && fileInput.files[0]) analyze(fileInput.files[0]);
+    handle(fileInput.files);
   });
 
+  // The class name has to match the stylesheet exactly. It said "dragging"
+  // here and ".dropzone.dragover" there, so dropping a file lit up nothing at
+  // all: the one moment the page most needs to say "yes, I have this" was the
+  // one moment it stayed silent.
   ["dragenter", "dragover"].forEach((name) =>
     dropzone.addEventListener(name, (event) => {
       event.preventDefault();
-      dropzone.classList.add("dragging");
+      dropzone.classList.add("dragover");
     })
   );
   ["dragleave", "drop"].forEach((name) =>
     dropzone.addEventListener(name, (event) => {
       event.preventDefault();
-      dropzone.classList.remove("dragging");
+      dropzone.classList.remove("dragover");
     })
   );
   dropzone.addEventListener("drop", (event) => {
-    const files = event.dataTransfer && event.dataTransfer.files;
-    if (files && files[0]) analyze(files[0]);
+    handle(event.dataTransfer && event.dataTransfer.files);
   });
 
   el("overlay-slider").addEventListener("input", (event) =>
@@ -372,7 +531,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   el("save-report").addEventListener("click", saveReport);
-  el("new-scan").addEventListener("click", reset);
+  el("new-scan").addEventListener("click", () => {
+    // Back to the list if there is one, rather than all the way to the start.
+    // Losing twenty readings because somebody wanted the previous row is the
+    // kind of thing that makes people stop using a tool.
+    if (batchResults.length > 1) {
+      show("batch-panel");
+    } else {
+      reset();
+    }
+  });
+  el("batch-new").addEventListener("click", reset);
   el("error-retry").addEventListener("click", reset);
 
   loadStatus().catch((error) => {

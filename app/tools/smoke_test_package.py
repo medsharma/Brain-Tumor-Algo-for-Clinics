@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -81,6 +82,72 @@ def wait_for(port: int, proc: subprocess.Popen, timeout: int = 240) -> None:
     raise SystemExit(f"the app did not answer on port {port} within {timeout}s")
 
 
+def check_dicom(port: int) -> List[str]:
+    """Does the BUNDLE read DICOM, or only the source tree?
+
+    ``pydicom`` is imported lazily, on purpose, so that a build without it
+    degrades to the old "export a JPEG from your viewer" refusal instead of
+    failing to start. That is the same property that let scipy and scikit-image
+    go missing from an earlier build unnoticed: nothing static sees the import,
+    the app looks healthy, and the failure only appears on a clinic laptop with
+    a real file in front of a real patient.
+
+    So: build a DICOM here, post it, and insist the package converted it.
+    """
+    try:
+        import numpy as np
+        from pydicom.dataset import Dataset, FileMetaDataset
+        from pydicom.uid import ExplicitVRLittleEndian, generate_uid
+    except ImportError:
+        print("  skip DICOM check: pydicom is not installed in THIS interpreter")
+        return []
+
+    rows = cols = 224
+    y, x = np.ogrid[:rows, :cols]
+    inside = np.clip(1.0 - (((x - cols / 2) / (cols * 0.36)) ** 2
+                            + ((y - rows / 2) / (rows * 0.42)) ** 2), 0.0, 1.0)
+    array = (inside * 900 + 60).astype(np.uint16)
+
+    ds = Dataset()
+    ds.file_meta = FileMetaDataset()
+    ds.file_meta.TransferSyntaxUID = ExplicitVRLittleEndian
+    ds.file_meta.MediaStorageSOPClassUID = "1.2.840.10008.5.1.4.1.1.4"
+    ds.file_meta.MediaStorageSOPInstanceUID = generate_uid()
+    ds.SOPClassUID = "1.2.840.10008.5.1.4.1.1.4"
+    ds.SOPInstanceUID = ds.file_meta.MediaStorageSOPInstanceUID
+    ds.Modality = "MR"
+    ds.Rows, ds.Columns = rows, cols
+    ds.SamplesPerPixel = 1
+    ds.PhotometricInterpretation = "MONOCHROME2"
+    ds.BitsAllocated = ds.BitsStored = 16
+    ds.HighBit = 15
+    ds.PixelRepresentation = 0
+    ds.RescaleSlope, ds.RescaleIntercept = 1.0, 0.0
+    ds.WindowCenter, ds.WindowWidth = 500, 900
+    ds.PixelData = array.tobytes()
+    ds.is_little_endian, ds.is_implicit_VR = True, False
+
+    import io as _io
+    buffer = _io.BytesIO()
+    ds.save_as(buffer, enforce_file_format=True)
+
+    temp = Path(os.environ.get("TEMP", ".")) / "_smoke_slice.dcm"
+    temp.write_bytes(buffer.getvalue())
+    try:
+        out = post(port, temp)
+    except Exception as exc:  # noqa: BLE001
+        return [f"the package failed on a DICOM file: {exc}"]
+    finally:
+        temp.unlink(missing_ok=True)
+
+    if out.get("source_format") != "dicom":
+        return ["the package did not convert a DICOM file. pydicom is probably "
+                "missing from the bundle, which silently sends every clinic back "
+                "to exporting JPEGs by hand"]
+    print(f"  DICOM: converted and called {out.get('call_key')!r}")
+    return []
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -105,8 +172,8 @@ def main() -> None:
         with urllib.request.urlopen(f"http://127.0.0.1:{args.port}/api/status", timeout=30) as r:
             status = json.loads(r.read())
         print(f"  state: {status['state']}")
-        for adapter in ("validator", "explainer"):
-            pass
+        if status["state"] == "refused":
+            failures.append("the package refused to start")
 
         calls: Dict[str, int] = {}
         n_read = 0
@@ -137,6 +204,8 @@ def main() -> None:
         # a package that reads nothing is the exact bug this file exists to catch
         if n_read == 0:
             failures.append("the package rejected EVERY real brain MRI")
+
+        failures.extend(check_dicom(args.port))
     finally:
         proc.terminate()
         try:

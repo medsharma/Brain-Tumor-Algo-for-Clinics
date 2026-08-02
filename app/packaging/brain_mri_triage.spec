@@ -69,6 +69,13 @@ hidden_imports = (
         "scipy.ndimage",
         "skimage.filters",
         "skimage.morphology",
+        # DICOM. image_loading imports it lazily through dicom_loading so a
+        # build without it degrades to the old refusal instead of failing to
+        # start, which also means static analysis cannot see it.
+        "pydicom",
+        "pydicom.pixels",
+        "pydicom.encaps",
+        "pydicom.uid",
     ]
 )
 

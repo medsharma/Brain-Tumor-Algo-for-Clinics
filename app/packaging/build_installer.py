@@ -11,15 +11,25 @@ gets a file in seconds and sees a progress window immediately, instead of
 watching a browser download 2.4 GB with no feedback and no idea whether it is
 working.
 
-The server address is written into the exe at build time, because a compiled
-binary cannot be rewritten per request the way the Python setup script is.
-Set MRI_TRIAGE_SERVER_URL to the address people will actually reach:
+The server address baked in here is only a **fallback**. The running app stamps
+its own address onto the end of this exe as it hands it out, and the installer
+reads that back before falling back to anything compiled in. See
+``app/core/downloads.stamp_installer``.
+
+That matters because this file gets built once, on one machine, and then handed
+to clinics on completely different networks. An address that was right at build
+time is not right on a clinic laptop in another country, and the installer would
+sit there trying to download 2.4 GB from a machine that does not exist there.
+
+So you no longer need to rebuild when the address changes. Set
+MRI_TRIAGE_SERVER_URL only to control what happens if somebody runs the exe
+straight out of the ``release`` folder, without downloading it from a server:
 
     set MRI_TRIAGE_SERVER_URL=http://192.168.1.83:8765
     python app/packaging/build_installer.py
 
-Rebuild it if that address changes. The installer accepts a URL as its first
-argument too, which is the escape hatch when it does.
+The installer also accepts a URL as its first argument, which is the escape
+hatch when everything else is wrong.
 """
 from __future__ import annotations
 

@@ -83,6 +83,22 @@ class TriageResult:
     explainer_is_stub: bool
     notes: list[str] = field(default_factory=list)
 
+    #: "image" for a file that arrived as a picture, "dicom" for one this app
+    #: converted itself. Every published accuracy figure was measured on the
+    #: first kind, so the difference has to reach the screen and the export.
+    source_format: str = "image"
+
+    #: When this reading was taken, UTC, ISO 8601.
+    #:
+    #: A result sheet in a patient's file with no date on it is not a record.
+    #: Nobody can tell later which visit it belongs to, which scan it describes,
+    #: or whether it came before or after the referral. The audit log has always
+    #: carried this; the thing a clinic actually prints and files did not.
+    #:
+    #: Recorded when the image is read, not when somebody presses Save, because
+    #: those can be days apart and it is the reading that is being reported.
+    read_at_utc: str = ""
+
     # Not serialised into JSON. Held for the UI to encode as PNG.
     original_rgb: np.ndarray | None = None
     heatmap: np.ndarray | None = None
@@ -289,6 +305,11 @@ class TriageEngine:
                 write_audit=write_audit,
                 kind=exc.kind,
             )
+
+        # How the picture was made, when the app made it. A DICOM converted
+        # here is not the image any published figure was measured on, and the
+        # operator has to be told that on the result rather than in a manual.
+        notes.extend(loaded.conversion_notes)
 
         validation = self._run_validator(loaded, source_path)
 
@@ -514,6 +535,8 @@ class TriageEngine:
             config_is_stub=self.config.is_stub,
             explainer_is_stub=self.explainer.is_stub,
             notes=notes,
+            source_format=loaded.source_format,
+            read_at_utc=audit.utc_now_iso(),
             original_rgb=original_rgb,
             heatmap=heatmap,
             overlay_rgb=overlay,
@@ -573,6 +596,7 @@ class TriageEngine:
             config_is_stub=self.config.is_stub,
             explainer_is_stub=self.explainer.is_stub,
             notes=[],
+            read_at_utc=audit.utc_now_iso(),
         )
 
         if write_audit:

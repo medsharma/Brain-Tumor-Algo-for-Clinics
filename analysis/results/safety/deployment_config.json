@@ -75,25 +75,35 @@
     "subset_definition": "BRISC images whose nearest internal TRAINING image is more than perceptual-hash Hamming distance 5 away. The other 56 percent of BRISC 2025 is near-duplicate of the training data and is excluded.",
     "tumor_miss_rate": 0.0027100271002710027,
     "tumor_miss_rate_ci": [
-      0.0006608841076067146,
-      0.005479639964672943
+      0.0010543658073204859,
+      0.0069474770603062085
     ],
-    "binary_sensitivity": 0.9911924119241192,
-    "binary_specificity": 0.9861830742659758,
-    "four_way_accuracy": 0.9620349278663629,
-    "defer_rate": 0.41192103264996205,
-    "miss_rate_after_defer": 0.0009033423667570009,
+    "binary_sensitivity": 0.9972826086956522,
+    "binary_specificity": 0.9464594127806563,
+    "four_way_accuracy": 0.961596958174905,
+    "defer_rate": 0.052771450265755505,
+    "miss_rate_after_defer": 0.002777777777777778,
     "_caveats": [
+      "Measured by running the built Windows package itself over the whole clean subset, not by rescoring cached probabilities. These are the numbers the program in the box produces.",
       "These numbers are from the CLEAN subset of BRISC 2025 only. About 56 percent of BRISC is near-duplicate of the training data and was excluded. Full-BRISC numbers are training accuracy, not external.",
       "Image-level duplication is excluded. PATIENT-level leakage cannot be ruled out: neither dataset ships patient identifiers, so other slices from the same patients may still be in training. The clean subset is therefore an upper bound on true external performance.",
       "Class balance in the clean subset is not the same as full BRISC. PPV and NPV measured here do not transfer to a clinic. Use sensitivity and specificity and the prevalence projections in OPERATING_POINT.md.",
       "BRISC is entirely T1 across three planes. Performance on other sequences is unmeasured.",
-      "tumor_miss_rate here is argmax-based: a real tumour displayed as notumor. binary_sensitivity uses the p_tumor threshold."
-    ]
+      "tumor_miss_rate here is argmax-based: a real tumour displayed as notumor. binary_sensitivity uses the p_tumor threshold.",
+      "Deferral no longer improves the miss rate. It sends 5.3 percent of scans to a human and catches 2.2 percent of tumours, and the miss rate before and after deferral is the same 0.27 percent. The safety net is the instruction to refer symptomatic patients regardless, not this threshold.",
+      "All four tumours sent home were meningiomas, as were all four scans refused as unreadable. Glioma and pituitary miss rates were zero on this subset."
+    ],
+    "tumour_sent_home_rate": 0.0027100271002710027,
+    "defer_rate_tumour": 0.02168021680216802,
+    "defer_rate_healthy": 0.0924006908462867,
+    "unreadable_rate": 0.0015186028853454822,
+    "measured_at_tumor_threshold": 0.59,
+    "measured_at_defer_cutoff": 0.3948388803005215,
+    "measured_by": "app/tools/verify_shipped_package.py, running the built Windows package over the whole clean subset through its own HTTP interface"
   },
   "entropy_units": "nats",
   "notes": [
-    "entropy_defer_threshold is in nats and is compared against the predictive entropy of the MC-Dropout mean over mc_T passes.",
+    "entropy_defer_threshold is a historical field name. Since the refit in e7dc1ba it holds a MUTUAL INFORMATION cutoff, in nats, as declared by defer_signal, and that is the quantity the app compares against it. Mutual information is the disagreement between the MC-Dropout passes, which is a different quantity from the predictive entropy of their mean.",
     "temperature is applied as softmax(log(mean_probs)/T); it does not change the predicted class, only the displayed confidence.",
     "tumor_threshold is applied to p_tumor = p_glioma + p_meningioma + p_pituitary AFTER temperature scaling.",
     "Every threshold here was fitted on the internal validation split and applied to BRISC unchanged."
@@ -113,6 +123,34 @@
       "why_it_was_wrong": "Fitted on the prediction caches, where mutual_information is one model's value from 20 MC passes. The app pools posterior samples across all 5 ensemble members, so its mutual information has a much heavier tail. The old cutoff sat inside that tail and deferred 31% of unseen scans.",
       "why_this_value": "Measured on 800 unseen BRISC images: deferring 5.6% and deferring 33.6% both send home the same 1 tumour in 422. Extra deferral bought no safety at all, and cost 28 points of usability. This is the tightest budget on that flat stretch.",
       "evidence": "analysis/results/safety/defer_threshold_fit.json"
+    }
+  ],
+  "expected_performance_history": [
+    {
+      "replaced_utc": "2026-08-01T08:43:26Z",
+      "why": "The figures below were measured under an earlier operating point and were not updated when the thresholds changed. They described a program that was no longer running.",
+      "previous": {
+        "dataset": "BRISC2025_clean_subset",
+        "n": 2634,
+        "subset_definition": "BRISC images whose nearest internal TRAINING image is more than perceptual-hash Hamming distance 5 away. The other 56 percent of BRISC 2025 is near-duplicate of the training data and is excluded.",
+        "tumor_miss_rate": 0.0027100271002710027,
+        "tumor_miss_rate_ci": [
+          0.0006608841076067146,
+          0.005479639964672943
+        ],
+        "binary_sensitivity": 0.9911924119241192,
+        "binary_specificity": 0.9861830742659758,
+        "four_way_accuracy": 0.9620349278663629,
+        "defer_rate": 0.41192103264996205,
+        "miss_rate_after_defer": 0.0009033423667570009,
+        "_caveats": [
+          "These numbers are from the CLEAN subset of BRISC 2025 only. About 56 percent of BRISC is near-duplicate of the training data and was excluded. Full-BRISC numbers are training accuracy, not external.",
+          "Image-level duplication is excluded. PATIENT-level leakage cannot be ruled out: neither dataset ships patient identifiers, so other slices from the same patients may still be in training. The clean subset is therefore an upper bound on true external performance.",
+          "Class balance in the clean subset is not the same as full BRISC. PPV and NPV measured here do not transfer to a clinic. Use sensitivity and specificity and the prevalence projections in OPERATING_POINT.md.",
+          "BRISC is entirely T1 across three planes. Performance on other sequences is unmeasured.",
+          "tumor_miss_rate here is argmax-based: a real tumour displayed as notumor. binary_sensitivity uses the p_tumor threshold."
+        ]
+      }
     }
   ]
 }

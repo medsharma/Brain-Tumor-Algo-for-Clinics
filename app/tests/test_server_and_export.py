@@ -162,9 +162,21 @@ def test_an_export_is_self_contained_and_offline(client, brisc_glioma):
     assert "data:image/png;base64," in text
 
 
-def test_an_export_says_dicom_is_unsupported(client, brisc_glioma):
+def test_an_export_records_where_the_picture_came_from(client, brisc_glioma):
+    """A converted DICOM is not the image the published figures were measured on.
+
+    The sheet that goes into a patient's file has to say which of the two it
+    was, because it changes how much weight the answer deserves.
+    """
     payload = _analyse(client, brisc_glioma[0])
-    assert "Not supported by this version" in client.post("/api/export", json=payload).text
+    text = client.post("/api/export", json=payload).text
+    assert "Image came from" in text
+    assert "used as supplied" in text
+
+    payload["source_format"] = "dicom"
+    converted = client.post("/api/export", json=payload).text
+    assert "converted by this app" in converted
+    assert "measured on slices exported as JPEG" in converted
 
 
 def test_export_escapes_injected_markup(client, brisc_glioma):
@@ -185,3 +197,86 @@ def test_the_export_records_which_model_and_config_produced_it(client, brisc_gli
     assert payload["image_sha256"] in text
     assert payload["config_version"] in text
     assert payload["app_version"] in text
+
+
+# ------------------------------------------------------- when it was read
+
+def test_a_result_records_when_the_scan_was_read(client, brisc_glioma):
+    payload = _analyse(client, brisc_glioma[0])
+
+    assert payload["read_at_utc"], "the result carries no reading time"
+    assert payload["read_at_utc"].endswith("Z"), "the reading time is not UTC"
+
+
+def test_an_export_is_dated(client, brisc_glioma):
+    """A result sheet with no date on it is not a record.
+
+    Filed in a patient's notes it cannot be tied to a visit, ordered against a
+    referral, or checked afterwards. This shipped undated.
+    """
+    payload = _analyse(client, brisc_glioma[0])
+    text = client.post("/api/export", json=payload).text
+
+    assert "Scan read at" in text
+    assert payload["read_at_utc"] in text
+    assert "This sheet made at" in text
+
+
+def test_an_older_export_says_the_time_is_missing_rather_than_inventing_one(
+        client, brisc_glioma):
+    """Stamping the export time as the reading time would be a quiet lie.
+
+    They can be days apart. A sheet that says a scan was read at the moment
+    somebody pressed Save is worse than one that admits it does not know.
+    """
+    payload = _analyse(client, brisc_glioma[0])
+    payload.pop("read_at_utc")
+
+    text = client.post("/api/export", json=payload).text
+    assert "not recorded by this version" in text
+
+
+def test_a_case_reference_reaches_the_printed_sheet(client, brisc_glioma):
+    """Without it the sheet cannot be filed against a patient at all."""
+    payload = _analyse(client, brisc_glioma[0])
+    payload["case_reference"] = "CLINIC-2291 / 01-08-2026"
+
+    text = client.post("/api/export", json=payload).text
+    assert "Case reference" in text
+    assert "CLINIC-2291 / 01-08-2026" in text
+
+
+def test_no_case_reference_means_no_empty_row(client, brisc_glioma):
+    payload = _analyse(client, brisc_glioma[0])
+    assert "Case reference" not in client.post("/api/export", json=payload).text
+
+
+def test_a_case_reference_is_escaped_and_capped(client, brisc_glioma):
+    """Operator-typed text is still attacker-influenced text."""
+    payload = _analyse(client, brisc_glioma[0])
+    payload["case_reference"] = "<script>alert(1)</script>" + "x" * 200
+
+    text = client.post("/api/export", json=payload).text
+    assert "<script>alert(1)</script>" not in text
+    assert "x" * 100 not in text, "the reference was not length-capped"
+
+
+def test_the_case_reference_is_never_written_to_the_audit_log(client, brisc_glioma,
+                                                              tmp_path, monkeypatch):
+    """It exists so a sheet can be filed, not so the app can keep it.
+
+    The audit log is the one thing this app does write to disk, and it is
+    deliberately free of anything identifying a patient. A clinic number is
+    exactly that.
+    """
+    from app.core import paths
+
+    payload = _analyse(client, brisc_glioma[0])
+    payload["case_reference"] = "CLINIC-2291"
+    client.post("/api/export", json=payload)
+
+    log_dir = paths.audit_dir()
+    written = "".join(
+        path.read_text(encoding="utf-8") for path in sorted(log_dir.glob("*.jsonl"))
+    )
+    assert "CLINIC-2291" not in written

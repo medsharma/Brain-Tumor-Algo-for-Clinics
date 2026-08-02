@@ -96,6 +96,55 @@ def verify_identical(original: Path, stripped: Path, backbone: str) -> float:
     return diff
 
 
+def refresh_config(dist: Path, source: Path) -> None:
+    """Put a corrected config into a prepared install, weights untouched.
+
+    The thing a clinic downloads carries its own copy of the config, and that
+    copy is what the app reads. When the figures a config publishes about itself
+    are corrected, the package keeps making the old claim until it is rebuilt,
+    and rebuilding means restripping and reverifying 1.7 GB of weights that did
+    not change.
+
+    So this rewrites everything except the checkpoint block, which stays exactly
+    as the full preparation left it: relative paths, and the hashes of the files
+    actually sitting in ``models/``. Those describe the weights on disk, and this
+    tool has not touched the weights.
+    """
+    target = dist / "deployment_config.json"
+    if not target.is_file():
+        raise SystemExit(
+            f"{target} does not exist, so this install was never prepared. "
+            f"Run this tool without --config-only.")
+
+    prepared = json.loads(target.read_text(encoding="utf-8"))
+    fresh = json.loads(source.read_text(encoding="utf-8"))
+
+    if "checkpoints" not in prepared:
+        raise SystemExit(f"{target} has no checkpoint block to keep")
+
+    seeds_before = [c.get("seed") for c in prepared["checkpoints"]]
+    if list(fresh.get("chosen_seeds") or []) != seeds_before:
+        raise SystemExit(
+            f"the config chooses seeds {fresh.get('chosen_seeds')} but this "
+            f"install holds {seeds_before}. That is a different model, not a "
+            f"corrected description of the same one. Run the full preparation.")
+
+    fresh["checkpoints"] = prepared["checkpoints"]
+    fresh["checkpoint_paths_are"] = prepared.get(
+        "checkpoint_paths_are", "relative to the folder containing this file")
+    target.write_text(json.dumps(fresh, indent=2), encoding="utf-8")
+
+    performance = fresh.get("expected_performance") or {}
+    print(f"  config refreshed in {target}")
+    print(f"    tumour threshold  {fresh.get('tumor_threshold')}")
+    print(f"    defer cutoff      {fresh.get('entropy_defer_threshold')} "
+          f"({fresh.get('defer_signal', 'entropy')})")
+    print(f"    published defer   {performance.get('defer_rate')}")
+    print(f"    weights           unchanged, {len(fresh['checkpoints'])} files")
+    print("\n  Repack the zip so the download matches:")
+    print("    python app/tools/pack_release.py")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -104,11 +153,19 @@ def main() -> None:
     ap.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     ap.add_argument("--skip-verify", action="store_true",
                     help="skip the bit-identity check (do not use for a real install)")
+    ap.add_argument("--config-only", action="store_true",
+                    help="refresh the config in an install that is already prepared, "
+                         "keeping its checkpoints. For when the paperwork changed "
+                         "and the weights did not.")
     args = ap.parse_args()
 
     if not args.dist.is_dir():
         raise SystemExit(f"{args.dist} does not exist. Build the app first:\n"
                          f"  python -m PyInstaller app/packaging/brain_mri_triage.spec --noconfirm")
+
+    if args.config_only:
+        refresh_config(args.dist, args.config)
+        return
 
     cfg = json.loads(args.config.read_text())
     models_dir = args.dist / "models"

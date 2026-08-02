@@ -59,6 +59,7 @@ from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
 from .core import (
+    audit,
     decision,
     downloads,
     explain_adapter,
@@ -334,7 +335,6 @@ def create_app() -> FastAPI:
         return _catalogue
 
     _package: list[downloads.Downloadable] = []
-    _installer: list[downloads.Downloadable] = []
 
     def package() -> downloads.Downloadable | None:
         """The ready-built Windows app, if one exists. Hashed once."""
@@ -344,21 +344,28 @@ def create_app() -> FastAPI:
             _package = [found] if found is not None else []
         return _package[0] if _package else None
 
-    def setup_exe() -> downloads.Downloadable | None:
-        """The small setup program, if one has been built."""
-        nonlocal _installer
-        if not _installer:
-            found = downloads.windows_installer(get_engine().config)
-            _installer = [found] if found is not None else []
-        return _installer[0] if _installer else None
+    def setup_exe(base_url: str) -> downloads.Downloadable | None:
+        """The small setup program, addressed to whoever is downloading it.
+
+        Not memoised here. The bytes depend on the address the caller reached us
+        on, and that comes from the Host header, so a per-address cache is a
+        cache an outsider chooses the keys of. ``downloads`` caches the one
+        underlying file instead, which is what the disk read was for.
+        """
+        return downloads.windows_installer(get_engine().config, base_url)
+
+    def base_url_of(request: Request) -> str:
+        return str(request.base_url).rstrip("/")
 
     @app.get("/api/downloads")
-    async def list_downloads() -> dict[str, Any]:
+    async def list_downloads(request: Request) -> dict[str, Any]:
         items = catalogue()
         body = downloads.manifest(get_engine().config, items)
         ready = package()
         body["windows_package"] = ready.to_dict() if ready is not None else None
-        setup = setup_exe()
+        # Hashed over the stamped bytes, so the checksum shown on the page is
+        # the checksum of the file this caller will actually receive.
+        setup = setup_exe(base_url_of(request))
         body["windows_installer"] = setup.to_dict() if setup is not None else None
         return body
 
@@ -392,14 +399,14 @@ def create_app() -> FastAPI:
         )
 
     @app.get("/api/downloads/{key}")
-    async def fetch_download(key: str) -> Response:
+    async def fetch_download(key: str, request: Request) -> Response:
         """Stream one file.
 
         `key` is matched against the catalogue rather than joined onto a
         directory, so there is no path to traverse out of. A request for
         `../../secrets` simply does not match anything.
         """
-        extras = [x for x in (package(), setup_exe()) if x is not None]
+        extras = [x for x in (package(), setup_exe(base_url_of(request))) if x is not None]
         item = next((x for x in extras if x.key == key), None) or downloads.find(catalogue(), key)
         if item is None:
             raise HTTPException(status_code=404, detail="No such file.")
@@ -453,6 +460,38 @@ def _build_report(payload: dict[str, Any]) -> str:
     """
     include_name = bool(payload.get("include_filename"))
     name = _escape(payload.get("display_name")) if include_name else "(filename withheld)"
+
+    # When the scan was read, and when this sheet was made. Both, because they
+    # are not the same event and can be days apart.
+    #
+    # A printed result with no date on it is not a record. Filed in a patient's
+    # notes it cannot be tied to a visit, ordered against a referral, or checked
+    # afterwards. The reading time is taken from the result rather than from the
+    # clock now; the clock now is reported separately and honestly labelled.
+    #
+    # An older export, or a payload with the field stripped, says so rather than
+    # borrowing the export time and quietly presenting it as the reading time.
+    read_at = _escape(payload.get("read_at_utc") or "not recorded by this version")
+
+    # Typed by the operator for this one sheet, so a clinic can file it. Never
+    # stored anywhere. Length-capped here as well as in the page, because the
+    # page is not the only thing that can post to this endpoint.
+    case_reference = _escape(str(payload.get("case_reference") or "").strip()[:60])
+    case_row = (
+        f" <tr><td>Case reference</td><td>{case_reference}</td></tr>\n"
+        if case_reference else ""
+    )
+
+    # Where the picture came from. A DICOM converted by the app is not the image
+    # any published figure was measured on, and a sheet going into a patient's
+    # file has to record which of the two this was.
+    source_line = (
+        "DICOM, converted by this app. Accuracy figures for this tool were "
+        "measured on slices exported as JPEG, not on this conversion."
+        if str(payload.get("source_format")) == "dicom"
+        else "An image file, used as supplied."
+    )
+    made_at = _escape(audit.utc_now_iso())
 
     images = ""
     for label, key in (("Original", "original_png"), ("Where the model looked", "overlay_png")):
@@ -519,6 +558,8 @@ def _build_report(payload: dict[str, Any]) -> str:
 <div class="disclaimer"><strong>Read this before acting on the result above.</strong>
 {_escape(payload.get('disclaimer') or decision.DISCLAIMER_FULL)}</div>
 <table class="meta">
+{case_row} <tr><td>Scan read at</td><td>{read_at} (UTC)</td></tr>
+ <tr><td>This sheet made at</td><td>{made_at} (UTC)</td></tr>
  <tr><td>Image file</td><td>{name}</td></tr>
  <tr><td>Image fingerprint (SHA-256)</td><td>{_escape(payload.get('image_sha256'))}</td></tr>
  <tr><td>App version</td><td>{_escape(payload.get('app_version'))}</td></tr>
@@ -526,7 +567,7 @@ def _build_report(payload: dict[str, Any]) -> str:
      seed(s) {_escape(payload.get('model_seeds'))}</td></tr>
  <tr><td>Config version</td><td>{_escape(payload.get('config_version'))}</td></tr>
  <tr><td>Repeated readings</td><td>{_escape(payload.get('mc_passes'))}</td></tr>
- <tr><td>DICOM</td><td>Not supported by this version. Images must be JPEG or PNG.</td></tr>
+ <tr><td>Image came from</td><td>{source_line}</td></tr>
 </table>
 </body></html>
 """

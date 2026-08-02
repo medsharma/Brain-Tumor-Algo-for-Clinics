@@ -9,7 +9,11 @@
 </head>
 <body>
 
-<div id="mode-banner" class="mode-banner hidden" role="alert"></div>
+<!-- role="status", not "alert". This strip is on screen every single session,
+     and an alert interrupts a screen reader every single time for a fact that
+     never changes. A polite live region still announces it, without shouting
+     over whatever the operator was doing. -->
+<div id="mode-banner" class="mode-banner hidden" role="status"></div>
 
 <!-- Inline, because nothing here may reach the network. Drawn rather than
      photographed: a real patient's scan used as decoration would be both a
@@ -55,14 +59,18 @@
         <use href="#brain-mark" />
       </svg>
       <p class="dropzone-main">Drop a scan here</p>
-      <p class="dropzone-sub">or click to choose. One brain MRI slice at a time. JPEG or PNG.</p>
-      <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.bmp,.tif,.tiff" hidden>
+      <p class="dropzone-sub">or click to choose. DICOM, JPEG or PNG. Several
+        slices at once is fine, each one judged on its own.</p>
+      <input type="file" id="file-input" multiple
+             accept=".dcm,.dicom,.ima,.jpg,.jpeg,.png,.bmp,.tif,.tiff" hidden>
     </div>
 
     <ul class="limits">
-      <li><strong>DICOM files are not supported.</strong> Export the slice from
-          your viewer as JPEG or PNG first, using the window your radiographer
-          normally uses.</li>
+      <li id="dicom-line"><strong>DICOM is read straight from the scanner.</strong>
+          The app windows it using the setting stored in the file, and says on
+          the result how the picture was made. Accuracy figures for this tool
+          were measured on slices exported as JPEG, so treat a DICOM result with
+          more caution and check the picture looks right.</li>
       <li><strong>One slice, not a whole study.</strong> This tool judges a
           single image. It does not combine slices into one answer.</li>
       <li id="privacy-line"><strong>Nothing leaves this laptop.</strong> No
@@ -72,8 +80,23 @@
 
   <!-- ---------------------------------------------------------------- -->
   <section id="working" class="panel hidden">
-    <p class="working-text">Reading the scan. This takes a few seconds.</p>
+    <p class="working-text" id="working-text">Reading the scan. This takes a few seconds.</p>
     <div class="spinner" aria-hidden="true"></div>
+  </section>
+
+  <!-- ----------------------------------------------------------------
+       Several slices, listed. Deliberately NOT combined into one answer:
+       doing that properly needs a study-level threshold nobody has measured,
+       and guessing one would raise false alarms that nobody would notice.
+       So this is a list of separate readings, sorted worst first, and it
+       says so. -->
+  <section id="batch-panel" class="panel hidden">
+    <h2>Slices read</h2>
+    <p class="batch-note" id="batch-note"></p>
+    <ul class="batch-list" id="batch-list"></ul>
+    <div class="actions">
+      <button type="button" id="batch-new" class="secondary-button">Read another scan</button>
+    </div>
   </section>
 
   <!-- ---------------------------------------------------------------- -->
@@ -132,10 +155,29 @@
       <p id="tumor-type-text" class="tumor-type"></p>
     </div>
 
-    <!-- Disclaimer, on every result -->
+    <!-- Disclaimer, on every result. Calmer than it was, and not one word
+         shorter: full-size body text, its own card, an amber rule down the
+         edge. The red in this interface is reserved for the tumour call, so
+         that it still means something on the fortieth scan of the day. -->
     <div class="disclaimer" role="note">
-      <h3>Read this before acting on the result above</h3>
+      <h3>Before you act on this</h3>
       <p id="disclaimer-text"></p>
+    </div>
+
+    <!-- Typed by the operator, put on the printed sheet, and never stored.
+         Without it a result sheet cannot be tied to a patient at all: the file
+         name is withheld by default because file names routinely carry patient
+         names, which left the clinic with a page of findings and no way to file
+         it. This goes into the export only. It is not in the audit log, not in
+         any request the app keeps, and it is gone when the page is reloaded. -->
+    <div class="case-row">
+      <label for="case-reference">Case reference for the printed sheet</label>
+      <input type="text" id="case-reference" maxlength="60" autocomplete="off"
+             placeholder="e.g. clinic number or visit date">
+      <p class="case-note">
+        Optional. Appears on the saved sheet so it can be filed. Not stored by
+        this app and not written to its log. Use whatever your clinic files by.
+      </p>
     </div>
 
     <div class="actions">

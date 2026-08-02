@@ -33,5 +33,14 @@ scikit-image>=0.21
 # shipped backbone is ViT, so this is the path that needs it.
 opencv-python>=4.8
 
+# DICOM, which is what every scanner in a clinic actually produces. The app
+# converts it itself (app/core/dicom_loading.py) rather than asking whoever is
+# at the laptop to pick a window in a viewer and export a JPEG, because that
+# choice changes the picture and can change the call.
+#
+# Without this the app still runs: it refuses DICOM with the old instructions,
+# which is a working route and a much worse one.
+pydicom>=2.4
+
 # Used by the benchmarking and validation tools in app/tools/, not by the app.
 pandas>=2.0

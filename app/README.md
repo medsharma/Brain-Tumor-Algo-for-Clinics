@@ -177,25 +177,41 @@ The slider changes how strong the colour is. The button hides it entirely.
 
 Stated plainly, because a vague limit is worse than a clear one.
 
-**DICOM files are not supported.** Most scanners produce DICOM. This tool does
-not read it.
+**DICOM is read, and the conversion is not a measured route.**
 
-The reason is not laziness. DICOM stores raw numbers from the scanner, not a
-picture. Turning those into an image needs a window level and width, plus a
-rescale slope and intercept. Get them wrong and the scan looks completely
-different, with no error and no warning, and the tool would confidently give
-you a wrong answer. The model was trained on images that had already been
-converted with a radiographer's settings.
+The app takes DICOM straight from the scanner. It applies the rescale slope and
+intercept, then the VOI LUT or the window stored in the file, which is the
+setting a radiographer or the scanner already chose. Only if the file carries no
+window at all does it fall back to stretching the middle 98% of the values, and
+then it says so on the result in those words. MONOCHROME1 files are inverted.
+Multi-frame files are refused rather than silently sliced.
 
-**What to do instead:** open the study in your normal viewer, export the slice
-you want as JPEG or PNG using the window your radiographer normally uses, then
-load that file.
+What it cannot tell you is how much that conversion moves the answer. Every
+performance figure this project publishes was measured on images that had
+already been exported from a viewer, and a DICOM converted here is a different
+picture. So every DICOM result carries a note saying that, on screen and on the
+printed sheet, and the audit log records the file extension it came in by.
 
-**One slice at a time, not a whole study.** A real MRI is many slices. This
-tool judges one image. It will not combine slices into a single answer,
-because doing that properly needs a separate safety threshold that has not
-been measured yet. Guessing one would make the tool raise false alarms more
-often, and nobody would notice.
+**If you would rather control it yourself:** export the slice from your viewer
+as JPEG or PNG with your usual window and load that instead. That route is
+unchanged and it is the one the published numbers describe.
+
+**Several slices at once, but never a study-level answer.** A real MRI is many
+slices, so the app takes as many as you drop on it and reads each one on its
+own. It lists them worst first, so the row that says refer is at the top rather
+than nineteen rows down.
+
+It will not combine them into a single answer for the study. Doing that properly
+needs a separate safety threshold that has not been measured, and guessing one
+would make the tool raise false alarms more often with nobody noticing. The
+result list says so on screen.
+
+**A case reference, for filing the printed sheet.** The saved result withholds
+the file name by default, because file names routinely carry patient names, and
+that left a clinic holding a page of findings with no way to tie it to anybody.
+So the result page has a free-text box whose contents go on the printed sheet
+and nowhere else: not into the audit log, not into anything the app keeps, and
+cleared the moment the next scan is read.
 
 **T1 scans of the brain.** That is what it has been tested on. Other sequences
 and other body parts are outside what it knows.

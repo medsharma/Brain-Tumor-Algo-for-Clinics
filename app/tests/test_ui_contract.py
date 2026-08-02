@@ -42,13 +42,33 @@ def test_the_page_promises_the_things_the_brief_requires():
     lowered = HTML.lower()
     assert "not a diagnosis" in lowered
     assert "dicom" in lowered
-    assert "one brain mri slice at a time" in lowered
     assert "nothing leaves this laptop" in lowered
 
 
-def test_the_page_says_dicom_is_unsupported_rather_than_staying_vague():
-    assert "DICOM files are not supported" in HTML
-    assert "JPEG or PNG" in HTML
+def test_several_slices_are_never_merged_into_one_answer():
+    """The app takes a whole study's worth of slices and judges each alone.
+
+    Combining them needs a study-level threshold nobody has measured. An
+    invented one would raise false alarms that nobody would notice, so the page
+    has to say plainly that no study-level call is being made.
+    """
+    assert 'id="file-input" multiple' in HTML
+    assert "each one judged on its own" in HTML
+    assert "does not combine slices" in HTML
+    assert "NOT combined into a single answer" in JS
+
+
+def test_the_page_says_what_it_does_with_dicom_rather_than_staying_vague():
+    """DICOM is read as of 2026-08-01, and the page has to say how.
+
+    A converted DICOM is not the picture any published figure was measured on.
+    The upload page says the app windows it from the file, and that the accuracy
+    numbers came from exported JPEG.
+    """
+    assert "DICOM is read straight from the scanner" in HTML
+    assert "window" in HTML.lower()
+    assert "exported as JPEG" in HTML or "exported as JPEG" in HTML.replace("\n", " ")
+    assert ".dcm" in HTML, "the file picker must offer DICOM"
 
 
 def test_the_page_warns_that_it_judges_one_slice_not_a_study():
@@ -123,3 +143,25 @@ def test_the_font_stack_uses_only_fonts_a_machine_already_has():
 )
 def test_every_control_is_wired_to_something(handler):
     assert handler in JS, f"the {handler} control has no listener"
+
+
+def test_the_case_reference_is_export_only_and_never_stored():
+    """The sheet has to be filable. The reference must not become a record.
+
+    File names are withheld from exports by default because they routinely
+    carry patient names, which left a clinic holding a page of findings with no
+    way to tie it to a patient. The operator types a reference instead, it goes
+    on the printed sheet, and it goes nowhere else: not into the audit log, not
+    into the result the app holds, and not across a scan boundary.
+    """
+    assert 'id="case-reference"' in HTML
+    assert "case_reference" in JS
+
+    # It is added to the export payload, not to the stored result.
+    assert "case_reference: el(\"case-reference\").value.trim()" in JS
+    assert "currentResult.case_reference" not in JS
+
+    # And it is cleared when a new scan starts.
+    reset = JS[JS.index("function reset()"):]
+    reset = reset[:reset.index("\n}")]
+    assert 'el("case-reference").value = ""' in reset

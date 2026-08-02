@@ -14,6 +14,11 @@ it needs urgent attention.
 >
 > Do not use it to make a decision about a person.
 
+**Planning a clinic pilot?** Read
+[CLINIC_READINESS.md](CLINIC_READINESS.md) first. It sets out what is ready, what
+is not, the only deployment that is defensible today, and the checklist that has
+to be complete before a clinic acts on a result.
+
 ---
 
 ## Why this exists
@@ -252,17 +257,19 @@ disable it.
 
 What it will and will not accept:
 
-- One brain MRI slice at a time, JPEG or PNG.
-- **No DICOM.** Export the slice from your viewer first, using the window your
-  radiographer normally uses. Guessing a window level and width would change the
-  image silently.
+- Brain MRI slices, as DICOM, JPEG or PNG. Several at once is fine; each is
+  judged on its own.
+- **DICOM is converted by the app**, using the window stored in the file. If the
+  file carries no window it falls back to a percentile stretch and says so on the
+  result. Every published figure was measured on viewer-exported JPEG, so a
+  DICOM result is marked as coming through an unmeasured route.
 - **No study-level answer.** It judges one image. It does not combine slices.
 
 Speed, measured on CPU (Windows 11, torch 2.12.1+cpu, 8 threads, ResNet-50,
 single seed, MC-Dropout T=20): about **130 ms per image** once warm, plus about
 0.5 s to load the model.
 
-Tests: `python -m pytest app/tests` (178 tests).
+Tests: `python -m pytest app/tests` (323 tests).
 
 ---
 

@@ -15,51 +15,82 @@
      3. The safety wording must never look like small print. It is the most
         important text on the page.
 
-   Restrained on purpose. A triage tool that looks slicker than its evidence
-   invites trust it has not earned, and this model still sends about 2 tumours
-   in 1,000 home confidently. The polish goes into type, spacing and depth, not
-   into colour and ornament. */
+   Polish lives in type, spacing, depth and light. Not in colour.
+
+   Colour here is a signal, not decoration, and the budget is spent as follows:
+
+     red    — the tumour call, and nothing else on the page.
+     amber  — a standing condition the operator should know about.
+     green  — the no-tumour call.
+     blue   — the machine itself: controls, links, the mark.
+
+   Every warning on this page keeps its full wording. What changed is weight:
+   the permanent ones sit in quiet cards with a single hairline of colour, so
+   that the one box that turns red still means something on the fortieth scan
+   of the day. A page where everything shouts is a page where nothing is
+   heard, and this model still sends about 2 tumours in 1,000 home
+   confidently. */
 
 /* ------------------------------------------------------------------ tokens */
 
 :root {
   color-scheme: dark;
 
-  --bg: #08090b;
-  --bg-glow: #0d1014;
-  --surface: #0f1114;
-  --surface-2: #15181c;
-  --line: #1d2126;
-  --line-strong: #2b3138;
+  --bg: #07080a;
+  --bg-glow: #0e1218;
+  --surface: #0f1216;
+  --surface-2: #14181d;
+  --surface-3: #1a1f25;
+  --line: #21262d;
+  --line-strong: #2f3740;
 
-  --text: #f0f2f4;
-  --text-2: #9aa1aa;
-  --text-3: #6b737d;
+  --text: #f2f4f7;
+  --text-2: #a0a8b2;
+  --text-3: #6e767f;
 
-  /* One accent. Cold, instrument-like, and it reads as "machine", which is
-     what this is. */
-  --accent: #56b6e6;
+  /* One accent, in two temperatures. Cold and instrument-like, which reads as
+     "machine", which is what this is. The second tone exists only so gradients
+     and glows have somewhere to travel. */
+  --accent: #5ab9e8;
+  --accent-2: #7f8ff5;
   --accent-dim: #2b6f95;
-  --accent-soft: #0e1c25;
+  --accent-soft: #0d1b25;
+  --accent-line: rgba(90, 185, 232, 0.30);
+  --accent-glow: rgba(90, 185, 232, 0.16);
 
-  --danger: #ff7a6b;
-  --danger-soft: #22100e;
-  --warn: #e8b562;
-  --warn-soft: #1f1810;
-  --ok: #6fd39a;
-  --ok-soft: #0d1c14;
-  --neutral: #8c98a4;
-  --neutral-soft: #14171b;
+  --danger: #ff8271;
+  --danger-soft: #1f100e;
+  --danger-line: rgba(255, 130, 113, 0.30);
+  --warn: #e9b869;
+  --warn-soft: #1c1610;
+  --warn-line: rgba(233, 184, 105, 0.28);
+  --ok: #74d6a0;
+  --ok-soft: #0c1b14;
+  --ok-line: rgba(116, 214, 160, 0.28);
+  --neutral: #93a0ac;
+  --neutral-soft: #13161a;
 
-  --radius: 10px;
-  --radius-lg: 16px;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
 
-  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset,
-            0 18px 40px -28px rgba(0, 0, 0, 0.9);
+  /* Depth comes from one soft, very low shadow plus a single hairline of light
+     along the top edge. Two layers, not five. */
+  --edge: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.45),
+            0 24px 48px -32px rgba(0, 0, 0, 0.95);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.45),
+                 0 30px 60px -30px rgba(0, 0, 0, 0.95);
+
+  --pane: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.006) 42%,
+            rgba(255, 255, 255, 0) 100%);
 
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
           Arial, sans-serif;
   --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
 * { box-sizing: border-box; }
@@ -68,8 +99,10 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
+  min-height: 100%;
   background:
-    radial-gradient(900px 520px at 50% -12%, var(--bg-glow), transparent 70%),
+    radial-gradient(1100px 600px at 50% -16%, var(--bg-glow), transparent 68%),
+    radial-gradient(700px 420px at 88% 4%, rgba(127, 143, 245, 0.05), transparent 70%),
     var(--bg);
   background-attachment: fixed;
   color: var(--text);
@@ -77,13 +110,29 @@ body {
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3 { line-height: 1.25; letter-spacing: -0.011em; margin: 0; }
+h1, h2, h3 { line-height: 1.22; letter-spacing: -0.013em; margin: 0; }
 p { margin: 0 0 0.9rem; }
 p:last-child { margin-bottom: 0; }
 
-a { color: var(--accent); text-underline-offset: 2px; }
+a {
+  color: var(--accent);
+  text-decoration-color: var(--accent-line);
+  text-underline-offset: 3px;
+  transition: color 0.15s var(--ease), text-decoration-color 0.15s var(--ease);
+}
+a:hover { text-decoration-color: currentColor; }
+
+/* One focus ring for the whole page, so keyboard use never has to guess. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection { background: rgba(90, 185, 232, 0.28); color: #fff; }
 
 code {
   font-family: var(--mono);
@@ -94,53 +143,140 @@ code {
   border-radius: 5px;
 }
 
+/* Numbers that change in place must not shuffle sideways while they do. */
+.probability-text,
+.package-size,
+.version,
+.technical table,
+.download-table { font-variant-numeric: tabular-nums; }
+
 .hidden { display: none !important; }
+
+/* Scrollbar, so the one piece of chrome we do not draw does not glare. */
+* { scrollbar-color: var(--line-strong) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: #3a424c; background-clip: content-box; }
 
 /* ------------------------------------------------------------------ banner */
 
+/* A standing condition, styled as one.
+ *
+ * This banner is on screen every time the app is opened. Red block capitals
+ * are the styling of an emergency, and an emergency that is permanently true
+ * stops being read after the second day: people learn the shape of it and skip
+ * past. So it is a quiet strip with one amber dot, holding exactly two facts
+ * that change what somebody does. The full reasoning stays underneath, one
+ * click away, and none of the wording was cut. */
 .mode-banner {
-  background: var(--danger);
-  color: #fff;
-  padding: 0.7rem 1.4rem;
-  font-weight: 650;
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  background: linear-gradient(180deg, rgba(233, 184, 105, 0.055), rgba(233, 184, 105, 0));
+  color: var(--text-2);
+  border-bottom: 1px solid var(--line);
+  padding: 0.65rem 1.4rem;
+  font-size: 0.82rem;
   text-align: center;
+}
+
+.banner-headline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 560;
+  letter-spacing: 0.01em;
+  font-size: 0.78rem;
+  color: var(--warn);
+  border: 1px solid var(--warn-line);
+  background: var(--warn-soft);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem 0.1rem 0.5rem;
+}
+
+/* The dot carries the alarm so the text does not have to. */
+.banner-headline::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--warn);
+  box-shadow: 0 0 0 3px rgba(233, 184, 105, 0.14);
+  flex: 0 0 auto;
 }
 
 .banner-detail {
   display: block;
   font-weight: 400;
-  font-size: 0.78rem;
-  letter-spacing: 0.01em;
-  text-transform: none;
-  opacity: 0.95;
-  margin: 0.3rem auto 0;
+  font-size: 0.82rem;
+  letter-spacing: 0.005em;
+  color: var(--text-2);
+  margin: 0.35rem auto 0;
   max-width: 78ch;
   line-height: 1.5;
+}
+
+/* The full reasoning, collapsed. Present for anyone deciding whether to trust
+ * the tool, out of the way of somebody reading their fortieth scan today. */
+.banner-more {
+  max-width: 78ch;
+  margin: 0.35rem auto 0;
+  text-align: left;
+  font-size: 0.78rem;
+  color: var(--text-2);
+}
+
+.banner-more > summary {
+  cursor: pointer;
+  text-align: center;
+  color: var(--text-3);
+  list-style: none;
+  padding: 0.15rem 0;
+}
+
+.banner-more > summary::-webkit-details-marker { display: none; }
+
+.banner-more > summary::after { content: " \25be"; }
+.banner-more[open] > summary::after { content: " \25b4"; }
+
+.banner-more > summary:hover { color: var(--text); }
+
+.banner-more > p {
+  margin: 0.5rem 0 0;
+  padding: 0.7rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  line-height: 1.55;
 }
 
 /* ------------------------------------------------------------------ layout */
 
 .topbar {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
   max-width: 940px;
   margin: 0 auto;
-  padding: 2.2rem 1.4rem 0;
+  padding: 2.4rem 1.4rem 0;
 }
 
-.topbar h1 { font-size: 1.3rem; font-weight: 640; }
+.topbar h1 {
+  font-size: 1.32rem;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+}
 
-.subtitle { color: var(--text-2); font-size: 0.9rem; margin: 0.15rem 0 0; }
+.subtitle { color: var(--text-2); font-size: 0.9rem; margin: 0.12rem 0 0; }
 
 .version {
   color: var(--text-3);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-family: var(--mono);
   display: flex;
   gap: 0.5rem;
@@ -150,147 +286,209 @@ code {
 .badge:not(:empty) {
   background: var(--warn-soft);
   color: var(--warn);
-  border: 1px solid currentColor;
-  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--warn-line);
+  padding: 0.12rem 0.5rem;
   border-radius: 999px;
-  font-size: 0.67rem;
-  letter-spacing: 0.04em;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
 }
 
 main {
   max-width: 940px;
   margin: 0 auto;
-  padding: 1.6rem 1.4rem 3rem;
+  padding: 1.7rem 1.4rem 3rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.4rem;
 }
 
 .panel {
-  background: var(--surface);
+  position: relative;
+  background-color: var(--surface);
+  background-image: var(--pane);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  padding: 1.7rem;
-  box-shadow: var(--shadow);
+  padding: 1.8rem;
+  box-shadow: var(--edge), var(--shadow);
+  animation: rise 0.34s var(--ease) both;
 }
 
-.panel h2 { font-size: 1rem; font-weight: 620; margin-bottom: 1rem; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.panel h2 {
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin-bottom: 1.05rem;
+}
 
 .panel h3 {
-  font-size: 0.8rem;
-  font-weight: 640;
+  font-size: 0.74rem;
+  font-weight: 620;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.09em;
   color: var(--text-3);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.55rem;
 }
 
 /* ---------------------------------------------------------------- dropzone */
 
 .dropzone {
+  position: relative;
+  overflow: hidden;
   border: 1.5px dashed var(--line-strong);
   border-radius: var(--radius);
-  padding: 3rem 1.5rem;
+  padding: 3.2rem 1.5rem;
   text-align: center;
   cursor: pointer;
-  background: var(--surface-2);
-  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  background:
+    radial-gradient(420px 180px at 50% 118%, rgba(90, 185, 232, 0.06), transparent 70%),
+    var(--surface-2);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease),
+              box-shadow 0.2s var(--ease), transform 0.14s var(--ease);
 }
 
 .dropzone:hover,
 .dropzone:focus-visible {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  background:
+    radial-gradient(420px 200px at 50% 118%, rgba(90, 185, 232, 0.12), transparent 70%),
+    var(--surface-2);
+  box-shadow: 0 0 0 1px rgba(90, 185, 232, 0.10), 0 0 40px -14px var(--accent-glow);
   outline: none;
 }
 
 .dropzone.dragover {
   border-color: var(--accent);
-  background: var(--accent-soft);
+  border-style: solid;
+  background:
+    radial-gradient(460px 240px at 50% 110%, rgba(90, 185, 232, 0.18), transparent 70%),
+    var(--accent-soft);
+  box-shadow: 0 0 0 1px var(--accent-line), 0 0 60px -18px rgba(90, 185, 232, 0.45);
   transform: scale(1.006);
 }
 
-.dropzone-main { font-size: 1rem; font-weight: 560; margin-bottom: 0.3rem; }
-.dropzone-sub { color: var(--text-3); font-size: 0.85rem; margin: 0; }
+.dropzone-main {
+  position: relative;
+  font-size: 1.14rem;
+  font-weight: 560;
+  letter-spacing: -0.012em;
+  margin-bottom: 0.35rem;
+}
+
+.dropzone-sub {
+  position: relative;
+  color: var(--text-3);
+  font-size: 0.85rem;
+  margin: 0;
+}
 
 .limits {
   list-style: none;
   padding: 0;
-  margin: 1.3rem 0 0;
+  margin: 1.4rem 0 0;
   display: grid;
-  gap: 0.55rem;
+  gap: 0.6rem;
   font-size: 0.85rem;
   color: var(--text-2);
 }
 
-.limits li { padding-left: 1.1rem; position: relative; }
+.limits li { padding-left: 1.15rem; position: relative; }
 
 .limits li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.62em;
+  top: 0.6em;
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background: var(--line-strong);
 }
 
+.limits strong { color: var(--text); font-weight: 580; }
+
 /* Replaces the "nothing leaves this laptop" line when that stops being true.
-   It has to read as a warning, never as reassurance. */
+   It has to read as a warning, never as reassurance — so this one keeps its
+   colour. It is not a standing condition, it is a change of fact. */
 .privacy-warning {
   background: var(--warn-soft);
-  border-left: 3px solid var(--warn);
-  border-radius: 6px;
-  padding: 0.6rem 0.8rem !important;
-  color: var(--text);
+  border: 1px solid var(--warn-line);
+  border-left: 2px solid var(--warn);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem !important;
+  color: var(--text-2);
 }
 .privacy-warning::before { display: none; }
+.privacy-warning strong { color: var(--warn); }
 
 /* ----------------------------------------------------------------- working */
 
-.working-text { text-align: center; color: var(--text-2); margin-bottom: 1.1rem; }
+.working-text { text-align: center; color: var(--text-2); margin-bottom: 1.2rem; }
 
 .spinner {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   margin: 0 auto;
   border: 2.5px solid var(--line);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  filter: drop-shadow(0 0 10px var(--accent-glow));
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
-
-@media (prefers-reduced-motion: reduce) {
-  .spinner { animation-duration: 2.4s; }
-  .dropzone { transition: none; }
-}
 
 /* ------------------------------------------------------------------ result */
 
 /* The single most important element on the page. Everything else is sized
    relative to it, deliberately smaller. */
 .call-box {
+  position: relative;
+  overflow: hidden;
   border-radius: var(--radius);
-  padding: 1.7rem;
+  padding: 1.8rem 1.9rem;
   margin-bottom: 1.5rem;
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background-color: var(--surface-2);
+  background-image: var(--pane);
+  box-shadow: var(--edge);
 }
 
-.call-box.tumor { background: var(--danger-soft); border-color: var(--danger); }
-.call-box.no_tumor { background: var(--ok-soft); border-color: var(--ok); }
-.call-box.uncertain { background: var(--warn-soft); border-color: var(--warn); }
-.call-box.cannot_read { background: var(--neutral-soft); border-color: var(--line-strong); }
+/* A bar of the call's own colour down the leading edge. Visible from further
+   away than any word on the page, and the first thing the eye lands on. */
+.call-box::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--line-strong);
+}
+
+.call-box.tumor {
+  background-color: var(--danger-soft);
+  border-color: var(--danger-line);
+  box-shadow: var(--edge), 0 0 60px -30px rgba(255, 130, 113, 0.55);
+}
+.call-box.no_tumor { background-color: var(--ok-soft); border-color: var(--ok-line); }
+.call-box.uncertain { background-color: var(--warn-soft); border-color: var(--warn-line); }
+.call-box.cannot_read { background-color: var(--neutral-soft); border-color: var(--line-strong); }
+
+.call-box.tumor::before { background: var(--danger); }
+.call-box.no_tumor::before { background: var(--ok); }
+.call-box.uncertain::before { background: var(--warn); }
+.call-box.cannot_read::before { background: var(--neutral); }
 
 .call-text {
-  font-size: 1.55rem;
-  font-weight: 660;
-  letter-spacing: -0.016em;
+  font-size: 1.62rem;
+  font-weight: 640;
+  letter-spacing: -0.022em;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.18;
 }
 
 .call-box.tumor .call-text { color: var(--danger); }
@@ -299,57 +497,198 @@ main {
 .call-box.cannot_read .call-text { color: var(--neutral); }
 
 .confidence-text {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: var(--text-2);
-  margin: 0.45rem 0 0;
-  font-weight: 520;
+  margin: 0.5rem 0 0;
+  font-weight: 500;
 }
 
-.probability-text { font-size: 0.82rem; color: var(--text-3); margin: 0.2rem 0 0; }
+.probability-text { font-size: 0.82rem; color: var(--text-3); margin: 0.22rem 0 0; }
 
 .next-step {
-  background: var(--accent-soft);
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(90, 185, 232, 0.07), rgba(90, 185, 232, 0.02));
+  border: 1px solid rgba(90, 185, 232, 0.16);
   border-radius: var(--radius);
-  padding: 1.1rem 1.3rem;
-  margin-bottom: 1.1rem;
+  padding: 1.15rem 1.35rem;
+  margin-bottom: 1.15rem;
 }
 
-.next-step p { font-size: 0.98rem; font-weight: 540; }
+.next-step h3 { color: var(--accent); }
+.next-step p { font-size: 1rem; font-weight: 520; }
 
-.reason { color: var(--text-2); font-size: 0.89rem; margin-bottom: 1.1rem; }
+.reason { color: var(--text-2); font-size: 0.89rem; margin-bottom: 1.15rem; }
 
+/* Result-time notes: a stub warning, a heatmap that failed. These are specific
+   to the scan on screen, so they keep amber. */
 .notes {
   list-style: none;
   padding: 0.8rem 1rem;
-  margin: 0 0 1.2rem;
+  margin: 0 0 1.25rem;
   background: var(--warn-soft);
-  border-left: 3px solid var(--warn);
-  border-radius: 6px;
+  border: 1px solid var(--warn-line);
+  border-left: 2px solid var(--warn);
+  border-radius: var(--radius-sm);
   font-size: 0.86rem;
+  color: var(--text-2);
 }
 
 .notes li + li { margin-top: 0.4rem; }
 
+/* ------------------------------------------------------------------ batch */
+
+/* A study arrives as a folder of slices, so the app takes several at once. It
+ * does NOT merge them into one answer: that needs a study-level threshold
+ * nobody has measured, and an invented one would raise false alarms quietly.
+ *
+ * Sorted worst first. Somebody scanning twenty rows must not have to reach row
+ * nineteen to find the one that says refer. */
+.batch-note {
+  font-size: 0.87rem;
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line-strong);
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.1rem;
+  max-width: 78ch;
+}
+
+.batch-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+
+.batch-item { margin: 0; }
+
+.batch-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name call" "detail call";
+  align-items: center;
+  gap: 0.15rem 1rem;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  background-color: var(--surface-2);
+  background-image: var(--pane);
+  color: var(--text);
+  transition: border-color 0.15s var(--ease), background 0.15s var(--ease),
+              transform 0.1s var(--ease);
+}
+
+.batch-button:hover { background-color: var(--surface-3); }
+.batch-button:active { transform: translateY(1px); }
+.batch-button:disabled { cursor: default; opacity: 0.7; transform: none; }
+
+.batch-name {
+  grid-area: name;
+  font-size: 0.9rem;
+  font-weight: 550;
+  overflow-wrap: anywhere;
+}
+
+.batch-detail {
+  grid-area: detail;
+  font-size: 0.79rem;
+  color: var(--text-3);
+  overflow-wrap: anywhere;
+}
+
+.batch-call {
+  grid-area: call;
+  font-size: 0.82rem;
+  font-weight: 580;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.batch-item.tumor .batch-button { border-left-color: var(--danger); }
+.batch-item.tumor .batch-call { color: var(--danger); }
+.batch-item.no_tumor .batch-button { border-left-color: var(--ok); }
+.batch-item.no_tumor .batch-call { color: var(--ok); }
+.batch-item.uncertain .batch-button { border-left-color: var(--warn); }
+.batch-item.uncertain .batch-call { color: var(--warn); }
+.batch-item.cannot_read .batch-button { border-left-color: var(--neutral); }
+.batch-item.cannot_read .batch-call { color: var(--neutral); }
+
+@media (max-width: 620px) {
+  .batch-button {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "call" "name" "detail";
+    gap: 0.25rem;
+  }
+  .batch-call { text-align: left; }
+}
+
+/* ------------------------------------------------------- case reference */
+
+/* Typed for one printed sheet, never stored. Without it the sheet cannot be
+ * filed at all: the file name is withheld by default because file names carry
+ * patient names. */
+.case-row {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1.4rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--line);
+}
+
+.case-row label {
+  font-size: 0.74rem;
+  font-weight: 620;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-3);
+}
+
+.case-row input {
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  max-width: 32ch;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+
+.case-row input::placeholder { color: var(--text-3); }
+
+.case-row input:focus {
+  outline: none;
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px rgba(90, 185, 232, 0.12);
+}
+
+.case-note { font-size: 0.78rem; color: var(--text-3); margin: 0; max-width: 62ch; }
+
 /* ------------------------------------------------------------------ images */
 
-.images-block { margin: 1.6rem 0; }
+.images-block { margin: 1.7rem 0; }
 
 .images-caveat {
   font-size: 0.87rem;
-  color: var(--text);
+  color: var(--text-2);
   background: var(--surface-2);
-  border-left: 3px solid var(--line-strong);
-  padding: 0.6rem 0.85rem;
-  border-radius: 6px;
-  margin-bottom: 0.7rem;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line-strong);
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
 }
 
-.images-help { font-size: 0.82rem; color: var(--text-3); margin-bottom: 1rem; }
+.images-help { font-size: 0.82rem; color: var(--text-3); margin-bottom: 1.05rem; }
 
 .image-pair {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.1rem;
+  gap: 1.15rem;
 }
 
 .image-pair figure { margin: 0; }
@@ -358,20 +697,32 @@ main {
   width: 100%;
   display: block;
   border-radius: var(--radius);
-  border: 1px solid var(--line);
   background: #000;
 }
 
-.image-pair figcaption {
-  font-size: 0.72rem;
-  color: var(--text-3);
-  margin-top: 0.45rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+/* The frame sits on a wrapper rather than the image, so the two panes line up
+   exactly and the overlay does not get a second border of its own. */
+.image-pair figure > img,
+.overlay-stack {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 30px -22px rgba(0, 0, 0, 0.9);
+  transition: border-color 0.18s var(--ease);
 }
 
-.overlay-stack { position: relative; }
-.overlay-stack img { position: relative; }
+.image-pair figure:hover > img,
+.image-pair figure:hover .overlay-stack { border-color: var(--line-strong); }
+
+.image-pair figcaption {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.overlay-stack { position: relative; overflow: hidden; }
+.overlay-stack img { position: relative; border: none; border-radius: 0; box-shadow: none; }
 .overlay-stack #img-overlay {
   position: absolute;
   inset: 0;
@@ -381,47 +732,107 @@ main {
 .slider-row {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  margin-top: 0.9rem;
+  gap: 0.9rem;
+  margin-top: 1rem;
   font-size: 0.82rem;
   color: var(--text-2);
   flex-wrap: wrap;
 }
 
-.slider-row input[type="range"] { flex: 1; min-width: 130px; accent-color: var(--accent); }
+/* Drawn by hand rather than left to the browser, because the stock control is
+   a grey slab in a dark room and this one gets used with the image, not read. */
+.slider-row input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  min-width: 130px;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider-row input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  margin-top: -5.5px;
+  border-radius: 50%;
+  background: #eef7fd;
+  border: none;
+  box-shadow: 0 0 0 4px rgba(90, 185, 232, 0.14), 0 2px 6px rgba(0, 0, 0, 0.6);
+  transition: box-shadow 0.15s var(--ease), transform 0.12s var(--ease);
+}
+
+.slider-row input[type="range"]:hover::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgba(90, 185, 232, 0.20), 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.slider-row input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.94); }
+
+.slider-row input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+}
+
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: none;
+  border-radius: 50%;
+  background: #eef7fd;
+  box-shadow: 0 0 0 4px rgba(90, 185, 232, 0.14), 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.slider-row input[type="range"]:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .heatmap-warning {
   font-size: 0.85rem;
-  color: var(--warn);
+  color: var(--text-2);
   background: var(--warn-soft);
-  padding: 0.55rem 0.8rem;
-  border-radius: 6px;
-  margin-top: 0.8rem;
+  border: 1px solid var(--warn-line);
+  border-left: 2px solid var(--warn);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  margin-top: 0.85rem;
 }
 
 /* --------------------------------------------------------------- secondary */
 
 .secondary-block {
   border-top: 1px solid var(--line);
-  padding-top: 1.2rem;
-  margin-top: 1.4rem;
+  padding-top: 1.25rem;
+  margin-top: 1.5rem;
 }
 
 .secondary-label { font-size: 0.79rem; color: var(--text-3); margin-bottom: 0.3rem; }
-.tumor-type { font-size: 1rem; font-weight: 560; }
+.tumor-type { font-size: 1.02rem; font-weight: 560; }
 
 /* -------------------------------------------------------------- disclaimer */
 
+/* Shown on every single result, which is exactly why it is no longer a red
+ * box. Red on every scan trains the eye to skip it, and the red is needed two
+ * inches higher up for the tumour call. Not one word was removed: it is
+ * full-size body text, high contrast, in a card of its own, with an amber rule
+ * down the edge. Quieter than it was. Still impossible to mistake for small
+ * print. */
 .disclaimer {
-  border: 1px solid var(--danger);
-  background: var(--danger-soft);
+  border: 1px solid var(--line-strong);
+  border-left: 2px solid var(--warn);
+  background-color: var(--surface-2);
+  background-image: var(--pane);
   border-radius: var(--radius);
-  padding: 1.1rem 1.3rem;
-  margin: 1.6rem 0 1.2rem;
+  padding: 1.15rem 1.35rem;
+  margin: 1.7rem 0 1.2rem;
 }
 
-.disclaimer h3 { color: var(--danger); margin-bottom: 0.4rem; }
-.disclaimer p { font-size: 0.875rem; }
+.disclaimer h3 { color: var(--warn); margin-bottom: 0.45rem; }
+.disclaimer p { font-size: 0.9rem; color: var(--text); }
 
 /* ----------------------------------------------------------------- buttons */
 
@@ -430,38 +841,67 @@ main {
 .small-button {
   font-family: inherit;
   font-size: 0.9rem;
-  font-weight: 560;
-  padding: 0.62rem 1.25rem;
-  border-radius: 8px;
+  font-weight: 550;
+  padding: 0.65rem 1.3rem;
+  border-radius: 9px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background 0.13s ease, border-color 0.13s ease, opacity 0.13s ease;
+  transition: transform 0.12s var(--ease), box-shadow 0.16s var(--ease),
+              background 0.16s var(--ease), border-color 0.16s var(--ease),
+              filter 0.16s var(--ease);
   text-decoration: none;
   display: inline-block;
 }
 
-.primary-button { background: var(--accent); color: #fff; }
-.primary-button:hover { opacity: 0.9; }
+.primary-button:active,
+.secondary-button:active,
+.small-button:active { transform: translateY(1px); }
+
+.primary-button {
+  background-image: linear-gradient(180deg, var(--accent), #3f9fd2);
+  color: #04121b;
+  font-weight: 600;
+  box-shadow: var(--edge), 0 8px 20px -12px rgba(90, 185, 232, 0.7);
+}
+
+.primary-button:hover {
+  filter: brightness(1.07);
+  box-shadow: var(--edge), 0 12px 26px -12px rgba(90, 185, 232, 0.8);
+}
 
 .secondary-button {
-  background: var(--surface);
+  background: var(--surface-2);
   color: var(--text);
   border-color: var(--line-strong);
+  box-shadow: var(--edge);
 }
-.secondary-button:hover { background: var(--surface-2); }
+.secondary-button:hover { background: var(--surface-3); border-color: #39424d; }
 
 .small-button {
-  padding: 0.34rem 0.75rem;
+  padding: 0.36rem 0.8rem;
   font-size: 0.79rem;
-  background: var(--surface);
+  background: var(--surface-2);
   color: var(--text-2);
   border-color: var(--line-strong);
 }
-.small-button:hover { background: var(--surface-2); }
+.small-button:hover { background: var(--surface-3); color: var(--text); }
 
-button:disabled { opacity: 0.45; cursor: not-allowed; }
+button:disabled,
+button:disabled:hover {
+  opacity: 0.42;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
 
-.actions { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.2rem; }
+.actions {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-top: 1.3rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--line);
+}
 
 /* --------------------------------------------------------------- technical */
 
@@ -471,55 +911,68 @@ summary {
   cursor: pointer;
   font-size: 0.86rem;
   color: var(--text-2);
-  font-weight: 540;
-  padding: 0.35rem 0;
+  font-weight: 530;
+  padding: 0.4rem 0;
+  transition: color 0.15s var(--ease);
 }
 summary:hover { color: var(--text); }
+summary::marker { color: var(--text-3); }
 
 .technical table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.79rem;
-  margin-top: 0.7rem;
+  font-size: 0.78rem;
+  margin-top: 0.8rem;
   font-family: var(--mono);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
 
 .technical td {
-  padding: 0.35rem 0.6rem;
+  padding: 0.42rem 0.7rem;
   border-bottom: 1px solid var(--line);
   color: var(--text-2);
 }
+.technical tr:last-child td { border-bottom: none; }
 .technical td:first-child { color: var(--text-3); width: 42%; }
 
 .checkbox-row {
   display: flex;
-  gap: 0.55rem;
+  gap: 0.6rem;
   align-items: flex-start;
-  margin-top: 0.9rem;
+  margin-top: 0.95rem;
   font-size: 0.82rem;
   color: var(--text-2);
+  cursor: pointer;
 }
+
+.checkbox-row input { accent-color: var(--accent); margin-top: 0.22rem; }
 
 /* ---------------------------------------------------------------- download */
 
 .download-intro { max-width: 66ch; color: var(--text-2); font-size: 0.91rem; }
 
 .package-block {
-  border: 1px solid var(--accent);
+  border: 1px solid rgba(90, 185, 232, 0.22);
   border-radius: var(--radius);
-  padding: 1.3rem 1.4rem;
-  margin: 1.1rem 0 1.4rem;
-  background: var(--accent-soft);
+  padding: 1.4rem 1.5rem;
+  margin: 1.15rem 0 1.4rem;
+  background:
+    radial-gradient(600px 200px at 0% 0%, rgba(127, 143, 245, 0.06), transparent 70%),
+    linear-gradient(180deg, rgba(90, 185, 232, 0.07), rgba(90, 185, 232, 0.015));
+  box-shadow: var(--edge);
 }
 
-.package-heading { color: var(--accent); margin-bottom: 0.9rem; }
+.package-heading { color: var(--accent); margin-bottom: 1rem; }
 
-.setup-steps { display: grid; gap: 0.75rem; margin: 0 0 1rem; }
+.setup-steps { display: grid; gap: 0.8rem; margin: 0 0 1rem; }
 
 .setup-step {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.8rem;
   margin: 0;
   flex-wrap: wrap;
   font-size: 0.91rem;
@@ -529,36 +982,38 @@ summary:hover { color: var(--text); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.55rem;
+  height: 1.55rem;
   border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.77rem;
-  font-weight: 660;
+  background: rgba(90, 185, 232, 0.14);
+  border: 1px solid var(--accent-line);
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 640;
   flex: 0 0 auto;
 }
 
-.package-size { color: var(--text-3); font-size: 0.81rem; font-family: var(--mono); }
+.package-size { color: var(--text-3); font-size: 0.8rem; font-family: var(--mono); }
 
 .setup-command {
   font-family: var(--mono);
-  background: var(--text);
-  color: var(--bg);
-  padding: 0.32rem 0.6rem;
+  background: var(--surface-3);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  padding: 0.34rem 0.65rem;
   border-radius: 6px;
   font-size: 0.81rem;
-  border: none;
   user-select: all;
 }
 
 .download-note {
   font-size: 0.85rem;
   color: var(--text-2);
-  background: var(--warn-soft);
-  border-left: 3px solid var(--warn);
-  padding: 0.55rem 0.8rem;
-  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line-strong);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
   max-width: 66ch;
 }
 
@@ -569,12 +1024,16 @@ summary:hover { color: var(--text); }
 
 .download-summary {
   background: var(--surface-2);
-  border-left: 3px solid var(--accent);
-  padding: 0.7rem 0.9rem;
-  border-radius: 6px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent-dim);
+  padding: 0.75rem 0.95rem;
+  border-radius: var(--radius-sm);
   margin: 0.9rem 0;
   font-size: 0.85rem;
+  color: var(--text-2);
 }
+
+.download-summary strong { color: var(--text); }
 
 .download-table {
   width: 100%;
@@ -587,7 +1046,7 @@ summary:hover { color: var(--text); }
 .download-table th,
 .download-table td {
   text-align: left;
-  padding: 0.45rem 0.6rem;
+  padding: 0.5rem 0.65rem;
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
@@ -596,26 +1055,31 @@ summary:hover { color: var(--text); }
   color: var(--text-3);
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 0.69rem;
-  letter-spacing: 0.05em;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
 }
 
 .download-table .hash {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.64rem;
   color: var(--text-3);
   word-break: break-all;
   max-width: 18ch;
 }
 
-.download-link { font-weight: 560; }
+.download-link { font-weight: 550; }
 
+/* This one stays coloured. It is a claim about evidence, not a repeated
+   procedural caution, and someone about to install this on a clinic machine
+   is exactly who needs to read it. */
 .download-warning {
-  margin-top: 1rem;
-  padding: 0.75rem 0.95rem;
+  margin-top: 1.1rem;
+  padding: 0.8rem 1rem;
+  color: var(--text-2);
   background: var(--danger-soft);
-  border-left: 3px solid var(--danger);
-  border-radius: 6px;
+  border: 1px solid var(--danger-line);
+  border-left: 2px solid var(--danger);
+  border-radius: var(--radius-sm);
   max-width: 70ch;
   font-size: 0.85rem;
 }
@@ -625,7 +1089,7 @@ summary:hover { color: var(--text); }
 footer {
   max-width: 940px;
   margin: 0 auto;
-  padding: 1.4rem 1.4rem 3rem;
+  padding: 1.5rem 1.4rem 3.5rem;
   color: var(--text-3);
   font-size: 0.77rem;
   border-top: 1px solid var(--line);
@@ -634,17 +1098,6 @@ footer {
 footer p { margin-bottom: 0.4rem; max-width: 78ch; }
 
 .footer-validation { color: var(--text-2); }
-
-/* ------------------------------------------------------------------ mobile */
-
-@media (max-width: 620px) {
-  .panel { padding: 1.25rem; border-radius: var(--radius); }
-  .call-text { font-size: 1.3rem; }
-  .dropzone { padding: 2.2rem 1rem; }
-  main { padding: 1.1rem 0.9rem 3rem; gap: 1.1rem; }
-  .topbar { padding: 1.6rem 0.9rem 0; }
-  footer { padding: 1.4rem 0.9rem 3rem; }
-}
 
 /* ------------------------------------------------------------- brain mark */
 
@@ -658,13 +1111,13 @@ footer p { margin-bottom: 0.4rem; max-width: 78ch; }
    privacy question and a claim about a specific person's brain. This is a
    coronal outline over scan rings and it means nothing clinically. */
 
-.brand { display: flex; align-items: center; gap: 0.85rem; }
+.brand { display: flex; align-items: center; gap: 0.9rem; }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
-  filter: drop-shadow(0 0 14px rgba(86, 182, 230, 0.20));
+  filter: drop-shadow(0 0 16px rgba(90, 185, 232, 0.22));
 }
 
 .mk-ring {
@@ -674,7 +1127,14 @@ footer p { margin-bottom: 0.4rem; max-width: 78ch; }
   opacity: 0.55;
 }
 
-.mk-ring-2 { stroke-dasharray: 3 5; opacity: 0.4; }
+.mk-ring-2 {
+  stroke-dasharray: 3 5;
+  opacity: 0.4;
+  transform-origin: 32px 32px;
+  animation: sweep 26s linear infinite;
+}
+
+@keyframes sweep { to { transform: rotate(360deg); } }
 
 .mk-stroke {
   fill: none;
@@ -689,41 +1149,55 @@ footer p { margin-bottom: 0.4rem; max-width: 78ch; }
 /* Large and very quiet behind the dropzone text. It should register as texture
    first and a brain second; if you notice it before you notice the words, it is
    too loud. */
-.dropzone { position: relative; overflow: hidden; }
-
 .dropzone-mark {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 190px;
-  height: 190px;
+  width: 200px;
+  height: 200px;
   transform: translate(-50%, -50%);
-  opacity: 0.055;
+  opacity: 0.07;
   pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
 }
 
 .dropzone:hover .dropzone-mark,
-.dropzone:focus-visible .dropzone-mark { opacity: 0.10; }
+.dropzone:focus-visible .dropzone-mark {
+  opacity: 0.11;
+  transform: translate(-50%, -50%) scale(1.02);
+}
 
 .dropzone.dragover .dropzone-mark {
-  opacity: 0.16;
-  transform: translate(-50%, -50%) scale(1.04);
+  opacity: 0.18;
+  transform: translate(-50%, -50%) scale(1.06);
 }
 
-.dropzone-main,
-.dropzone-sub { position: relative; }
-
-.dropzone-main {
-  font-size: 1.12rem;
-  letter-spacing: -0.01em;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dropzone-mark { transition: none; }
-}
+/* ------------------------------------------------------------------ mobile */
 
 @media (max-width: 620px) {
-  .brand-mark { width: 32px; height: 32px; }
-  .dropzone-mark { width: 140px; height: 140px; }
+  .panel { padding: 1.3rem; border-radius: var(--radius); }
+  .call-box { padding: 1.35rem 1.4rem; }
+  .call-text { font-size: 1.34rem; }
+  .dropzone { padding: 2.4rem 1rem; }
+  main { padding: 1.1rem 0.9rem 3rem; gap: 1.1rem; }
+  .topbar { padding: 1.7rem 0.9rem 0; }
+  footer { padding: 1.4rem 0.9rem 3rem; }
+  .brand-mark { width: 34px; height: 34px; }
+  .dropzone-mark { width: 145px; height: 145px; }
+}
+
+/* ------------------------------------------------------------------ motion */
+
+/* Everything above degrades to nothing here. A tool for a tired reader must
+   never be the reason the screen moves. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+  .mk-ring-2 { animation: none; }
+  .panel { animation: none; }
+  .dropzone,
+  .dropzone-mark,
+  .primary-button,
+  .secondary-button,
+  .small-button { transition: none; }
+  .dropzone.dragover { transform: none; }
 }

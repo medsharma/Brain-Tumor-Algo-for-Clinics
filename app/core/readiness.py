@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 
 from . import config as config_module
@@ -121,6 +122,20 @@ def check(
                 f"Model file not found: {checkpoint.path}",
             ))
 
+    # A clinic laptop is offline by design, so nothing corrects its clock. When
+    # the CMOS battery goes, it comes back as 2009 and stays there, and every
+    # result sheet and every audit line is then dated wrongly with no warning.
+    # A printed record with the wrong date is worse than one with no date: it
+    # can be filed against the wrong visit and nobody has a reason to doubt it.
+    #
+    # There is no reference to check against on a machine with no network. There
+    # is one fact: this software cannot have been run before it was built. A
+    # clock reading earlier than the config it is loading is wrong, definitely,
+    # and that catches the dead-battery case, which is the common one.
+    clock = _clock_finding(cfg.created_utc)
+    if clock is not None:
+        warnings.append(clock)
+
     if cfg.entropy_units_source.startswith("ASSUMED"):
         warnings.append(Finding(
             "entropy_units_assumed",
@@ -173,14 +188,23 @@ def check(
         detail = str((attest or {}).get("detail", "")).strip() if isinstance(attest, Mapping) else ""
         warnings.append(Finding(
             "no_external_validation",
+            # Every fact here is the same as it was. What changed is the order:
+            # what it means for the person reading a scan comes first, and the
+            # history of how we know it comes after. The old version opened with
+            # the BRISC contamination story, which is the most important thing
+            # to a developer and close to the least important thing to a nurse
+            # deciding whether to act on the answer in front of them.
             detail or (
-                "This tool has never been tested on data it did not train on. "
-                "BRISC 2025 was the intended external test set and roughly 80% "
-                "of it turned out to be the training data republished. The "
-                "figures shown come from what survived removing that overlap, "
-                "which shares sources, scanners and preprocessing with the "
-                "training data. No clinician has reviewed a single output. Not "
-                "for clinical use."
+                "What this tool has been measured on comes from the same "
+                "sources, scanners and preparation as the data it learned from. "
+                "It has not yet been tested on scans from a different hospital "
+                "or a different scanner, and no clinician has reviewed its "
+                "output. Expect it to do worse on your scans than the figures "
+                "here suggest, by an amount nobody has measured yet. Treat "
+                "every answer as a prompt to look, not as a finding. "
+                "(The intended external test set, BRISC 2025, turned out to be "
+                "roughly 80% the training data republished. The figures shown "
+                "are what survived removing that overlap.)"
             ),
         ))
 
@@ -188,6 +212,37 @@ def check(
         blockers=tuple(blockers),
         warnings=tuple(warnings),
         dev_mode=bool(dev_mode),
+    )
+
+
+def _clock_finding(created_utc: str) -> Finding | None:
+    """Warn when this computer's clock is provably wrong.
+
+    Returns None when the clock is plausible, or when the config carries no
+    readable creation date, because an unreadable date is not evidence of a
+    broken clock and this must not cry wolf on every startup.
+    """
+    stamp = str(created_utc or "").strip()
+    if not stamp:
+        return None
+    try:
+        built = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if built.tzinfo is None:
+        built = built.replace(tzinfo=timezone.utc)
+
+    now = datetime.now(timezone.utc)
+    if now >= built:
+        return None
+
+    return Finding(
+        "clock_is_wrong",
+        f"This computer's clock says {now.strftime('%Y-%m-%d')}, which is before "
+        f"this software was built ({built.strftime('%Y-%m-%d')}). The clock is "
+        f"wrong. Every result sheet and every audit entry will carry the wrong "
+        f"date until it is corrected, and a report filed under the wrong date "
+        f"can end up against the wrong visit.",
     )
 
 

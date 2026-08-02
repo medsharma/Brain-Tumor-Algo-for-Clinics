@@ -4,9 +4,12 @@ The model was trained on 8-bit JPEG and PNG brain MRI slices. Anything else
 either needs conversion decisions we are not qualified to make silently, or is
 not an image at all.
 
-DICOM gets its own explicit refusal. Real clinics produce DICOM, so a vague
-"unsupported file" message would leave the operator guessing. See
-``docs`` in ``app/README.md`` for why v1 does not accept it.
+DICOM is read, as of 2026-08-01, because every clinic this tool is for produces
+it and the previous answer -- open a viewer, choose a window, export a JPEG --
+put the most consequential decision in the conversion into the hands of whoever
+was standing at the laptop. The conversion is in ``dicom_loading`` and it
+explains itself on screen every time. If DICOM support is missing from a build,
+the old refusal comes back with the old instructions, which still work.
 """
 
 from __future__ import annotations
@@ -17,7 +20,7 @@ from pathlib import Path
 
 from PIL import Image, UnidentifiedImageError
 
-from . import hashing
+from . import dicom_loading, hashing
 
 #: Pillow's decompression-bomb ceiling. A brain MRI slice is well under a
 #: megapixel; anything near this is not a scan.
@@ -65,6 +68,15 @@ class LoadedImage:
     mode: str
     file_bytes: int
 
+    #: "image" for a file that was already a picture, "dicom" for one this app
+    #: converted. Everything published about this tool's accuracy was measured
+    #: on the first kind.
+    source_format: str = "image"
+
+    #: What the operator needs to know about how the picture was made. Empty
+    #: for an ordinary JPEG, where there is nothing to say.
+    conversion_notes: tuple[str, ...] = ()
+
 
 def looks_like_dicom(data: bytes, filename: str = "") -> bool:
     """True for DICOM by magic bytes or by extension.
@@ -80,18 +92,9 @@ def looks_like_dicom(data: bytes, filename: str = "") -> bool:
     return data[:4] == _DICOM_MAGIC
 
 
-DICOM_REFUSAL = (
-    "This looks like a DICOM file. This version does not read DICOM.\n"
-    "\n"
-    "Why: DICOM stores raw scanner values, not a picture. Turning those into "
-    "an image needs a window level and width, plus the rescale slope and "
-    "intercept. Guess those wrong and the scan looks completely different, "
-    "with no error and no warning. The model was trained on already-windowed "
-    "JPEG images, so a wrong guess would quietly produce a wrong call.\n"
-    "\n"
-    "What to do: export the slice from your viewer as JPEG or PNG, with the "
-    "window your radiographer normally uses, then load that file."
-)
+#: Kept for builds without DICOM support, and as the wording every other refusal
+#: in this file is measured against. See ``dicom_loading.UNAVAILABLE_MESSAGE``.
+DICOM_REFUSAL = dicom_loading.UNAVAILABLE_MESSAGE
 
 
 def load_image_bytes(data: bytes, filename: str, audit_dir: str | Path) -> LoadedImage:
@@ -113,10 +116,10 @@ def load_image_bytes(data: bytes, filename: str, audit_dir: str | Path) -> Loade
             kind="too_large",
         )
 
-    if looks_like_dicom(data, filename):
-        raise ImageLoadError(DICOM_REFUSAL, kind="dicom")
-
     extension = hashing.safe_extension(filename)
+
+    if looks_like_dicom(data, filename):
+        return _load_dicom(data, filename, extension, audit_dir)
 
     try:
         image = Image.open(io.BytesIO(data))
@@ -165,6 +168,48 @@ def load_image_bytes(data: bytes, filename: str, audit_dir: str | Path) -> Loade
         height=image.height,
         mode=image.mode,
         file_bytes=len(data),
+    )
+
+
+def _load_dicom(data: bytes, filename: str, extension: str,
+                audit_dir: str | Path) -> LoadedImage:
+    """Convert a DICOM, or refuse it the way this app always used to.
+
+    A build without DICOM support gives the old refusal and the old
+    instructions, which still work. Anything else would leave a clinic reading
+    "no module named pydicom" and guessing.
+    """
+    if not dicom_loading.available():
+        raise ImageLoadError(dicom_loading.UNAVAILABLE_MESSAGE, kind="dicom")
+
+    try:
+        converted = dicom_loading.to_image(data)
+    except dicom_loading.DicomError as exc:
+        raise ImageLoadError(exc.message, kind=exc.kind) from exc
+
+    image = converted.image
+    if image.width < 32 or image.height < 32:
+        raise ImageLoadError(
+            f"That DICOM's image is only {image.width} by {image.height} "
+            f"pixels. That is too small to be a usable MRI slice.",
+            kind="too_small",
+        )
+
+    return LoadedImage(
+        image=image,
+        sha256=hashing.sha256_bytes(data),
+        display_name=Path(filename).name,
+        filename_hash=hashing.hash_filename(filename, audit_dir),
+        extension=extension or ".dcm",
+        width=image.width,
+        height=image.height,
+        mode=image.mode,
+        file_bytes=len(data),
+        source_format="dicom",
+        # The unmeasured-path warning comes first. It is the one that changes
+        # how much weight to put on the answer; how the window was chosen is
+        # the detail behind it.
+        conversion_notes=(dicom_loading.UNMEASURED_PATH_NOTE, converted.note),
     )
 
 

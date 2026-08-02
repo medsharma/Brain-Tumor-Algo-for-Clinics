@@ -208,21 +208,98 @@ def find_windows_installer() -> Optional[Path]:
     return candidate if candidate.is_file() else None
 
 
-def windows_installer(cfg: DeploymentConfig) -> Optional[Downloadable]:
+#: Must match ``app/packaging/setup_gui.py``. The installer reads these back out
+#: of its own file to learn where to download from.
+INSTALLER_FOOTER_MAGIC = b"MRITRIAGE-SERVER-V1:"
+INSTALLER_FOOTER_END = b":MRITRIAGE-END"
+
+
+def stamp_installer(raw: bytes, base_url: str) -> bytes:
+    """Write this server's address into the end of the setup program.
+
+    The setup program has to download 2.4 GB from somewhere, and it is a
+    compiled binary, so it cannot be regenerated per request the way the Python
+    setup script is. Its build-time address is whatever machine it was built on.
+    Hand that file to a clinic on another network and it tries to fetch the
+    application from an address that means nothing there, which looks exactly
+    like "the download is broken".
+
+    So the address the browser actually used to reach us is appended here, and
+    ``setup_gui.footer_server`` reads it back. PyInstaller locates its archive by
+    searching backwards from the end of the file, so trailing bytes do not
+    disturb the bootloader and the exe still starts normally.
+
+    Any footer from a previous stamping is dropped first, so re-serving a file
+    that has already been through here does not accumulate them.
+    """
+    cut = raw.rfind(INSTALLER_FOOTER_MAGIC)
+    if cut != -1:
+        raw = raw[:cut]
+    return raw + INSTALLER_FOOTER_MAGIC + base_url.rstrip("/").encode("utf-8") + INSTALLER_FOOTER_END
+
+
+#: The unstamped setup program, read once. Keyed by (path, size, mtime) so a
+#: rebuilt exe is picked up without a restart.
+_installer_cache: Dict[tuple, bytes] = {}
+
+
+def _installer_bytes(path: Path) -> bytes:
+    stat = path.stat()
+    key = (str(path), stat.st_size, stat.st_mtime_ns)
+    blob = _installer_cache.get(key)
+    if blob is None:
+        blob = path.read_bytes()
+        _installer_cache.clear()   # only ever one build; do not accumulate
+        _installer_cache[key] = blob
+    return blob
+
+
+def windows_installer(cfg: DeploymentConfig, base_url: str = "") -> Optional[Downloadable]:
+    """The setup program, with ``base_url`` stamped in when one is given.
+
+    ``base_url`` empty means "serve it as built", which is only right for a
+    caller that has no request context. Every real download has one.
+    """
     path = find_windows_installer()
     if path is None:
         return None
+
+    description = (
+        "Setup program for Windows. Downloads and installs the app, makes a "
+        "desktop shortcut and opens it. Nothing else to do."
+    )
+
+    if not base_url:
+        return Downloadable(
+            key="BrainMRITriageSetup.exe",
+            filename=path.name,
+            path=path,
+            kind="installer",
+            bytes=path.stat().st_size,
+            sha256=file_sha256(path),
+            description=description,
+        )
+
+    # Held in memory rather than written next to the original, because the
+    # right bytes depend on how this particular caller reached us and two
+    # clinics on two networks must not race each other over one file on disk.
+    #
+    # Rebuilt per call rather than cached per address. `base_url` comes from the
+    # Host header, so caching on it means anyone who can reach this server can
+    # make it keep an extra 9 MB copy by sending a new Host, as many times as
+    # they like. Only the raw file is cached, which is one fixed 9 MB; the
+    # stamping is a concatenation and the hash of 9 MB is a few tens of
+    # milliseconds, which is nothing against downloading it.
+    blob = stamp_installer(_installer_bytes(path), base_url)
     return Downloadable(
         key="BrainMRITriageSetup.exe",
         filename=path.name,
         path=path,
         kind="installer",
-        bytes=path.stat().st_size,
-        sha256=file_sha256(path),
-        description=(
-            "Setup program for Windows. Downloads and installs the app, makes a "
-            "desktop shortcut and opens it. Nothing else to do."
-        ),
+        bytes=len(blob),
+        sha256=hashlib.sha256(blob).hexdigest(),
+        description=description,
+        content=blob,
     )
 
 
@@ -351,9 +428,13 @@ def manifest(cfg: DeploymentConfig, items: List[Downloadable]) -> dict:
             "file can still load and then give wrong answers."
         ),
         "not_validated": (
-            "This model has never been tested on data it did not train on. No "
-            "clinician has reviewed a single output. Not for clinical use. Read "
-            "MODEL_CARD.md before trusting anything it says."
+            "Development build. Use it as a second opinion, never as the only "
+            "basis for a decision about a patient. It has not yet been tested "
+            "on scans from a hospital or scanner outside its training sources, "
+            "and no clinician has reviewed its output. It is not approved as a "
+            "medical device anywhere and it is not for clinical use as the "
+            "deciding factor. Read MODEL_CARD.md and LIMITATIONS.md before "
+            "relying on it."
         ),
     }
 

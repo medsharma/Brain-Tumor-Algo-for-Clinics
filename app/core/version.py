@@ -10,10 +10,10 @@ APP_VERSION = "1.0.0-pilot"
 
 #: What the tool is built to read. Deliberately narrow. This is a statement
 #: about inputs, not about performance, and it is worded that way on purpose.
-INTENDED_SCOPE = (
-    "T1 brain MRI slices, one image at a time, saved as JPEG or PNG. "
-    "Three tumour families plus no-tumour."
-)
+#:
+#: It does not repeat the class list. That is in the disclaimer directly above
+#: it on screen, and saying it twice in four lines teaches people to skim both.
+INTENDED_SCOPE = "T1 brain MRI slices, one at a time. DICOM, JPEG or PNG."
 
 
 def validation_statement(expected_performance: dict, is_stub: bool) -> str:
@@ -46,10 +46,19 @@ def validation_statement(expected_performance: dict, is_stub: bool) -> str:
         )
 
     if isinstance(miss_rate, (int, float)):
+        # A rate per thousand, because "0.3%" of a number nobody has in mind is
+        # not a quantity anyone can feel. Three patients is.
+        #
+        # And it states the limit itself instead of ending on "ask whoever
+        # installed this tool whether that dataset was genuinely unseen", which
+        # was the old wording. That question was passed to the one person least
+        # able to answer it, when the answer is known and is this: the test data
+        # comes from the same sources as the training data.
+        per_thousand = miss_rate * 1000
         return (
-            f"Measured on {dataset}, {n:,} images. Of real tumours, "
-            f"{miss_rate:.1%} were called no-tumour. Ask whoever installed "
-            f"this tool whether that dataset was genuinely unseen by the model."
+            f"Tested on {n:,} images it never trained on, from the same sources "
+            f"as the data it learned from. It missed {per_thousand:.0f} tumours "
+            f"in 1,000."
         )
 
-    return f"Measured on {dataset}, {n:,} images."
+    return f"Tested on {dataset}, {n:,} images. No miss rate recorded."

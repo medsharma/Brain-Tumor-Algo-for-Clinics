@@ -157,9 +157,34 @@ def test_the_disclaimer_names_every_limit_the_brief_requires():
     assert "not a diagnosis" in text
     assert "qualified human" in text
     assert "glioma" in text and "meningioma" in text and "pituitary" in text
-    assert "no-tumour" in text
+    # The fourth outcome, named as the operator sees it on screen rather than
+    # as a class in a list. What matters is that the disclaimer says what a
+    # NO TUMOR result does and does not mean.
+    assert "no tumor" in text
     assert "metastases" in text
     assert "rarer" in text
+
+
+def test_the_disclaimer_tells_the_operator_to_refer_a_symptomatic_patient():
+    """The only control that catches a confident miss.
+
+    The model does not catch them and the deferral rule does not either: on the
+    clean subset the miss rate before and after deferring is the same. This
+    sentence is the safety net, so it belongs in the text that appears on every
+    single result rather than in a manual.
+    """
+    assert "if the patient has symptoms, refer them anyway" in decision.DISCLAIMER_FULL.lower()
+
+
+def test_the_disclaimer_does_not_claim_validation():
+    """It said "validated on T1 brain MRI only". Nothing here is validated.
+
+    It has been tested, on data that shares its sources with the training data.
+    Claiming validation on a screen a clinic reads is the kind of overclaim that
+    gets people hurt.
+    """
+    assert "validated" not in decision.DISCLAIMER_FULL.lower()
+    assert "tested on t1" in decision.DISCLAIMER_FULL.lower()
 
 
 def test_the_disclaimer_warns_that_no_tumour_is_not_a_clean_bill():

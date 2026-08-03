@@ -19,9 +19,18 @@ async function loadStatus() {
   if (!response.ok) throw new Error("The app did not start correctly.");
   status = await response.json();
 
-  el("app-version").textContent = status.app_name + " " + status.app_version;
+  // The version only. The name is in the heading two inches to the left, and
+  // printing it twice is the kind of thing that makes a screen look generated.
+  el("app-version").textContent = status.app_version;
   el("disclaimer-text").textContent = status.disclaimer;
-  el("footer-disclaimer").textContent = status.disclaimer;
+
+  // The short form down here, the full one on the result.
+  //
+  // Both used to be the full text, which meant the same four lines appeared
+  // twice on one screen, a few inches apart. Printing a safety notice twice
+  // does not make it twice as heeded. It makes the page look automatic, and it
+  // teaches the reader that the text is scenery.
+  el("footer-disclaimer").textContent = status.disclaimer_short;
   // Two separate statements on purpose. What the tool reads is not the same
   // claim as what has been measured about it, and merging them reads as a
   // validation claim the project cannot currently support.
@@ -61,9 +70,7 @@ async function loadStatus() {
 
     const lead = document.createElement("span");
     lead.className = "banner-detail";
-    lead.textContent =
-      "A second opinion, not a decision. Do not use this tool on its own to " +
-      "decide about a patient. A person makes the call.";
+    lead.textContent = "A second opinion, not a decision. A person makes the call.";
     banner.appendChild(lead);
 
     const messages = (status.warnings || []).map((w) => w.message).join(" ");
@@ -246,13 +253,29 @@ function renderBatch() {
   ).length;
   const unread = batchResults.filter((row) => !row.result).length;
 
-  el("batch-note").textContent =
-    batchResults.length + " slices, judged one by one. " +
-    "These are NOT combined into a single answer for the study: this tool " +
-    "reads one image at a time and has no measured threshold for a whole " +
-    "study. " + flagged + " flagged for referral" +
-    (unread ? ", " + unread + " could not be read" : "") +
-    ". Open any row for the full result.";
+  // The number that decides what happens next goes first, on its own line.
+  //
+  // It used to open with two clauses about study-level thresholds and reach
+  // "3 flagged for referral" in the fourth line, past a colon and a semicolon.
+  // The caveat is still here and still says the same thing. It is just no
+  // longer standing in front of the only number anybody acts on.
+  const note = el("batch-note");
+  note.textContent = "";
+
+  const headline = document.createElement("span");
+  headline.className = "batch-headline";
+  headline.textContent =
+    flagged + " of " + batchResults.length + " flagged for referral" +
+    (unread ? ", " + unread + " could not be read" : "") + ".";
+  note.appendChild(headline);
+
+  const explain = document.createElement("span");
+  explain.className = "batch-explain";
+  explain.textContent =
+    "Read separately and NOT combined into a single answer for the study: " +
+    "there is no measured threshold for a whole study. Open any row for the " +
+    "full result.";
+  note.appendChild(explain);
 
   const list = el("batch-list");
   list.textContent = "";

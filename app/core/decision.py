@@ -24,16 +24,22 @@ DISCLAIMER_SHORT = (
     "Not a diagnosis. A qualified human makes the call."
 )
 
+#: Shown on every result and every export, so every word has to earn its place.
+#:
+#: It used to run to four sentences of throat-clearing before reaching the point.
+#: Nobody reads that on their fortieth scan of the day, and a safety notice
+#: nobody finishes is decoration. Each line below changes what somebody does.
+#:
+#: "Validated on T1 brain MRI only" was also a straight overclaim. Nothing here
+#: has been validated. It has been tested, on data from the same sources it
+#: learned from, and the word matters.
 DISCLAIMER_FULL = (
-    "This tool is not a diagnosis and does not replace a doctor. "
-    "A qualified human makes the call.\n"
-    "It recognises three tumour families only: glioma, meningioma and "
-    "pituitary, plus no-tumour. "
-    "It does not cover metastases, and it does not cover rarer tumour types. "
-    "A scan it calls NO TUMOR may still contain a tumour it was never taught "
-    "to see.\n"
-    "It judges one image at a time, not a whole study, and it has been "
-    "validated on T1 brain MRI only."
+    "Not a diagnosis. A qualified human makes the call.\n"
+    "It knows three tumours: glioma, meningioma, pituitary. It does not know "
+    "metastases or rarer types, so a scan it calls NO TUMOR may still contain "
+    "a tumour it was never taught to see.\n"
+    "If the patient has symptoms, refer them anyway.\n"
+    "One image at a time, not a whole study. Tested on T1 brain MRI only."
 )
 
 

@@ -556,6 +556,22 @@ main {
   max-width: 78ch;
 }
 
+/* The count first, at reading size. The caveat under it, quieter, unabridged. */
+.batch-headline {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 560;
+  color: var(--text);
+  letter-spacing: -0.012em;
+}
+
+.batch-explain {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--text-3);
+}
+
 .batch-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
 
 .batch-item { margin: 0; }
@@ -638,13 +654,9 @@ main {
   border-top: 1px solid var(--line);
 }
 
-.case-row label {
-  font-size: 0.74rem;
-  font-weight: 620;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--text-3);
-}
+/* Sentence case. An uppercase tracked-out label is how the section headings on
+   this page are set, and this is a field, not a section. */
+.case-row label { font-size: 0.85rem; color: var(--text-2); }
 
 .case-row input {
   font-family: inherit;
@@ -666,21 +678,20 @@ main {
   box-shadow: 0 0 0 3px rgba(90, 185, 232, 0.12);
 }
 
-.case-note { font-size: 0.78rem; color: var(--text-3); margin: 0; max-width: 62ch; }
+.case-row input { max-width: 34ch; }
 
 /* ------------------------------------------------------------------ images */
 
 .images-block { margin: 1.7rem 0; }
 
+/* Plain text, not a box. The result already carries a call box, an instruction
+   box and the disclaimer card; a fourth outlined rectangle for a one-line
+   caveat is a border doing the work a line break already does. */
 .images-caveat {
-  font-size: 0.87rem;
-  color: var(--text-2);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-left: 2px solid var(--line-strong);
-  padding: 0.65rem 0.9rem;
-  border-radius: var(--radius-sm);
-  margin-bottom: 0.75rem;
+  font-size: 0.84rem;
+  color: var(--text-3);
+  margin-bottom: 0.9rem;
+  max-width: 72ch;
 }
 
 .images-help { font-size: 0.82rem; color: var(--text-3); margin-bottom: 1.05rem; }
@@ -810,8 +821,9 @@ main {
   margin-top: 1.5rem;
 }
 
-.secondary-label { font-size: 0.79rem; color: var(--text-3); margin-bottom: 0.3rem; }
-.tumor-type { font-size: 1.02rem; font-weight: 560; }
+.tumor-type { font-size: 0.95rem; color: var(--text-2); margin-bottom: 0.2rem; }
+.tumor-type strong { color: var(--text); font-weight: 580; }
+.secondary-label { font-size: 0.79rem; color: var(--text-3); margin: 0; }
 
 /* -------------------------------------------------------------- disclaimer */
 
@@ -965,7 +977,14 @@ summary::marker { color: var(--text-3); }
   box-shadow: var(--edge);
 }
 
-.package-heading { color: var(--accent); margin-bottom: 1rem; }
+/* The one line under the download button. Everything the person needs to know
+   about installing, in a sentence, next to the thing they just clicked. */
+.install-step {
+  font-size: 0.91rem;
+  color: var(--text);
+  max-width: 62ch;
+  margin: 1rem 0 0.9rem;
+}
 
 .setup-steps { display: grid; gap: 0.8rem; margin: 0 0 1rem; }
 

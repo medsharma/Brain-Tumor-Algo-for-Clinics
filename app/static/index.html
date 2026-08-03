@@ -51,8 +51,10 @@
 <main>
 
   <!-- ---------------------------------------------------------------- -->
+  <!-- No heading. The dropzone says "Drop a scan here" in larger type two
+       lines below, and a panel title reading "Load a scan" above it is a label
+       for a label. -->
   <section id="upload-panel" class="panel">
-    <h2>Load a scan</h2>
     <div id="dropzone" class="dropzone" tabindex="0" role="button"
          aria-label="Choose an MRI image file">
       <svg class="dropzone-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -65,16 +67,19 @@
              accept=".dcm,.dicom,.ima,.jpg,.jpeg,.png,.bmp,.tif,.tiff" hidden>
     </div>
 
+    <!-- Three lines, one each. This list used to run to eight lines of
+         explanation standing between somebody and the thing they came to do,
+         including a paragraph on DICOM windowing. The caution about a DICOM
+         picture belongs on the result, next to the picture, where it can
+         actually be acted on. It is printed there. -->
     <ul class="limits">
-      <li id="dicom-line"><strong>DICOM is read straight from the scanner.</strong>
-          The app windows it using the setting stored in the file, and says on
-          the result how the picture was made. Accuracy figures for this tool
-          were measured on slices exported as JPEG, so treat a DICOM result with
-          more caution and check the picture looks right.</li>
-      <li><strong>One slice, not a whole study.</strong> This tool judges a
-          single image. It does not combine slices into one answer.</li>
+      <li id="dicom-line"><strong>DICOM is read straight from the scanner</strong>,
+          using the window stored in the file. The accuracy figures come from
+          slices exported as JPEG, so check a DICOM picture looks right.</li>
+      <li><strong>Each slice is judged on its own.</strong>
+          It does not combine slices into one answer.</li>
       <li id="privacy-line"><strong>Nothing leaves this laptop.</strong> No
-          internet is used and no image is uploaded anywhere.</li>
+          internet, no upload.</li>
     </ul>
   </section>
 
@@ -108,8 +113,10 @@
       <p id="probability-text" class="probability-text"></p>
     </div>
 
+    <!-- No "What to do next" heading. The sentence inside is an instruction in
+         the imperative, in a box of its own, directly under the call. Labelling
+         it adds a line and tells the reader nothing they cannot see. -->
     <div class="next-step">
-      <h3>What to do next</h3>
       <p id="next-step-text"></p>
     </div>
 
@@ -120,13 +127,10 @@
     <!-- Heatmap -->
     <div id="images-block" class="images-block">
       <h3>Where the model looked</h3>
+      <!-- Session D's wording, verbatim, and nothing after it. There was a
+           second line here explaining the same idea in different words, which
+           is how a page ends up feeling written by a machine. -->
       <p id="heatmap-caveat" class="images-caveat"></p>
-      <p class="images-help">
-        The colours show which parts of the image pushed the model towards its
-        answer. Use it as a sanity check: if the colour sits away from anything
-        that looks abnormal, treat the answer with suspicion. It is not proof
-        on its own.
-      </p>
       <div class="image-pair">
         <figure>
           <img id="img-original" alt="The scan as the model sees it">
@@ -148,11 +152,14 @@
       <p id="heatmap-warning" class="heatmap-warning hidden"></p>
     </div>
 
-    <!-- Secondary -->
+    <!-- One line for one word. This was a heading, a caveat and a value stacked
+         three deep to say "Glioma", for information the clinic does not act on:
+         the referral is the same either way, which is what the caveat says. -->
     <div id="type-block" class="secondary-block hidden">
-      <h3>Most likely tumour type</h3>
+      <p class="tumor-type">
+        Most likely type: <strong id="tumor-type-text"></strong>
+      </p>
       <p class="secondary-label">Secondary information. A clinic refers either way.</p>
-      <p id="tumor-type-text" class="tumor-type"></p>
     </div>
 
     <!-- Disclaimer, on every result. Calmer than it was, and not one word
@@ -171,13 +178,9 @@
          it. This goes into the export only. It is not in the audit log, not in
          any request the app keeps, and it is gone when the page is reloaded. -->
     <div class="case-row">
-      <label for="case-reference">Case reference for the printed sheet</label>
+      <label for="case-reference">Case reference</label>
       <input type="text" id="case-reference" maxlength="60" autocomplete="off"
-             placeholder="e.g. clinic number or visit date">
-      <p class="case-note">
-        Optional. Appears on the saved sheet so it can be filed. Not stored by
-        this app and not written to its log. Use whatever your clinic files by.
-      </p>
+             placeholder="optional, never stored">
     </div>
 
     <div class="actions">
@@ -205,115 +208,78 @@
   </section>
 
   <!-- ---------------------------------------------------------------- -->
-  <section id="download-panel" class="panel">
-    <h2>Run this on your own laptop</h2>
-    <p class="download-intro">
-      This page, running on your machine, offline. Same model, same settings,
-      same answers.
-    </p>
+  <!-- ----------------------------------------------------------------
+       One button, then one collapsed list of everything else.
 
-    <!-- One click. Everything else on this page is a fallback for this. -->
+       This was four stacked blocks: the installer, the zip, the Python route
+       and the file-by-file table, all open at once, on the same screen as the
+       scan reader. Somebody who came to read a scan had to scroll past three
+       ways of installing software they already have. Somebody who came to
+       install it had four things to choose between when only one of them is
+       ever the right answer.
+
+       So: the button that works for almost everybody, and a single "Other
+       ways" for the rest. -->
+  <section id="download-panel" class="panel">
+    <h2>Install on another laptop</h2>
+
     <div id="installer-block" class="package-block hidden">
-      <h3 class="package-heading">Windows</h3>
-      <div class="setup-steps">
-        <p class="setup-step">
-          <span class="step-number">1</span>
-          <a class="primary-button setup-download" id="installer-link" href="#" download>
-            Download and install
-          </a>
-          <span class="package-size" id="installer-size"></span>
-        </p>
-        <p class="setup-step">
-          <span class="step-number">2</span>
-          Double-click the downloaded file. That is everything.
-        </p>
-      </div>
-      <p class="download-intro">
-        It downloads the app, installs it, puts a shortcut on your desktop and
-        opens it. A few minutes, mostly waiting for the download. After that it
-        never needs the internet again.
+      <p class="setup-step">
+        <a class="primary-button setup-download" id="installer-link" href="#" download>
+          Download for Windows
+        </a>
+        <span class="package-size" id="installer-size"></span>
+      </p>
+      <p class="install-step">
+        Double-click it. That is the whole install.
       </p>
       <p class="download-note">
-        Windows may warn that the file is from an unknown publisher, because it
-        is not code-signed. Choose <strong>More info</strong> then
-        <strong>Run anyway</strong>, or ask whoever sent you the link.
+        Windows will say the publisher is unknown, because this is not
+        code-signed. Choose <strong>More info</strong>, then
+        <strong>Run anyway</strong>.
       </p>
     </div>
 
-    <!-- Kept for anyone who would rather see what they are getting. -->
-    <details id="package-block" class="download-howto hidden">
-      <summary>Windows, without the installer</summary>
-      <p>
-        The same application as a plain zip, if you would rather unpack it
-        yourself or put it straight onto a USB stick.
-      </p>
-      <div class="setup-steps">
-        <p class="setup-step">
-          <span class="step-number">1</span>
-          <a class="secondary-button setup-download" id="package-link" href="#" download>
-            Download the zip
-          </a>
+    <details class="download-howto">
+      <summary>Other ways to install</summary>
+
+      <div id="package-block" class="hidden">
+        <p>
+          <strong>Windows, without the installer.</strong> The same app as a
+          zip, for a USB stick or a machine that blocks downloaded programs.
+          Unpack it and run <code>BrainMRITriage.exe</code>.
+        </p>
+        <p>
+          <a class="download-link" id="package-link" href="#" download>Download the zip</a>
           <span class="package-size" id="package-size"></span>
         </p>
-        <p class="setup-step">
-          <span class="step-number">2</span>
-          Right-click it and choose <strong>Extract All</strong>
-        </p>
-        <p class="setup-step">
-          <span class="step-number">3</span>
-          Open the folder and double-click
-          <code class="setup-command">BrainMRITriage.exe</code>
-        </p>
-      </div>
-    </details>
-
-    <details class="download-howto">
-      <summary>Other ways: Mac, Linux, or if you already have Python</summary>
-
-      <p>
-        This route needs <strong>Python 3.10 or newer</strong>. It downloads
-        one small file that fetches everything else and starts the app.
-      </p>
-
-      <div class="setup-steps">
-        <p class="setup-step">
-          <span class="step-number">1</span>
-          <a class="secondary-button setup-download" href="/api/setup" download>
-            Download the setup file
-          </a>
-        </p>
-        <p class="setup-step">
-          <span class="step-number">2</span>
-          Run it:
-          <code class="setup-command">python setup_brain_mri_triage.py</code>
-        </p>
       </div>
 
       <p>
-        It checks every file against its checksum, installs what it needs and
-        opens this page on your machine. About
-        <span id="setup-size">1.7 GB</span>. After that it never touches the
-        internet again.
+        <strong>Mac, Linux, or a machine with Python 3.10 or newer.</strong>
+        One small file that fetches the rest, checks every checksum and starts
+        the app. About <span id="setup-size">1.7 GB</span>, once.
       </p>
-    </details>
+      <p>
+        <a class="download-link" href="/api/setup" download>Download the setup file</a>,
+        then run <code class="setup-command">python setup_brain_mri_triage.py</code>
+      </p>
 
-    <details class="download-howto">
-      <summary>The individual files, and doing it by hand</summary>
-      <div id="download-summary" class="download-summary"></div>
-      <table id="download-table" class="download-table"></table>
-      <p>
-        The setup file above does all of this for you. To do it manually: put
-        the <code>.pth</code> files in a <code>models</code> folder next to the
-        app, put <code>deployment_config.json</code> in
-        <code>analysis/results/safety/</code> and
-        <code>rejector_config.json</code> in
-        <code>analysis/results/ood/</code>, then run <code>python -m app</code>.
-      </p>
-      <p>
-        Check a file on Windows with
-        <code>certutil -hashfile best_vit_seed42.pth SHA256</code>. A
-        part-downloaded model can still load and then give wrong answers.
-      </p>
+      <details>
+        <summary>Every file, with checksums</summary>
+        <div id="download-summary" class="download-summary"></div>
+        <table id="download-table" class="download-table"></table>
+        <p>
+          By hand: <code>.pth</code> files into <code>models/</code>,
+          <code>deployment_config.json</code> into
+          <code>analysis/results/safety/</code>,
+          <code>rejector_config.json</code> into
+          <code>analysis/results/ood/</code>, then
+          <code>python -m app</code>. Check a file with
+          <code>certutil -hashfile best_vit_seed42.pth SHA256</code>: a
+          part-downloaded model still loads, and then gives wrong answers.
+        </p>
+      </details>
     </details>
 
     <p class="download-warning" id="download-warning"></p>

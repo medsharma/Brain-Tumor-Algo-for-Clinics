@@ -427,14 +427,21 @@ def manifest(cfg: DeploymentConfig, items: List[Downloadable]) -> dict:
             "Check each file's SHA-256 after downloading. A truncated model "
             "file can still load and then give wrong answers."
         ),
+        # Shown to whoever is about to put this on a clinic machine, so it says
+        # the two things that decide whether they should: nobody has approved
+        # it, and nobody qualified has checked it.
+        #
+        # It used to also say "use it as a second opinion, never as the only
+        # basis for a decision" and point at two markdown files. The banner at
+        # the top of the same screen already says the first, and a person
+        # downloading a Windows installer cannot open a file in a git
+        # repository. Repeating one and offering the other made the block long
+        # enough to skip, which is the opposite of what it is for.
         "not_validated": (
-            "Development build. Use it as a second opinion, never as the only "
-            "basis for a decision about a patient. It has not yet been tested "
-            "on scans from a hospital or scanner outside its training sources, "
-            "and no clinician has reviewed its output. It is not approved as a "
-            "medical device anywhere and it is not for clinical use as the "
-            "deciding factor. Read MODEL_CARD.md and LIMITATIONS.md before "
-            "relying on it."
+            "Not for clinical use. This is a development build, not approved as "
+            "a medical device anywhere. It has not been tested on scans from a "
+            "hospital or scanner outside its training sources, and no clinician "
+            "has reviewed its output."
         ),
     }
 

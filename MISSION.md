@@ -1,14 +1,3 @@
-# How to talk to me
-
-- Be direct. No fluff, no hedging, no over-explaining.
-- No jargon. If a technical term is unavoidable, explain it in plain words.
-- Do not use em dashes.
-- Use short sentences. Bullet points are good. Write like a clear LinkedIn post, not an essay.
-- Give me the honest answer even if it is not what I want to hear. Especially then.
-- If something is a bad idea, tell me straight and tell me why.
-- Do not flatter me or pad answers with praise.
-- When there is a risk to patients, say so plainly. Do not soften it.
-
 # Repositories
 
 There are two. Do not mix them up.

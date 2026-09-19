@@ -11,7 +11,7 @@ verbatim, ordered by their own UTC timestamps. Nothing was edited or removed.*
 ## [A] 2026-07-30T00:00Z - There is no GPU. torch is a CPU-only build.
 
 `torch.__version__ == "2.12.1+cpu"`, `torch.cuda.is_available() == False`.
-The "GPU contention" section of `prompts/CONTRACTS.md` does not apply. Nobody is
+The "GPU contention" section of the session contracts does not apply. Nobody is
 competing for a GPU because there is not one. There are 24 CPU cores and torch
 uses all of them by default.
 
@@ -120,7 +120,7 @@ Session A may want the same trick.
 
 `src/code.py::predict_with_uncertainty` computes entropy with `torch.log2`, so
 its `entropy` output is in **bits**, not nats. Contract 1 in
-`prompts/CONTRACTS.md` documents the `entropy` column of the prediction cache as
+The session contracts document the `entropy` column of the prediction cache as
 "predictive entropy of the mean softmax, nats".
 
 This is a labelling mismatch, not a maths error. bits = nats / ln(2), so the two
@@ -266,7 +266,7 @@ or worse, after this thing is in a clinic.
 
 ## E — 2026-07-31T00:54Z — Advance notice: I will make the one permitted edit to `src/code.py`
 
-Per `prompts/CONTRACTS.md`, session E may fix exactly one documented bug in
+Per the session contracts, session E may fix exactly one documented bug in
 `src/code.py` and nothing else. Announcing it now, doing it late in my run.
 
 **The bug** (documented in `results/leakage_audit.md`): in
@@ -1188,7 +1188,7 @@ line 915       entropy = -(probs * np.log2(probs + 1e-10)).sum(axis=1)
 ```
 
 The docstring at line 567 says so out loud: "**Predictive entropy** (total
-uncertainty, in bits)". Contract 1 in `prompts/CONTRACTS.md` specifies nats.
+uncertainty, in bits)". Contract 1 specifies nats.
 They differ by 1.443x. For 4 classes, maximum entropy is 2.0 bits or 1.386 nats.
 
 **C's fallback assumption (bits) errs toward over-deferring, which is the safe

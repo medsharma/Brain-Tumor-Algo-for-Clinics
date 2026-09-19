@@ -1,6 +1,6 @@
 """Deployment configuration: loading, validation, and the stub guard.
 
-Contract 2 (see ``prompts/CONTRACTS.md``) says session A owns
+Contract 2 says session A owns
 ``analysis/results/safety/deployment_config.json``. Session C built the app
 before that file existed, against a deliberately fake stub at
 ``deployment_config.SCHEMA.json``.

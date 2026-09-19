@@ -36,7 +36,7 @@ WHY THIS DOES NOT REUSE src/code.py::evaluate_ood UNCHANGED
       4. It does not measure false rejection on external in-scope data, which
          is the single most likely way a rejector turns out to be useless.
 
-    src/code.py is frozen under the ownership rules in prompts/CONTRACTS.md, so
+    src/code.py is frozen under the project ownership rules, so
     it is left untouched. This script imports its model classes and transforms
     so preprocessing stays identical, and supersedes evaluate_ood for the
     reporting. _FlatImageDataset's per-file header check is reused in spirit.
@@ -787,7 +787,7 @@ def oos_paths() -> pd.DataFrame:
 def brisc_paths() -> pd.DataFrame:
     """BRISC is the external in-scope set. Inference only, never fitted on.
 
-    Uses the exact class mapping from prompts/CONTRACTS.md and asserts the
+    Uses the exact class mapping fixed by the project contracts and asserts the
     per-class counts, because `no_tumor` silently failing to match `notumor`
     would produce plausible, meaningless numbers.
     """

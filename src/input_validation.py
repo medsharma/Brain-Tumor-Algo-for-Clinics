@@ -3,7 +3,7 @@
 src/input_validation.py
 
 Input validation for the brain-MRI triage tool. Owned by session B.
-Contract 3 in prompts/CONTRACTS.md. Session C imports this. The signature of
+Contract 3. Session C imports this. The signature of
 ``validate_image`` is frozen once published.
 
 WHAT THIS IS
